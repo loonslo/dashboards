@@ -2,3 +2,5 @@ __pycache__/
 *.pyc
 .DS_Store
 refresh.log
+scripts/index_decision_dashboard_cache.json
+scripts/index_decision_dashboard_history.json
