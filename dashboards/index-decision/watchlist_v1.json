@@ -1,0 +1,24 @@
+{
+  "asof": "2026-06-30",
+  "purpose": "v1网页观察池，不是买入清单，不自动触发交易。",
+  "items": [
+    {"market": "US", "ticker": "MSFT", "name": "Microsoft", "group": "现有训练仓", "reason": "已有美股训练仓相关，观察云与AI企业软件。", "priority": "core", "alert_drawdown_pct": -15, "alert_1d_abs_pct": 4, "alert_1m_pct": -10},
+    {"market": "US", "ticker": "NVDA", "name": "NVIDIA", "group": "现有训练仓", "reason": "已有美股训练仓相关，观察AI算力链核心。", "priority": "core", "alert_drawdown_pct": -18, "alert_1d_abs_pct": 6, "alert_1m_pct": -15},
+    {"market": "US", "ticker": "VOO", "name": "Vanguard S&P 500 ETF", "group": "核心宽基", "reason": "标普500境外执行载体观察。", "priority": "core", "alert_drawdown_pct": -5, "alert_1d_abs_pct": 3, "alert_1m_pct": -5},
+    {"market": "US", "ticker": "QQQ", "name": "Invesco QQQ", "group": "核心宽基", "reason": "纳指100境外执行载体观察。", "priority": "core", "alert_drawdown_pct": -5, "alert_1d_abs_pct": 4, "alert_1m_pct": -7},
+    {"market": "US", "ticker": "TSM", "name": "Taiwan Semiconductor", "group": "AI算力链", "reason": "先进制程代工，和NVDA/AI算力需求共振。", "priority": "high", "alert_drawdown_pct": -15, "alert_1d_abs_pct": 5, "alert_1m_pct": -12},
+    {"market": "US", "ticker": "AVGO", "name": "Broadcom", "group": "AI算力链", "reason": "AI ASIC和数据中心网络链条观察。", "priority": "high", "alert_drawdown_pct": -15, "alert_1d_abs_pct": 6, "alert_1m_pct": -12},
+    {"market": "US", "ticker": "AMD", "name": "Advanced Micro Devices", "group": "AI算力链", "reason": "GPU替代供给和高波动半导体观察。", "priority": "normal", "alert_drawdown_pct": -20, "alert_1d_abs_pct": 7, "alert_1m_pct": -15},
+    {"market": "US", "ticker": "GOOGL", "name": "Alphabet", "group": "美股核心平台", "reason": "搜索、云和AI模型商业化观察。", "priority": "high", "alert_drawdown_pct": -12, "alert_1d_abs_pct": 4, "alert_1m_pct": -10},
+    {"market": "US", "ticker": "META", "name": "Meta Platforms", "group": "美股核心平台", "reason": "广告景气、AI推荐效率和资本开支观察。", "priority": "normal", "alert_drawdown_pct": -15, "alert_1d_abs_pct": 5, "alert_1m_pct": -12},
+    {"market": "US", "ticker": "BRK.B", "name": "Berkshire Hathaway", "group": "防守压舱石", "reason": "现金、保险和多元资产防守观察。", "priority": "core", "alert_drawdown_pct": -8, "alert_1d_abs_pct": 3, "alert_1m_pct": -5},
+    {"market": "US", "ticker": "UNH", "name": "UnitedHealth", "group": "医疗防守", "reason": "医疗保险龙头，防守资产和政策风险观察。", "priority": "high", "alert_drawdown_pct": -12, "alert_1d_abs_pct": 5, "alert_1m_pct": -10},
+    {"market": "US", "ticker": "LLY", "name": "Eli Lilly", "group": "医药成长", "reason": "GLP-1高估值成长资产观察。", "priority": "normal", "alert_drawdown_pct": -15, "alert_1d_abs_pct": 5, "alert_1m_pct": -12},
+    {"market": "US", "ticker": "KO", "name": "Coca-Cola", "group": "消费防守", "reason": "品牌消费和股息防守观察。", "priority": "normal", "alert_drawdown_pct": -8, "alert_1d_abs_pct": 3, "alert_1m_pct": -5},
+    {"market": "HK", "ticker": "0700.HK", "name": "腾讯控股", "group": "港股平台", "reason": "中国互联网平台、游戏和广告核心观察。", "priority": "high", "alert_drawdown_pct": -15, "alert_1d_abs_pct": 5, "alert_1m_pct": -10},
+    {"market": "HK", "ticker": "9988.HK", "name": "阿里巴巴-W", "group": "港股平台", "reason": "电商、云和中国消费平台观察。", "priority": "normal", "alert_drawdown_pct": -15, "alert_1d_abs_pct": 5, "alert_1m_pct": -10},
+    {"market": "HK", "ticker": "1211.HK", "name": "比亚迪股份", "group": "新能源车", "reason": "新能源车龙头和全球化观察。", "priority": "normal", "alert_drawdown_pct": -18, "alert_1d_abs_pct": 6, "alert_1m_pct": -12},
+    {"market": "CN", "ticker": "600900.SH", "name": "长江电力", "group": "A股高股息", "reason": "公用事业现金流和高股息观察。", "priority": "high", "alert_drawdown_pct": -8, "alert_1d_abs_pct": 3, "alert_1m_pct": -5},
+    {"market": "CN", "ticker": "600519.SH", "name": "贵州茅台", "group": "A股现金牛", "reason": "A股质量资产和消费景气观察。", "priority": "normal", "alert_drawdown_pct": -12, "alert_1d_abs_pct": 4, "alert_1m_pct": -8}
+  ]
+}
