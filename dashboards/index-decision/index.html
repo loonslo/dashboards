@@ -267,7 +267,7 @@
       bottom: 0;
       z-index: 6;
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 6px;
       padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
       border-top: 1px solid var(--line);
@@ -372,6 +372,14 @@
       <div id="indices" class="card-list"></div>
     </section>
 
+
+    <section id="short-flow-section">
+      <div class="section-head">
+        <h2>短线资金跟随</h2>
+        <span class="hint">资金流与观察条件</span>
+      </div>
+      <div id="shortFlow" class="card-list"></div>
+    </section>
     <section id="watchlist-section">
       <div class="section-head">
         <h2>观察池</h2>
@@ -399,6 +407,7 @@
 
   <nav class="bottom-nav" aria-label="页面导航">
     <a href="#indices-section" class="active">指数</a>
+    <a href="#short-flow-section">资金</a>
     <a href="#watchlist-section">观察</a>
     <a href="#alerts-section">提醒</a>
     <a href="#add" id="openAdd">添加</a>
@@ -420,7 +429,7 @@
 
   <script>
     const LOCAL_KEY = "finance_dashboard_local_watchlist_v1";
-    const state = { data: null, mode: "all", group: "", localItems: [] };
+    const state = { data: null, shortFlow: null, mode: "all", group: "", localItems: [] };
     const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "N/A" : Number(v).toFixed(d);
     const pct = (v, d = 1) => v === null || v === undefined || Number.isNaN(Number(v)) ? "N/A" : `${Number(v).toFixed(d)}%`;
     const cls = v => Number(v) > 0 ? "pos" : Number(v) < 0 ? "neg" : "flat";
@@ -430,6 +439,12 @@
       const res = await fetch("dashboard_latest.json", { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       state.data = await res.json();
+      try {
+        const flowRes = await fetch("../short-flow/dashboard_latest.json", { cache: "no-store" });
+        state.shortFlow = flowRes.ok ? await flowRes.json() : null;
+      } catch {
+        state.shortFlow = null;
+      }
       state.localItems = loadLocalItems();
       render();
     }
@@ -555,6 +570,58 @@
       });
     }
 
+
+    function money(v) {
+      if (v === null || v === undefined || Number.isNaN(Number(v))) return "N/A";
+      const value = Number(v);
+      const abs = Math.abs(value);
+      if (abs >= 100000000) return `${(value / 100000000).toFixed(2)}亿`;
+      if (abs >= 10000) return `${(value / 10000).toFixed(0)}万`;
+      return value.toFixed(0);
+    }
+
+    function dataStatusClass(status) {
+      return status === "live" ? "tag-live" : status === "stale" ? "tag-stale" : "tag-unavailable";
+    }
+
+    function renderShortFlow() {
+      const box = document.getElementById("shortFlow");
+      const data = state.shortFlow;
+      if (!data) {
+        box.innerHTML = '<div class="empty">未读取到 short-flow 数据。可先运行 scripts/refresh_short_flow.sh。</div>';
+        return;
+      }
+      const source = data.source_status || {};
+      const counts = data.status_counts || {};
+      const picks = (data.watch_signals || []).slice(0, 3);
+      const rows = picks.length ? picks.map(row => `
+        <article class="asset-card">
+          <div class="asset-top">
+            <div>
+              <div class="asset-name">${safe(row.display_name || row.name || row.code)}</div>
+              <div class="asset-code">${safe(row.code)} · ${safe(row.group)} · <span class="${dataStatusClass(row.data_status)}">${safe(row.data_status || "unknown")}</span></div>
+            </div>
+            <div class="price ${cls(row.main_net)}">${money(row.main_net)}</div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><span>状态</span><b>${safe(row.status || "N/A")}</b></div>
+            <div class="metric"><span>涨跌幅</span><b class="${cls(row.pct)}">${pct(row.pct)}</b></div>
+            <div class="metric"><span>主力占比</span><b class="${cls(row.main_net_pct)}">${pct(row.main_net_pct)}</b></div>
+          </div>
+          <div class="signal">${safe(row.next_trigger || row.reason || "等待资金确认")}</div>
+          ${row.failure ? `<div class="reason">失败条件：${safe(row.failure)}</div>` : ""}
+        </article>
+      `).join("") : '<div class="empty">观察池暂无可展示标的。</div>';
+      box.innerHTML = `
+        <div class="flow-status">
+          <div class="metric"><span>Focus</span><b>${counts["Focus watch"] || 0}</b></div>
+          <div class="metric"><span>Wait/Exclude</span><b>${(counts["Wait for strength"] || 0) + (counts["Exclude for now"] || 0)}</b></div>
+          <div class="metric"><span>接口状态</span><b>${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0}</b></div>
+        </div>
+        ${rows}
+        <a class="flow-link" href="../short-flow/">打开完整 short-flow 看板</a>
+      `;
+    }
     function renderIndices() {
       document.getElementById("indices").innerHTML = (state.data?.indices || [])
         .map(row => assetCard(row, { type: "index" }))
@@ -612,6 +679,7 @@
       renderModeChips();
       renderGroupChips();
       renderIndices();
+      renderShortFlow();
       renderWatchlist();
       renderAlerts();
       renderGaps();
@@ -669,7 +737,7 @@
       });
     });
 
-    const sections = ["indices-section", "watchlist-section", "alerts-section", "gaps-section"];
+    const sections = ["indices-section", "short-flow-section", "watchlist-section", "alerts-section", "gaps-section"];
     window.addEventListener("scroll", () => {
       const current = sections.findLast(id => document.getElementById(id).getBoundingClientRect().top < 220) || sections[0];
       document.querySelectorAll(".bottom-nav a").forEach(link => {
@@ -681,3 +749,5 @@
   </script>
 </body>
 </html>
+
+

@@ -7,7 +7,7 @@ cd "$ROOT"
 git pull --rebase
 ./scripts/refresh_all.sh
 
-git add dashboards/index-decision/dashboard_latest.json dashboards/index-decision/history/
+git add dashboards/
 
 if git diff --cached --quiet; then
   echo "No dashboard data changes."
@@ -16,3 +16,4 @@ fi
 
 git commit -m "refresh dashboards $(date +%F)"
 git push
+

@@ -1,0 +1,135 @@
+{
+  "items": [
+    {
+      "code": "510050",
+      "name": "上证50ETF",
+      "group": "宽基",
+      "role": "market",
+      "priority": "normal"
+    },
+    {
+      "code": "510300",
+      "name": "沪深300ETF",
+      "group": "宽基",
+      "role": "market",
+      "priority": "normal"
+    },
+    {
+      "code": "510500",
+      "name": "中证500ETF",
+      "group": "宽基",
+      "role": "market",
+      "priority": "normal"
+    },
+    {
+      "code": "512100",
+      "name": "中证1000ETF",
+      "group": "宽基",
+      "role": "market",
+      "priority": "normal"
+    },
+    {
+      "code": "159915",
+      "name": "创业板ETF",
+      "group": "宽基",
+      "role": "market",
+      "priority": "normal"
+    },
+    {
+      "code": "588000",
+      "name": "科创50ETF",
+      "group": "宽基",
+      "role": "market",
+      "priority": "high"
+    },
+    {
+      "code": "588220",
+      "name": "科创100F",
+      "group": "宽基",
+      "role": "market",
+      "priority": "high"
+    },
+    {
+      "code": "512760",
+      "name": "半导体ETF",
+      "group": "科技ETF",
+      "role": "market",
+      "priority": "high"
+    },
+    {
+      "code": "589020",
+      "name": "KC半导体",
+      "group": "科技ETF",
+      "role": "watch",
+      "priority": "core",
+      "key_level": 3.2,
+      "plan_note": "关注3.20关键位，资金未回流前不新增半导体仓位。"
+    },
+    {
+      "code": "515880",
+      "name": "通信ETF",
+      "group": "科技ETF",
+      "role": "market",
+      "priority": "high"
+    },
+    {
+      "code": "515070",
+      "name": "AI ETF",
+      "group": "科技ETF",
+      "role": "watch",
+      "priority": "high"
+    },
+    {
+      "code": "562500",
+      "name": "机器人ETF",
+      "group": "科技ETF",
+      "role": "watch",
+      "priority": "normal"
+    },
+    {
+      "code": "512890",
+      "name": "红利低波ETF",
+      "group": "防守/轮动",
+      "role": "market",
+      "priority": "normal",
+      "plan_note": "防守观察，不参与科技线减压判断。"
+    },
+    {
+      "code": "512000",
+      "name": "券商ETF",
+      "group": "防守/轮动",
+      "role": "market",
+      "priority": "normal"
+    },
+    {
+      "code": "516020",
+      "name": "化工ETF",
+      "group": "防守/轮动",
+      "role": "market",
+      "priority": "normal"
+    },
+    {
+      "code": "512010",
+      "name": "医药ETF",
+      "group": "防守/轮动",
+      "role": "market",
+      "priority": "normal"
+    },
+    {
+      "code": "601138",
+      "name": "工业富联",
+      "group": "个股观察",
+      "role": "watch",
+      "priority": "core",
+      "plan_note": "误操作仓优先恢复到观察仓，盘中只看修复是否成立。"
+    },
+    {
+      "code": "000636",
+      "name": "风华高科",
+      "group": "个股观察",
+      "role": "watch",
+      "priority": "high",
+      "plan_note": "不加仓，只等待修复或后续处理。"
+    }
+  ]
+}
