@@ -1,5 +1,5 @@
 {
-  "asof": "2026-07-03 14:35",
+  "asof": "2026-07-03 15:05",
   "indices": [
     {
       "return_1m": -2.08,
@@ -121,7 +121,7 @@
       "pe_52w_ago": 24.09,
       "dividend_yield": 1.09,
       "valuation_date": "7/02/26",
-      "source_valuation": "WSJ:P/E & Yields",
+      "source_valuation": "Cache:WSJ:P/E & Yields@2026-07-03 14:35",
       "code": "^GSPC",
       "name": "标普500",
       "kind": "us_broad",
@@ -146,7 +146,7 @@
       "pe_52w_ago": 31.95,
       "dividend_yield": 0.52,
       "valuation_date": "7/02/26",
-      "source_valuation": "WSJ:P/E & Yields",
+      "source_valuation": "Cache:WSJ:P/E & Yields@2026-07-03 14:35",
       "code": "^NDX",
       "name": "纳斯达克100",
       "kind": "nasdaq",
@@ -162,26 +162,30 @@
     }
   ],
   "data_gaps": [
-    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpHWAz11pJPxhFkXt6C8qd2s-zEK5woaEO7esmyQ4vOk8BKGhXgpXU\"'",
-    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpHWAPQI11L4w1wwfNNWog1uZNXK5woaDAesrg0T8634_hAypAueN8\"'",
-    "AVGO/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "MSFT/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "AMD/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "NVDA/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "VOO/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "TSM/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpHXxWlxIJZvdIj6LE8UTAieqPKK5woaOIoHkCRxoeZKm3eyLjae60\"'",
+    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpHXxaK5PZzrYyeayfJ8MmqxjmAK5woaEBagrt1VVIvOIhZbBrjszM\"'",
+    "^GSPC/valuation: WSJ未返回指数PE/股息率字段",
+    "^NDX/valuation: WSJ未返回指数PE/股息率字段",
+    "^GSPC/valuation: WSJ不可用，使用缓存估值(7/02/26)",
+    "^NDX/valuation: WSJ不可用，使用缓存估值(7/02/26)",
     "QQQ/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "MSFT/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "TSM/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "VOO/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "GOOGL/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "META/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "BRK.B/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "KO/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "AMD/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "AVGO/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "LLY/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "UNH/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "META/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "0700.HK/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "UNH/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "KO/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "BRK.B/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "9988.HK/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "1211.HK/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "600900.SH/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "600519.SH/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "600900.SH/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests"
+    "NVDA/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests"
   ],
   "watchlist": [
     {
