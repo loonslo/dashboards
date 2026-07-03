@@ -7,15 +7,17 @@ import datetime as dt
 import json
 import os
 import statistics
+import subprocess
 import sys
 import time
 import urllib.parse
 import urllib.request
+import shutil
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) ShortFlowDashboard/0.1"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
 TIMEOUT = 12
 MAX_WORKERS = int(os.environ.get("SHORT_FLOW_MAX_WORKERS", "1"))
 DEFAULT_WATCHLIST = os.path.join(os.path.dirname(HERE), "dashboards", "short-flow", "watchlist_v1.json")
@@ -54,16 +56,42 @@ def signed(value, digits=1, suffix="%"):
     return f"{value:+.{digits}f}{suffix}"
 
 
+def headers_for(url):
+    headers = {
+        "User-Agent": USER_AGENT,
+        "Accept": "application/json,text/plain,*/*",
+        "Connection": "close",
+    }
+    if "web.ifzq.gtimg.cn" in url:
+        headers["Referer"] = "https://gu.qq.com/"
+    elif "eastmoney.com" in url:
+        headers["Referer"] = "https://quote.eastmoney.com/"
+    return headers
+
+
 def get_json(url):
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Referer": "https://quote.eastmoney.com/"})
     last_error = None
     for attempt in range(3):
+        req = urllib.request.Request(url, headers=headers_for(url))
         try:
             with urllib.request.urlopen(req, timeout=TIMEOUT) as response:
                 return json.loads(response.read().decode("utf-8"))
         except Exception as exc:
             last_error = exc
             time.sleep(0.4 + attempt * 0.8)
+
+    curl = shutil.which("curl") or shutil.which("curl.exe")
+    if curl:
+        headers = headers_for(url)
+        command = [curl, "-L", "--http1.1", "-A", headers.get("User-Agent", USER_AGENT)]
+        if headers.get("Referer"):
+            command.extend(["-e", headers["Referer"]])
+        command.append(url)
+        try:
+            completed = subprocess.run(command, capture_output=True, text=True, timeout=TIMEOUT + 10, check=True)
+            return json.loads(completed.stdout)
+        except Exception as exc:
+            last_error = exc
     raise last_error
 
 
@@ -72,6 +100,11 @@ def secid_for(code):
     if code.startswith(("5", "6", "9")):
         return f"1.{code}"
     return f"0.{code}"
+
+def tencent_symbol_for(code):
+    code = str(code).strip()
+    prefix = "sh" if code.startswith(("5", "6", "9")) else "sz"
+    return f"{prefix}{code}"
 
 
 def load_watchlist(path):
@@ -110,49 +143,70 @@ def parse_kline(row):
 
 def parse_flow(row):
     parts = row.split(",")
-    if len(parts) < 13:
+    if len(parts) < 6:
         return {}
-    return {
+    result = {
         "flow_date": parts[0],
         "main_net": to_float(parts[1]),
         "small_net": to_float(parts[2]),
         "medium_net": to_float(parts[3]),
         "large_net": to_float(parts[4]),
         "super_large_net": to_float(parts[5]),
-        "main_net_pct": to_float(parts[6]),
-        "small_net_pct": to_float(parts[7]),
-        "medium_net_pct": to_float(parts[8]),
-        "large_net_pct": to_float(parts[9]),
-        "super_large_net_pct": to_float(parts[10]),
-        "flow_close": to_float(parts[11]),
-        "flow_pct": to_float(parts[12]),
     }
+    if len(parts) >= 13:
+        result.update({
+            "main_net_pct": to_float(parts[6]),
+            "small_net_pct": to_float(parts[7]),
+            "medium_net_pct": to_float(parts[8]),
+            "large_net_pct": to_float(parts[9]),
+            "super_large_net_pct": to_float(parts[10]),
+            "flow_close": to_float(parts[11]),
+            "flow_pct": to_float(parts[12]),
+        })
+    return result
 
 
 def fetch_klines(code, limit=90):
-    fields1 = "f1,f2,f3,f4,f5,f6"
-    fields2 = "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61"
-    query = urllib.parse.urlencode({
-        "secid": secid_for(code),
-        "klt": "101",
-        "fqt": "1",
-        "lmt": str(limit),
-        "end": "20500101",
-        "fields1": fields1,
-        "fields2": fields2,
-    })
-    payload = get_json(f"https://push2his.eastmoney.com/api/qt/stock/kline/get?{query}")
-    data = payload.get("data") or {}
-    rows = [parse_kline(row) for row in data.get("klines") or []]
-    rows = [row for row in rows if row and row.get("close") is not None]
+    symbol = tencent_symbol_for(code)
+    query = urllib.parse.urlencode({"param": f"{symbol},day,,,{limit},qfq"})
+    payload = get_json(f"https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?{query}")
+    data = (payload.get("data") or {}).get(symbol) or {}
+    raw_rows = data.get("qfqday") or data.get("day") or []
+    rows = []
+    prev_close = None
+    for item in raw_rows:
+        if len(item) < 6:
+            continue
+        close = to_float(item[2])
+        volume = to_float(item[5])
+        amount = close * volume * 100 if close is not None and volume is not None else None
+        row = {
+            "date": item[0],
+            "open": to_float(item[1]),
+            "close": close,
+            "high": to_float(item[3]),
+            "low": to_float(item[4]),
+            "volume": volume,
+            "amount": amount,
+            "amplitude_pct": None,
+            "pct": pct_change(close, prev_close),
+            "change": close - prev_close if close is not None and prev_close is not None else None,
+            "turnover_pct": None,
+        }
+        rows.append(row)
+        if close is not None:
+            prev_close = close
     if not rows:
-        raise RuntimeError("日线为空")
-    return data, rows
+        raise RuntimeError("腾讯日线为空")
+    qt = data.get("qt") or {}
+    qt_row = qt.get(symbol) or []
+    meta = {"name": qt_row[1] if len(qt_row) > 1 else None}
+    return meta, rows
 
 
 def fetch_flow(code):
     fields1 = "f1,f2,f3,f7"
-    fields2 = "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63"
+    fields2 = "f51,f52,f53,f54,f55,f56"
     query = urllib.parse.urlencode({
         "lmt": "1",
         "klt": "101",
@@ -160,11 +214,47 @@ def fetch_flow(code):
         "fields1": fields1,
         "fields2": fields2,
     })
-    payload = get_json(f"https://push2.eastmoney.com/api/qt/stock/fflow/daykline/get?{query}")
+    payload = get_json(f"https://push2.eastmoney.com/api/qt/stock/fflow/kline/get?{query}")
     data = payload.get("data") or {}
     rows = data.get("klines") or []
     return parse_flow(rows[-1]) if rows else {}
 
+
+def fetch_flow_batch(items):
+    secids = [secid_for(item.get("code")) for item in items if item.get("code")]
+    if not secids:
+        return {}
+    result = {}
+    fields = "f12,f14,f2,f3,f6,f62,f184,f66,f72,f78,f84"
+    for index in range(0, len(secids), 4):
+        chunk = ",".join(secids[index:index + 4])
+        query = urllib.parse.urlencode({
+            "fltt": "2",
+            "invt": "2",
+            "secids": chunk,
+            "fields": fields,
+        }, safe=",")
+        try:
+            payload = get_json(f"https://push2.eastmoney.com/api/qt/ulist.np/get?{query}")
+        except Exception:
+            time.sleep(0.3)
+            continue
+        diff = ((payload.get("data") or {}).get("diff") or [])
+        for row in diff:
+            code = str(row.get("f12") or "").strip()
+            if not code:
+                continue
+            result[code] = {
+                "main_net": to_float(row.get("f62")),
+                "main_net_pct": to_float(row.get("f184")),
+                "super_large_net": to_float(row.get("f66")),
+                "large_net": to_float(row.get("f72")),
+                "medium_net": to_float(row.get("f78")),
+                "small_net": to_float(row.get("f84")),
+                "flow_date": None,
+            }
+        time.sleep(0.2)
+    return result
 
 def moving_average(values, window):
     if len(values) < window:
@@ -277,13 +367,22 @@ def failure_text(row):
     return "；".join(parts)
 
 
-def collect_one(item):
+def collect_one(item, flow_map=None):
     code = str(item["code"])
     meta, klines = fetch_klines(code)
-    flow = fetch_flow(code)
+    flow_error = None
+    if flow_map is not None:
+        flow = flow_map.get(code) or {}
+        if not flow:
+            flow_error = "批量资金流未返回"
+    else:
+        try:
+            flow = fetch_flow(code)
+        except Exception as exc:
+            flow = {}
+            flow_error = str(exc)
     latest = klines[-1]
     closes = [row["close"] for row in klines]
-    amounts = [row.get("amount") for row in klines]
     row = {
         "code": code,
         "secid": secid_for(code),
@@ -313,17 +412,33 @@ def collect_one(item):
         "amount_ratio_20": ratio(latest.get("amount"), amount_average(klines, 20)),
         "upper_shadow_ratio": upper_shadow_ratio(latest),
         "intraday_drawdown_pct": intraday_drawdown_from_high(latest),
-        "source_price": "Eastmoney:stock/kline",
-        "source_flow": "Eastmoney:stock/fflow/daykline",
+        "main_net": None,
+        "main_net_pct": None,
+        "super_large_net": None,
+        "large_net": None,
+        "small_net": None,
+        "source_price": "Tencent:appstock/fqkline",
+        "source_flow": "unavailable" if flow_error else "Eastmoney:qt/ulist.np",
+        "flow_error": flow_error,
     }
     row.update(flow)
+    amount = row.get("amount")
+    for key, pct_key in (
+        ("main_net", "main_net_pct"),
+        ("small_net", "small_net_pct"),
+        ("large_net", "large_net_pct"),
+        ("super_large_net", "super_large_net_pct"),
+    ):
+        if row.get(pct_key) is None and row.get(key) is not None and amount not in (None, 0):
+            row[pct_key] = row.get(key) / amount * 100
     status, reason = classify(row)
+    if flow_error:
+        reason = f"资金流暂不可用，价格/均线已更新：{flow_error}；{reason}"
     row["status"] = status
     row["reason"] = reason
     row["next_trigger"] = trigger_text(row)
     row["failure"] = failure_text(row)
     return row
-
 
 def fallback_row(item, error):
     role = item.get("role") or "watch"
@@ -401,13 +516,34 @@ def apply_previous_snapshot(data, previous):
     for section in ("market_flow", "watch_signals"):
         merged = []
         for row in data.get(section, []):
+            old = previous_rows.get(str(row.get("code")))
             if row_is_live(row):
+                if row.get("main_net") is None and old and old.get("main_net") is not None:
+                    for key in (
+                        "main_net",
+                        "main_net_pct",
+                        "super_large_net",
+                        "large_net",
+                        "medium_net",
+                        "small_net",
+                        "small_net_pct",
+                        "large_net_pct",
+                        "super_large_net_pct",
+                        "flow_date",
+                    ):
+                        if row.get(key) is None and old.get(key) is not None:
+                            row[key] = old.get(key)
+                    row["source_flow"] = old.get("source_flow") or "stale"
+                    row["flow_data_status"] = "stale"
+                    row["stale_flow_from_asof"] = previous.get("asof")
+                    row["reason"] = "本次资金流接口失败，沿用上次资金流；" + str(row.get("reason") or "")
+                elif row.get("main_net") is not None:
+                    row["flow_data_status"] = "live"
                 row["data_status"] = "live"
                 live_count += 1
                 merged.append(row)
                 continue
 
-            old = previous_rows.get(str(row.get("code")))
             if old and row_is_live(old):
                 kept = dict(old)
                 kept["data_status"] = "stale"
@@ -449,16 +585,21 @@ def apply_previous_snapshot(data, previous):
         "stale_rows": stale_count,
         "unavailable_rows": unavailable_count,
         "previous_asof": previous.get("asof"),
-        "policy": "live优先；接口失败时沿用上次有效行；无历史有效行才显示N/A。",
+        "policy": "价格live优先；价格接口失败沿用上次有效行；资金流接口失败时可沿用上次资金流。",
     }
     return data
-
 def collect_dashboard(watchlist_path):
     items = load_watchlist(watchlist_path)
+    flow_map = {}
+    flow_batch_error = None
+    try:
+        flow_map = fetch_flow_batch(items)
+    except Exception as exc:
+        flow_batch_error = str(exc)
     rows = []
     gaps = []
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
-        futures = {pool.submit(collect_one, item): item for item in items}
+        futures = {pool.submit(collect_one, item, flow_map): item for item in items}
         for future in as_completed(futures):
             item = futures[future]
             try:
@@ -467,6 +608,8 @@ def collect_dashboard(watchlist_path):
                 gaps.append(f"{item.get('code')}/{item.get('name')}: {exc}")
                 rows.append(fallback_row(item, exc))
 
+    if flow_batch_error:
+        gaps.append(f"资金流批量接口: {flow_batch_error}")
     priority_order = {"core": 0, "high": 1, "normal": 2}
     rows.sort(key=lambda row: (priority_order.get(row.get("priority"), 9), row.get("group") or "", row.get("code") or ""))
     market_rows = [row for row in rows if row.get("role") == "market"]
@@ -487,7 +630,6 @@ def collect_dashboard(watchlist_path):
         "status_counts": status_counts,
         "data_gaps": gaps,
     }
-
 
 def write_json(data, path):
     with open(path, "w", encoding="utf-8") as handle:
@@ -519,7 +661,7 @@ def selftest():
         },
         {
             "asof": "2026-07-01 15:30",
-            "market_flow": [{"code": "510300", "close": 4.0, "source_price": "Eastmoney:stock/kline", "main_net": 1}],
+            "market_flow": [{"code": "510300", "close": 4.0, "source_price": "Tencent:appstock/fqkline", "main_net": 1}],
             "watch_signals": [],
         },
     )
@@ -561,6 +703,21 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
