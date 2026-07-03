@@ -1,5 +1,5 @@
 {
-  "asof": "2026-07-03 09:35",
+  "asof": "2026-07-03 10:05",
   "indices": [
     {
       "return_1m": -2.08,
@@ -39,12 +39,6 @@
       "signal_snapshot_delta": "无变化"
     },
     {
-      "return_1m": 4.48,
-      "return_3m": 14.32,
-      "return_ytd": 16.46,
-      "return_1y": 47.54,
-      "performance_date": "2026-07-02",
-      "source_performance": "CSI:get-index-yield-item",
       "current": 8694.18,
       "high_52w": 9147.56,
       "drawdown_52w": -4.956294356090574,
@@ -53,6 +47,12 @@
       "pe_ttm": 30.79,
       "date": "2026-07-02",
       "source_price": "CSI:index-perf",
+      "return_1m": 4.48,
+      "return_3m": 14.32,
+      "return_ytd": 16.46,
+      "return_1y": 47.54,
+      "performance_date": "2026-07-02",
+      "source_performance": "CSI:get-index-yield-item",
       "pe_static": 32.11,
       "pb": 2.46,
       "dividend_yield": 1.19,
@@ -84,12 +84,6 @@
       "pe_ttm": 7.06,
       "date": "2026-07-02",
       "source_price": "CSI:index-perf",
-      "return_1m": -9.37,
-      "return_3m": -11.66,
-      "return_ytd": -9.49,
-      "return_1y": -12.98,
-      "performance_date": "2026-07-02",
-      "source_performance": "CSI:get-index-yield-item",
       "pb": 0.7684,
       "dividend_yield": 5.34,
       "roe": 10.14,
@@ -162,26 +156,27 @@
     }
   ],
   "data_gaps": [
-    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpHEbMR476URPpb94a6X_SHZxrfK5woaARxaSthA61sQ9cAT0IUnX8\"'",
-    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpHEb2UcWIIkdLvgdFOtVjGA6XbK5woaOBwEYUKWg-Mgp4QBpCGo-4\"'",
-    "QQQ/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "NVDA/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "MSFT/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "AVGO/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpHGMXxZSDnvEHCDQIqPEBR2E6OK5woaJPvWr2lgwJ2ILBT9wbXwtg\"'",
+    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpHGLy9oMqumDCWGagqbIMvJL97K5woaHiUsnbSvZ1mSpMeRo8T0UQ\"'",
+    "H30269/performance: The read operation timed out",
     "VOO/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "AVGO/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "TSM/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "AMD/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "NVDA/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "GOOGL/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "BRK.B/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "MSFT/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "AMD/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "META/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "LLY/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "BRK.B/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "UNH/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "0700.HK/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "KO/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "UNH/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "9988.HK/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "1211.HK/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
     "600900.SH/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "600519.SH/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests"
+    "600519.SH/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
+    "QQQ/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests"
   ],
   "watchlist": [
     {
