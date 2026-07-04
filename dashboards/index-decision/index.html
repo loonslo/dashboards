@@ -342,14 +342,6 @@
     }
   </style>
   <script src="../api-client.js"></script>
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-  <script>
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
 </head>
 <body>
   <header>
@@ -757,17 +749,17 @@
       document.getElementById("watchlist").innerHTML = `<div class="empty">${safe(error.message)}</div>`;
     }
 
-    document.getElementById("search").addEventListener("input", renderWatchlist);
-    document.getElementById("reload").addEventListener("click", () => loadData().catch(showError));
-    document.getElementById("openAdd").addEventListener("click", event => {
+    document.getElementById("search")?.addEventListener("input", renderWatchlist);
+    document.getElementById("reload")?.addEventListener("click", () => loadData().catch(showError));
+    document.getElementById("openAdd")?.addEventListener("click", event => {
       event.preventDefault();
       document.getElementById("addPanel").classList.add("open");
       document.getElementById("addTicker").focus();
     });
-    document.getElementById("closeAdd").addEventListener("click", () => {
+    document.getElementById("closeAdd")?.addEventListener("click", () => {
       document.getElementById("addPanel").classList.remove("open");
     });
-    document.getElementById("saveAdd").addEventListener("click", () => {
+    document.getElementById("saveAdd")?.addEventListener("click", () => {
       const ticker = document.getElementById("addTicker").value.trim().toUpperCase();
       if (!ticker) return;
       const row = {
@@ -790,7 +782,7 @@
       renderAlerts();
     });
 
-    document.getElementById("notify").addEventListener("click", async () => {
+    document.getElementById("notify")?.addEventListener("click", async () => {
       if (!("Notification" in window)) {
         alert("当前浏览器不支持通知");
         return;
@@ -805,7 +797,7 @@
 
     const sections = ["overview-section", "indices-section", "short-flow-section", "watchlist-section", "alerts-section", "gaps-section"];
     window.addEventListener("scroll", () => {
-      const current = sections.findLast(id => document.getElementById(id).getBoundingClientRect().top < 220) || sections[0];
+      const current = sections.findLast(id => document.getElementById(id)?.getBoundingClientRect().top < 220) || sections[0];
       document.querySelectorAll(".bottom-nav a").forEach(link => {
         link.classList.toggle("active", link.getAttribute("href") === `#${current}`);
       });

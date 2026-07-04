@@ -390,14 +390,6 @@
     }
   </style>
   <script src="../api-client.js"></script>
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-  <script>
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
 </head>
 <body>
   <header>
@@ -764,6 +756,7 @@
       html += `</div>`;
       panel.innerHTML = html;
     }
+    function renderEtfPool() {
       const root = document.getElementById("etfPool");
       const hint = document.getElementById("etfHint");
       const data = state.etf;
