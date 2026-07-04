@@ -303,6 +303,17 @@ def fetch_stooq_history(ticker, yahoo_error=None):
     raise RuntimeError(f"Yahoo/Stooq历史均失败: {last_error}")
 
 
+def friendly_fetch_error(exc):
+    text = str(exc)
+    if "429" in text or "Too Many Requests" in text:
+        return "行情源临时限流，等待下次刷新"
+    if "Invalid isoformat" in text or "(async()" in text:
+        return "行情源返回内容异常，等待下次刷新"
+    if "timed out" in text.lower() or "timeout" in text.lower():
+        return "行情源响应超时，等待下次刷新"
+    return "行情数据暂时不可用，等待下次刷新"
+
+
 def fetch_cnbc_quote(symbol):
     encoded = urllib.parse.quote(symbol, safe="")
     url = (
@@ -597,7 +608,7 @@ def build_watchlist_alerts(row):
             "ticker": ticker,
             "name": name,
             "level": "data",
-            "notify": priority in ("core", "high"),
+            "notify": False,
             "message": "行情数据缺失，今天不能据此判断",
         })
     if dd is not None and dd_limit is not None and dd <= dd_limit:
@@ -652,17 +663,17 @@ def collect_watchlist(path):
                 merge_non_null(row, future.result())
                 row["signal"] = watchlist_signal(row)
                 row["alerts"] = build_watchlist_alerts(row)
-                row["has_alert"] = bool(row["alerts"])
+                row["has_alert"] = any(alert.get("level") != "data" for alert in row["alerts"])
             except Exception as exc:
                 row["signal"] = "数据不足"
                 row["alerts"] = [{
                     "ticker": ticker,
                     "name": row.get("name") or ticker,
                     "level": "data",
-                    "notify": row.get("priority") in ("core", "high"),
-                    "message": f"行情抓取失败：{exc}",
+                    "notify": False,
+                    "message": friendly_fetch_error(exc),
                 }]
-                row["has_alert"] = True
+                row["has_alert"] = False
                 gaps.append(f"{ticker}/watchlist: {exc}")
             rows.append(row)
 
@@ -749,11 +760,13 @@ def collect_dashboard(watchlist_path=None):
         watchlist_rows, watchlist_gaps = collect_watchlist(watchlist_path)
         data["watchlist"] = watchlist_rows
         data["data_gaps"].extend(watchlist_gaps)
-        data["alerts"] = [
+        all_alerts = [
             alert
             for row in watchlist_rows
             for alert in row.get("alerts", [])
         ]
+        data["alerts"] = [alert for alert in all_alerts if alert.get("level") != "data"]
+        data["data_alerts"] = [alert for alert in all_alerts if alert.get("level") == "data"]
         data["notifications"] = [
             alert
             for alert in data["alerts"]

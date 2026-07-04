@@ -261,6 +261,14 @@
       border-color: #cdd6df;
       box-shadow: 0 12px 28px rgba(25, 35, 45, 0.10);
     }
+    .alert-card {
+      min-height: 150px;
+    }
+    .data-notice {
+      min-height: 118px;
+      border-left: 3px solid var(--amber);
+      background: #fffaf0;
+    }
     .top {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -644,8 +652,17 @@
       local: "本机",
       alert: "提醒",
       warning: "预警",
-      info: "观察"
+      info: "观察",
+      data: "数据"
     }[level] || level || "提醒");
+    const isDataIssue = row => {
+      const message = row?.message || "";
+      return row?.level === "data" || /Yahoo|Stooq|HTTP Error|Too Many Requests|Invalid isoformat|CNBC|WSJ|CSI|Danjuan/i.test(message);
+    };
+    const isActionAlert = row => !isDataIssue(row);
+    const dataIssueMessage = count => count > 1
+      ? `${count} 个标的行情暂未更新，先不要据此做买卖判断。`
+      : "行情数据暂未更新，先不要据此做买卖判断。";
 
     async function loadData() {
       state.data = await DashboardApi.fetchLatest("index-decision", "dashboard_latest.json");
@@ -721,12 +738,12 @@
     function renderSummary() {
       document.getElementById("indexCount").textContent = state.data?.indices?.length ?? 0;
       document.getElementById("watchCount").textContent = watchRows().length;
-      document.getElementById("alertCount").textContent = alertRows().length;
+      document.getElementById("alertCount").textContent = alertRows().filter(isActionAlert).length;
       document.getElementById("meta").textContent = `生成时间：${state.data?.asof || "暂无"} · 只做观察，不执行交易`;
     }
 
     function alertRows() {
-      const backendAlerts = state.data?.alerts || [];
+      const backendAlerts = (state.data?.alerts || []).filter(isActionAlert);
       const localAlerts = state.localItems.map(row => ({
         ticker: row.ticker,
         name: row.name,
@@ -737,8 +754,15 @@
       return [...backendAlerts, ...localAlerts];
     }
 
+    function dataIssueRows() {
+      return [
+        ...(state.data?.data_alerts || []),
+        ...(state.data?.alerts || []).filter(isDataIssue)
+      ];
+    }
+
     function notificationRows() {
-      const backendRows = state.data?.notifications || [];
+      const backendRows = (state.data?.notifications || []).filter(isActionAlert);
       return [...backendRows];
     }
 
@@ -801,7 +825,9 @@
       }
       const source = data.source_status || {};
       const counts = data.status_counts || {};
-      const picks = (data.watch_signals || []).slice(0, 3);
+      const signals = data.watch_signals || [];
+      const picks = signals.slice(0, 3);
+      const hiddenSignals = Math.max(0, signals.length - picks.length);
       const cards = picks.length ? picks.map(row => `
         <article class="card">
           <div class="top">
@@ -827,7 +853,7 @@
           <div class="mini"><span>接口 实时/延迟/不可用</span><b>${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0}</b></div>
         </div>
         <div class="card-list">${cards}</div>
-        <a class="flow-link" href="../short-flow/">打开完整 A股短线看板 →</a>
+        <a class="flow-link" href="../short-flow/">打开完整 A股短线看板${hiddenSignals ? `（还有 ${hiddenSignals} 个）` : ""} →</a>
       `;
     }
 
@@ -843,7 +869,7 @@
         const text = `${row.ticker} ${row.name} ${row.group} ${row.market}`.toLowerCase();
         const modeOk =
           state.mode === "all" ||
-          (state.mode === "alert" && row.has_alert) ||
+          (state.mode === "alert" && (row.alerts || []).some(isActionAlert)) ||
           (state.mode === "core" && row.priority === "core") ||
           row.market === state.mode;
         return modeOk && (!query || text.includes(query)) && (!state.group || row.group === state.group);
@@ -861,15 +887,45 @@
     function renderGaps() {
       const gaps = state.data?.data_gaps || [];
       const box = document.getElementById("gaps");
+      const summarized = summarizeGaps(gaps);
       box.className = gaps.length ? "gap-box" : "empty";
-      box.innerHTML = gaps.length ? gaps.map(gap => `<div>· ${safe(gap)}</div>`).join("") : "暂无数据缺口";
+      box.innerHTML = gaps.length ? summarized.map(gap => `<div>· ${safe(gap)}</div>`).join("") : "暂无数据缺口";
+    }
+
+    function summarizeGaps(gaps) {
+      const watchlist = gaps.filter(gap => String(gap).includes("/watchlist")).length;
+      const history = gaps.filter(gap => String(gap).includes("/history")).length;
+      const valuation = gaps.filter(gap => String(gap).includes("/valuation")).length;
+      const cnbc = gaps.filter(gap => String(gap).includes("CNBC")).length;
+      const used = watchlist + history + valuation + cnbc;
+      const other = Math.max(0, gaps.length - used);
+      const rows = [];
+      if (watchlist) rows.push(`观察池行情暂未更新：${watchlist} 个标的，可能是行情源限流或暂不可用`);
+      if (history) rows.push(`核心指数历史行情暂缺：${history} 项，相关回撤信号需等待下次刷新`);
+      if (valuation) rows.push(`估值数据暂缺或使用缓存：${valuation} 项`);
+      if (cnbc) rows.push(`指数报价源暂未返回：${cnbc} 项`);
+      if (other) rows.push(`其他数据项待补：${other} 项`);
+      return rows.length ? rows : ["有数据缺口，等待下次刷新"];
     }
 
     function renderAlerts() {
       const rows = alertRows();
-      document.getElementById("alerts").innerHTML = rows.length
+      const dataIssues = dataIssueRows();
+      const dataNotice = dataIssues.length ? `
+          <article class="card data-notice">
+            <div class="top">
+              <div>
+                <div class="name">行情数据待更新</div>
+                <div class="code">数据 · ${dataIssues.length} 个标的</div>
+              </div>
+              <span class="pill">不交易</span>
+            </div>
+            <div class="signal">${safe(dataIssueMessage(dataIssues.length))}</div>
+          </article>
+        ` : "";
+      document.getElementById("alerts").innerHTML = rows.length || dataIssues.length
         ? rows.map(row => `
-          <article class="card">
+          <article class="card alert-card">
             <div class="top">
               <div>
                 <div class="name">${safe(row.name || row.ticker)}</div>
@@ -879,7 +935,7 @@
             </div>
             <div class="signal">${safe(row.message)}</div>
           </article>
-        `).join("")
+        `).join("") + dataNotice
         : '<div class="empty">暂无提醒</div>';
     }
 
