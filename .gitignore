@@ -6,3 +6,4 @@ scripts/index_decision_dashboard_cache.json
 scripts/index_decision_dashboard_history.json
 short-flow/data/
 short-flow/logs/
+server_data/

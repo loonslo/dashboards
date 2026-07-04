@@ -1,2 +1,5 @@
-# v0.1 uses only the Python standard library.
-# LangGraph/OpenAI dependencies are intentionally deferred to v0.2.
+# The runnable v0.1 path uses only the Python standard library.
+# Optional learning path for the workflow layer:
+# langgraph
+# langchain
+# langchain-openai

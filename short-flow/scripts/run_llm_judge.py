@@ -6,6 +6,8 @@ from _bootstrap import default_config_path, default_db_path
 from short_flow.analysis import summarize_rules, upsert_analysis_run
 from short_flow.config import load_config
 from short_flow.db import connect, init_db, rows
+from short_flow.graph.state import initial_state
+from short_flow.graph.workflow import run_workflow
 
 
 def main():
@@ -36,6 +38,18 @@ def main():
             "top_candidates": candidates[:5],
         }
         hard_rule_summary = summarize_rules(signals)
+        workflow_state = initial_state(
+            args.session,
+            candidates + waits,
+            excludes,
+            dict(regime) if regime else {},
+            {
+                "theme_enabled": config["features"].get("theme_enabled", False),
+                "max_total_exposure_pct": config["capital"].get("max_total_exposure_pct"),
+            },
+        )
+        workflow_result = run_workflow(workflow_state, use_llm=config["features"].get("use_llm", False))
+        decisions = workflow_result.get("decisions", {})
         decision = {
             "summary": "v0.1规则引擎输出，大模型判断将在v0.2接入。",
             "regime": dict(regime) if regime else {},
@@ -43,9 +57,10 @@ def main():
                 "theme_enabled": config["features"].get("theme_enabled", False),
                 "max_total_exposure_pct": config["capital"].get("max_total_exposure_pct"),
             },
-            "focus_watch": candidates,
-            "wait": waits,
-            "exclude": excludes,
+            "workflow_note": workflow_result.get("workflow_note", "rule-only workflow executed."),
+            "focus_watch": decisions.get("watch", candidates),
+            "wait": decisions.get("wait", waits),
+            "exclude": decisions.get("avoid", excludes),
             "risk_notes": ["不自动下单", "首笔不超过计划仓位1/3", "主题ETF默认关闭"],
         }
         md_lines = [f"{args.session} short-flow", "", decision["summary"], ""]

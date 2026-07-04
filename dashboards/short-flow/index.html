@@ -381,6 +381,7 @@
       .price { font-size: 18px; }
     }
   </style>
+  <script src="../api-client.js"></script>
   <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
@@ -489,12 +490,9 @@
     const statusClass = status => status === "Focus watch" ? "" : status === "Exclude for now" ? "exclude" : "wait";
 
     async function loadData() {
-      const res = await fetch("dashboard_latest.json", { cache: "no-store" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      state.data = await res.json();
+      state.data = await DashboardApi.fetchLatest("short-flow", "dashboard_latest.json");
       try {
-        const etfRes = await fetch("etf_pool_latest.json", { cache: "no-store" });
-        state.etf = etfRes.ok ? await etfRes.json() : null;
+        state.etf = await DashboardApi.fetchLatest("etf-pool", "etf_pool_latest.json");
       } catch (error) {
         state.etf = null;
       }
