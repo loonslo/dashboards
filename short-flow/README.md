@@ -25,10 +25,12 @@ Daily analysis is treated as a first-class asset. The important chain is:
 
 ```text
 etf_snapshot -> etf_indicator -> market_regime -> signal_result
-  -> llm_decision / analysis_run -> alert_log -> exported reports
+  -> llm_decision / analysis_run -> backtest_result / decision_review
+  -> alert_log -> exported reports
 ```
 
 `analysis_run` keeps input summaries, hard-rule summaries, model or rule output, validated output, report paths, and status. `alert_log` records what the system reminded you, why, through which channel, and whether the push succeeded.
+`backtest_result` records forward returns for historical Focus watch signals. `decision_review` records manual review labels and notes so later workflow runs can learn from repeated mistakes and valid patterns.
 
 ## Reminders
 
@@ -46,6 +48,15 @@ Use the seed watchlist for a fast end-to-end check:
 
 ```bash
 python short-flow/scripts/daily_job.py --session 0940 --seed-only
+```
+
+The daily pipeline now runs backtest before exporting the dashboard report, so
+`etf_pool_latest.json` includes the latest available `backtest` summary.
+
+Record a manual review after a signal has had time to play out:
+
+```bash
+python short-flow/scripts/review_decision.py --code 510300 --label good --note "资金确认后延续，规则有效"
 ```
 
 The production refresh path should omit `--seed-only`; the ETF master script tries the data source first and falls back to the local seed list if needed.

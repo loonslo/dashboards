@@ -15,9 +15,14 @@
       --soft: #eef2f5;
       --blue: #1769e0;
       --green: #157a3c;
+      --green-soft: #e7f4ec;
       --red: #bd2b2b;
+      --red-soft: #fbe9e9;
       --amber: #8a6200;
+      --amber-soft: #fbf1dc;
+      --blue-soft: #eaf2ff;
       --shadow: 0 8px 24px rgba(25, 35, 45, 0.07);
+      --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono", Menlo, Consolas, monospace;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -26,8 +31,10 @@
       min-width: 320px;
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-variant-numeric: tabular-nums;
       letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
     }
     header {
       position: sticky;
@@ -48,8 +55,10 @@
     }
     h1 {
       margin: 0;
-      font-size: 22px;
+      font-size: 21px;
+      font-weight: 780;
       line-height: 1.2;
+      letter-spacing: -0.01em;
     }
     .meta {
       margin-top: 5px;
@@ -79,7 +88,8 @@
       margin-top: 3px;
       color: var(--muted);
       font-size: 11px;
-      white-space: nowrap;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
     }
     .toolbar {
       display: grid;
@@ -87,7 +97,7 @@
       gap: 8px;
       align-items: center;
     }
-    input, button {
+    input, button, select {
       min-width: 0;
       height: 40px;
       border: 1px solid var(--line);
@@ -95,6 +105,7 @@
       background: var(--panel);
       color: var(--text);
       font-size: 15px;
+      font-family: inherit;
     }
     input { padding: 0 12px; }
     button {
@@ -132,10 +143,11 @@
     }
     .section-head {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 10px;
+      flex-wrap: wrap;
     }
     h2 {
       margin: 0;
@@ -146,6 +158,21 @@
       color: var(--muted);
       font-size: 12px;
       white-space: nowrap;
+    }
+    .section-tools {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      min-width: 0;
+      margin-left: auto;
+    }
+    .session-select {
+      width: min(100%, 238px);
+      height: 34px;
+      padding: 0 8px;
+      border-radius: 8px;
+      font-size: 13px;
     }
     .grid {
       display: grid;
@@ -158,10 +185,10 @@
     .card {
       min-width: 0;
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 10px;
       background: var(--panel);
       box-shadow: var(--shadow);
-      padding: 12px;
+      padding: 11px;
     }
     .top {
       display: grid;
@@ -210,9 +237,10 @@
     .metric b {
       display: block;
       margin-top: 3px;
+      font-family: var(--mono);
       font-size: 14px;
       line-height: 1.2;
-      white-space: nowrap;
+      overflow-wrap: anywhere;
     }
     .signal {
       margin-top: 10px;
@@ -270,6 +298,7 @@
       color: var(--muted);
       font-size: 13px;
       line-height: 1.5;
+      overflow-wrap: anywhere;
     }
     .gap-box {
       border-color: #efd58a;
@@ -278,8 +307,70 @@
     }
     .etf-overview {
       display: grid;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 10px;
+    }
+    .etf-status-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .status-card {
+      min-width: 0;
+      padding: 10px 11px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    .status-card.primary {
+      border-left: 3px solid var(--blue);
+      background: linear-gradient(90deg, var(--blue-soft), #fff 55%);
+    }
+    .status-card.ok {
+      border-left: 3px solid var(--green);
+      background: linear-gradient(90deg, var(--green-soft), #fff 55%);
+    }
+    .status-card.warn {
+      border-left: 3px solid var(--amber);
+      background: linear-gradient(90deg, var(--amber-soft), #fff 55%);
+    }
+    .status-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+    }
+    .status-card b {
+      display: block;
+      margin-top: 3px;
+      font-family: var(--mono);
+      font-size: 17px;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+    .guardrail-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .guardrail {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 28px;
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.2;
+    }
+    .guardrail b {
+      color: var(--text);
+      font-family: var(--mono);
+      font-weight: 700;
     }
     .etf-strip {
       display: grid;
@@ -309,9 +400,105 @@
     .decision-grid {
       display: grid;
       gap: 10px;
+      align-items: start;
+    }
+    .decision-card {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+    }
+    .decision-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 7px;
+      border-bottom: 1px solid var(--line);
+    }
+    .decision-title {
+      font-size: 15px;
+      font-weight: 760;
+      line-height: 1.2;
+    }
+    .decision-count {
+      flex: 0 0 auto;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .decision-card.focus .decision-count { background: var(--green-soft); color: var(--green); }
+    .decision-card.wait .decision-count { background: var(--amber-soft); color: var(--amber); }
+    .decision-card.exclude .decision-count { background: var(--red-soft); color: var(--red); }
+    .decision-list {
+      display: grid;
+      gap: 7px;
+    }
+    .decision-row {
+      min-width: 0;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfd;
+    }
+    .decision-row.compact {
+      padding: 7px 8px;
+    }
+    .decision-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+    }
+    .decision-main b {
+      min-width: 0;
+      font-size: 13px;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+    .score-pill {
+      flex: 0 0 auto;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: #3c4043;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .decision-note {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+    .decision-meta {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3px;
+      margin-top: 5px;
+      color: #4d5a66;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .decision-meta span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .decision-more {
+      padding: 7px 8px;
+      border-radius: 8px;
+      background: var(--soft);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
     }
     .table-wrap {
-      overflow-x: auto;
+      overflow-x: visible;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--panel);
@@ -320,14 +507,16 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 820px;
+      min-width: 0;
+      table-layout: fixed;
       font-size: 13px;
     }
     th, td {
       padding: 9px 10px;
       border-bottom: 1px solid var(--line);
       text-align: right;
-      white-space: nowrap;
+      white-space: normal;
+      overflow-wrap: anywhere;
     }
     th:first-child, td:first-child,
     th:nth-child(2), td:nth-child(2) {
@@ -340,6 +529,45 @@
       background: #fafbfc;
     }
     tr:last-child td { border-bottom: 0; }
+    .rank-table th, .rank-table td {
+      padding: 8px 8px;
+      vertical-align: top;
+    }
+    .rank-table th:first-child, .rank-table td:first-child { width: 36%; }
+    .rank-table th:nth-child(2), .rank-table td:nth-child(2) { width: 19%; }
+    .rank-name {
+      display: block;
+      color: var(--text);
+      font-weight: 650;
+      line-height: 1.25;
+    }
+    .rank-code {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+    .journal-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .journal-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .journal-panel {
+      display: none;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      margin-bottom: 10px;
+    }
     .bottom-nav {
       position: fixed;
       left: 0;
@@ -375,8 +603,10 @@
       .summary { grid-column: 2; grid-row: 1 / span 2; }
       .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .rank-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .etf-status-grid { grid-template-columns: 1.2fr 1fr 1fr 1fr; }
       .etf-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      .decision-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .decision-grid { grid-template-columns: minmax(190px, .75fr) minmax(260px, 1fr) minmax(320px, 1.35fr); }
+      .journal-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .bottom-nav { display: none; }
       main.wrap { padding-bottom: 28px; }
     }
@@ -387,6 +617,22 @@
       h1 { font-size: 20px; }
       .summary, .metrics { grid-template-columns: 1fr; }
       .price { font-size: 18px; }
+    }
+    @media (max-width: 520px) {
+      .section-head { align-items: flex-start; }
+      .section-tools {
+        width: 100%;
+        justify-content: stretch;
+      }
+      .session-select { width: 100%; }
+      .hint { white-space: normal; }
+      .rank-table { font-size: 12px; }
+      .rank-table th, .rank-table td { padding: 7px 6px; }
+      .rank-table th:first-child, .rank-table td:first-child { width: 34%; }
+      .rank-table th:nth-child(2), .rank-table td:nth-child(2) { width: 18%; }
+      .etf-status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .decision-meta { grid-template-columns: 1fr; }
+      .journal-actions { grid-template-columns: 1fr 82px; }
     }
   </style>
   <script src="../api-client.js"></script>
@@ -412,33 +658,11 @@
   </header>
 
   <main class="wrap">
-    <section id="rank-section">
-      <div class="section-head">
-        <h2>资金流排名</h2>
-        <span class="hint">先看钱去哪里</span>
-      </div>
-      <div class="rank-grid">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>流入</th><th>分组</th><th>涨跌</th><th>主力净额</th><th>占比</th></tr></thead>
-            <tbody id="inflowRows"></tbody>
-          </table>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>流出</th><th>分组</th><th>涨跌</th><th>主力净额</th><th>占比</th></tr></thead>
-            <tbody id="outflowRows"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-
     <section id="etf-section">
       <div class="section-head">
         <h2>ETF训练仓</h2>
-        <div style="display:flex;gap:8px;align-items:center">
-          <select id="etfSession" style="height:34px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);font-size:13px;padding:0 8px">
+        <div class="section-tools">
+          <select id="etfSession" class="session-select">
             <option value="latest">最新 (etf_pool_latest.json)</option>
             <option value="0850">08:50 盘前</option>
             <option value="0940">09:40 盘中确认</option>
@@ -451,19 +675,26 @@
       </div>
       <div id="etfPool" class="empty">等待数据</div>
     </section>
-    <section id="backtest-section">
+
+    <section id="rank-section">
       <div class="section-head">
-        <h2>信号回测</h2>
-        <span id="backtestHint" class="hint">验证策略有效性</span>
+        <h2>资金流排名</h2>
+        <span class="hint">佐证资金方向</span>
       </div>
-      <div id="backtestPanel" class="empty">等待回测数据</div>
-    </section>
-    <section id="market-section">
-      <div class="section-head">
-        <h2>市场/板块资金流</h2>
-        <span id="marketHint" class="hint">筛选后 - 个</span>
+      <div class="rank-grid">
+        <div class="table-wrap">
+          <table class="rank-table">
+            <thead><tr><th>流入</th><th>分组</th><th>涨跌</th><th>主力净额</th><th>占比</th></tr></thead>
+            <tbody id="inflowRows"></tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table class="rank-table">
+            <thead><tr><th>流出</th><th>分组</th><th>涨跌</th><th>主力净额</th><th>占比</th></tr></thead>
+            <tbody id="outflowRows"></tbody>
+          </table>
+        </div>
       </div>
-      <div id="marketFlow" class="grid"></div>
     </section>
 
     <section id="watch-section">
@@ -474,17 +705,33 @@
       <div id="watchSignals" class="grid"></div>
     </section>
 
+    <section id="market-section">
+      <div class="section-head">
+        <h2>市场/板块资金流</h2>
+        <span id="marketHint" class="hint">完整明细</span>
+      </div>
+      <div id="marketFlow" class="grid"></div>
+    </section>
+
+    <section id="backtest-section">
+      <div class="section-head">
+        <h2>信号回测</h2>
+        <span id="backtestHint" class="hint">验证策略有效性</span>
+      </div>
+      <div id="backtestPanel" class="empty">等待回测数据</div>
+    </section>
+
     <section id="journal-section">
       <div class="section-head">
         <h2>交易日志</h2>
         <span id="journalHint" class="hint">记录每一笔决策</span>
       </div>
-      <div id="journalStats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px"></div>
-      <div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px">
+      <div id="journalStats" class="journal-stats"></div>
+      <div class="journal-actions">
         <button id="openJournalAdd" type="button">+ 新交易</button>
         <button id="clearJournal" type="button" style="color:var(--red)">清空</button>
       </div>
-      <div id="journalAddPanel" style="display:none;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);margin-bottom:10px">
+      <div id="journalAddPanel" class="journal-panel">
         <div class="form-grid" style="display:grid;gap:8px">
           <input id="jCode" placeholder="代码，如 510300">
           <input id="jName" placeholder="名称，如 沪深300ETF">
@@ -510,11 +757,11 @@
   </main>
 
   <nav class="bottom-nav" aria-label="页面导航">
-    <a href="#rank-section" class="active">排名</a>
-    <a href="#etf-section">ETF</a>
-    <a href="#backtest-section">回测</a>
-    <a href="#market-section">资金</a>
+    <a href="#etf-section" class="active">ETF</a>
+    <a href="#rank-section">排名</a>
     <a href="#watch-section">观察</a>
+    <a href="#market-section">资金</a>
+    <a href="#backtest-section">回测</a>
     <a href="#journal-section">交易</a>
     <a href="#gaps-section">缺口</a>
   </nav>
@@ -642,7 +889,7 @@
     function rankRow(row) {
       return `
         <tr>
-          <td>${safe(row.display_name || row.name || row.code)} <span class="code">${safe(row.code)}</span></td>
+          <td><span class="rank-name">${safe(row.display_name || row.name || row.code)}</span><span class="rank-code">${safe(row.code)}</span></td>
           <td>${safe(row.group)}</td>
           <td class="${cls(row.pct)}">${pct(row.pct)}</td>
           <td class="${cls(row.main_net)}">${money(row.main_net)}</td>
@@ -653,8 +900,8 @@
 
     function renderRanks() {
       const ranked = filtered(allRows());
-      const inflow = [...ranked].sort((a, b) => (b.main_net ?? -1e30) - (a.main_net ?? -1e30)).slice(0, 8);
-      const outflow = [...ranked].sort((a, b) => (a.main_net ?? 1e30) - (b.main_net ?? 1e30)).slice(0, 8);
+      const inflow = [...ranked].sort((a, b) => (b.main_net ?? -1e30) - (a.main_net ?? -1e30)).slice(0, 6);
+      const outflow = [...ranked].sort((a, b) => (a.main_net ?? 1e30) - (b.main_net ?? 1e30)).slice(0, 6);
       document.getElementById("inflowRows").innerHTML = inflow.length ? inflow.map(rankRow).join("") : '<tr><td colspan="5">没有匹配的流入排名</td></tr>';
       document.getElementById("outflowRows").innerHTML = outflow.length ? outflow.map(rankRow).join("") : '<tr><td colspan="5">没有匹配的流出排名</td></tr>';
     }
@@ -671,17 +918,31 @@
 
     function decisionCard(title, rows, decision) {
       const visibleRows = filtered((rows || []).map(row => ({ ...row, _decision: decision })));
+      const decisionClass = decision === "focus" ? "focus" : decision === "exclude" ? "exclude" : "wait";
+      const displayRows = decision === "exclude" ? visibleRows.slice(0, 8) : visibleRows;
+      const hiddenCount = visibleRows.length - displayRows.length;
       return `
-        <div class="card">
-          <div class="name">${safe(title)}</div>
-          ${visibleRows.length ? visibleRows.map(row => `
-            <div class="reason">
-              <b>${safe(row.code)} ${safe(row.name)}</b><br>
-              原因：${safe(row.reason || "-")}<br>
-              触发：${safe(row.trigger || "-")}<br>
-              失败：${safe(row.failure || "-")}
-            </div>
-          `).join("") : '<div class="reason">无</div>'}
+        <div class="card decision-card ${decisionClass}">
+          <div class="decision-head">
+            <div class="decision-title">${safe(title)}</div>
+            <div class="decision-count">${visibleRows.length} 个</div>
+          </div>
+          <div class="decision-list">
+            ${displayRows.length ? displayRows.map(row => `
+              <div class="decision-row ${decision === "exclude" ? "compact" : ""}">
+                <div class="decision-main">
+                  <b>${safe(row.code)} ${safe(row.name)}</b>
+                  <span class="score-pill">${row.score != null ? fmt(row.score, 1) : "N/A"}</span>
+                </div>
+                <div class="decision-note">${safe(row.reason || "-")}</div>
+                ${decision === "exclude" ? "" : `<div class="decision-meta">
+                  <span><b>触发</b> ${safe(row.trigger || "-")}</span>
+                  <span><b>失败</b> ${safe(row.failure || "-")}</span>
+                </div>`}
+              </div>
+            `).join("") : '<div class="decision-note">无</div>'}
+            ${hiddenCount > 0 ? `<div class="decision-more">还有 ${hiddenCount} 个低优先级排除项已收起</div>` : ""}
+          </div>
         </div>
       `;
     }
@@ -773,22 +1034,23 @@
       root.className = "";
       root.innerHTML = `
         <div class="etf-overview">
-          <div class="etf-strip">
-            <div class="etf-mini"><span>市场状态</span><b>${safe(regime.regime || "N/A")}</b></div>
-            <div class="etf-mini"><span>能否开仓</span><b>${permission.can_open ? "允许训练仓" : "停止新开仓"}</b></div>
-            <div class="etf-mini"><span>最大敞口</span><b>${pct((permission.max_exposure_pct || 0) * 100, 0)}</b></div>
-            <div class="etf-mini"><span>主题ETF</span><b>${permission.theme_enabled ? "启用" : "关闭"}</b></div>
-            <div class="etf-mini"><span>训练本金</span><b>${money(guardrails.train_capital)}</b></div>
-            <div class="etf-mini"><span>首笔比例</span><b>${pct((guardrails.first_entry_ratio || 0) * 100, 0)}</b></div>
-            <div class="etf-mini"><span>单ETF上限</span><b>${pct((guardrails.max_single_etf_pct || 0) * 100, 0)}</b></div>
-            <div class="etf-mini"><span>TREND_DOWN</span><b>${safe(guardrails.trend_down_exit_days || 3)}日退出</b></div>
-            <div class="etf-mini"><span>分析ID</span><b>#${safe(data.analysis_run_id || "N/A")}</b></div>
-            <div class="etf-mini"><span>生成时间</span><b>${safe(data.generated_at || "N/A")}</b></div>
+          <div class="etf-status-grid">
+            <div class="status-card primary"><span>市场状态</span><b>${safe(regime.regime || "N/A")}</b></div>
+            <div class="status-card ${permission.can_open ? "ok" : "warn"}"><span>训练仓</span><b>${permission.can_open ? "允许开仓" : "停止新开"}</b></div>
+            <div class="status-card"><span>最大敞口</span><b>${pct((permission.max_exposure_pct || 0) * 100, 0)}</b></div>
+            <div class="status-card"><span>分析ID / 时间</span><b>#${safe(data.analysis_run_id || "N/A")} · ${safe(data.generated_at || "N/A")}</b></div>
+          </div>
+          <div class="guardrail-strip" aria-label="训练仓配置">
+            <span class="guardrail">本金 <b>${money(guardrails.train_capital)}</b></span>
+            <span class="guardrail">首笔 <b>${pct((guardrails.first_entry_ratio || 0) * 100, 0)}</b></span>
+            <span class="guardrail">单ETF <b>${pct((guardrails.max_single_etf_pct || 0) * 100, 0)}</b></span>
+            <span class="guardrail">主题 <b>${permission.theme_enabled ? "启用" : "关闭"}</b></span>
+            <span class="guardrail">TREND_DOWN <b>${safe(guardrails.trend_down_exit_days || 3)}日退出</b></span>
           </div>
           <div class="decision-grid">
             ${decisionCard("可观察", data.focus_watch || [], "focus")}
-            ${decisionCard("等待", data.wait || [], "wait")}
-            ${decisionCard("今日不碰", data.exclude || [], "exclude")}
+            ${decisionCard("待观察", data.wait || [], "wait")}
+            ${decisionCard("待排除", data.exclude || [], "exclude")}
           </div>
           ${data.exit_queue?.length ? decisionCard("TREND_DOWN退出队列", data.exit_queue, "exclude") : ""}
         </div>
@@ -992,7 +1254,7 @@
 
     // --- End Trade Journal ---
 
-    const sections = ["rank-section", "etf-section", "backtest-section", "market-section", "watch-section", "journal-section", "gaps-section"];
+    const sections = ["etf-section", "rank-section", "watch-section", "market-section", "backtest-section", "journal-section", "gaps-section"];
     window.addEventListener("scroll", () => {
       const current = sections.findLast(id => document.getElementById(id).getBoundingClientRect().top < 220) || sections[0];
       document.querySelectorAll(".bottom-nav a").forEach(link => {

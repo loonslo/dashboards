@@ -136,6 +136,26 @@ CREATE TABLE IF NOT EXISTS backtest_result (
 );
 CREATE INDEX IF NOT EXISTS idx_bt_signal_date ON backtest_result(signal_date);
 CREATE INDEX IF NOT EXISTS idx_bt_regime ON backtest_result(regime);
+CREATE TABLE IF NOT EXISTS decision_review (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_at TEXT,
+  updated_at TEXT,
+  analysis_run_id INTEGER,
+  trade_date TEXT,
+  session_name TEXT,
+  code TEXT,
+  name TEXT,
+  original_decision TEXT,
+  outcome_1d REAL,
+  outcome_5d REAL,
+  outcome_10d REAL,
+  review_label TEXT,
+  human_note TEXT,
+  rule_adjustment_hint TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_review_trade_date ON decision_review(trade_date);
+CREATE INDEX IF NOT EXISTS idx_review_code ON decision_review(code);
+CREATE INDEX IF NOT EXISTS idx_review_label ON decision_review(review_label);
 CREATE TABLE IF NOT EXISTS trade_log (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   entry_date TEXT,
@@ -160,6 +180,32 @@ CREATE TABLE IF NOT EXISTS trade_log (
 );
 """
 
+MIGRATIONS = [
+    """
+    DELETE FROM backtest_result
+    WHERE id NOT IN (
+      SELECT MIN(id)
+      FROM backtest_result
+      GROUP BY signal_date, code
+    )
+    """,
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_bt_signal_code ON backtest_result(signal_date, code)",
+    """
+    DELETE FROM decision_review
+    WHERE id NOT IN (
+      SELECT MAX(id)
+      FROM decision_review
+      WHERE analysis_run_id IS NOT NULL AND code IS NOT NULL
+      GROUP BY analysis_run_id, code
+      UNION
+      SELECT id
+      FROM decision_review
+      WHERE analysis_run_id IS NULL OR code IS NULL
+    )
+    """,
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_review_run_code ON decision_review(analysis_run_id, code)",
+]
+
 
 def connect(db_path):
     path = pathlib.Path(db_path)
@@ -173,6 +219,8 @@ def connect(db_path):
 def init_db(db_path):
     with connect(db_path) as conn:
         conn.executescript(SCHEMA)
+        for migration in MIGRATIONS:
+            conn.execute(migration)
         conn.commit()
 
 

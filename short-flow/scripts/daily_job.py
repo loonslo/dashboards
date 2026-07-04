@@ -5,18 +5,17 @@ import sys
 from _bootstrap import ROOT
 
 
-STEPS = [
+DATA_STEPS = [
     "fetch_etf_master.py",
     "fetch_snapshot.py",
     "compute_indicators.py",
     "compute_regime.py",
     "compute_signals.py",
     "run_llm_judge.py",
-    "export_dashboard_json.py",
-    "push_report.py",
 ]
 
 BACKTEST_STEPS = ["backtest.py"]
+PUBLISH_STEPS = ["export_dashboard_json.py", "push_report.py"]
 
 
 def run_step(step_name, extra_args=None):
@@ -37,18 +36,21 @@ def main():
 
     session_args = ["--session", args.session]
 
-    for step in STEPS:
+    for step in DATA_STEPS:
         extra = []
-        if step in ("compute_signals.py", "run_llm_judge.py", "export_dashboard_json.py"):
+        if step in ("compute_signals.py", "run_llm_judge.py"):
             extra = session_args
         if step == "fetch_etf_master.py" and args.seed_only:
             extra.append("--seed-only")
         run_step(step, extra)
 
-    # Run backtest after market close (1520 session) or when explicitly allowed
     if not args.skip_backtest:
         for step in BACKTEST_STEPS:
             run_step(step)
+
+    for step in PUBLISH_STEPS:
+        extra = session_args if step == "export_dashboard_json.py" else []
+        run_step(step, extra)
 
 
 if __name__ == "__main__":

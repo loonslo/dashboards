@@ -99,15 +99,18 @@ def compute_backtest_summary(conn):
     def _stats(subset):
         if not subset:
             return None
+        avg_return_1d = _mean([r["return_1d_close"] for r in subset])
+        avg_return_5d = _mean([r["return_5d"] for r in subset])
+        avg_return_10d = _mean([r["return_10d"] for r in subset])
         return {
             "count": len(subset),
             "avg_score": _mean([r["score"] for r in subset]),
             "win_rate_1d": _win_rate([r["hit_1d"] for r in subset]),
-            "avg_return_1d": round(_mean([r["return_1d_close"] for r in subset]), 2) if _mean([r["return_1d_close"] for r in subset]) else None,
+            "avg_return_1d": round(avg_return_1d, 2) if avg_return_1d is not None else None,
             "win_rate_5d": _win_rate([r["hit_5d"] for r in subset]),
-            "avg_return_5d": round(_mean([r["return_5d"] for r in subset]), 2) if _mean([r["return_5d"] for r in subset]) else None,
+            "avg_return_5d": round(avg_return_5d, 2) if avg_return_5d is not None else None,
             "win_rate_10d": _win_rate([r["hit_10d"] for r in subset]),
-            "avg_return_10d": round(_mean([r["return_10d"] for r in subset]), 2) if _mean([r["return_10d"] for r in subset]) else None,
+            "avg_return_10d": round(avg_return_10d, 2) if avg_return_10d is not None else None,
         }
 
     by_regime = {}
@@ -133,6 +136,51 @@ def compute_backtest_summary(conn):
         "total_signals": len(bt_rows),
         "overall": _stats(bt_rows),
         "by_regime": regime_summaries,
+        "recent": recent,
+    }
+
+
+def compute_review_summary(conn):
+    """Read manual decision reviews for the dashboard and future workflow memory."""
+    total = conn.execute("SELECT COUNT(*) AS n FROM decision_review").fetchone()["n"]
+    label_rows = rows(conn, """
+        SELECT COALESCE(review_label, 'unlabeled') AS label, COUNT(*) AS count
+        FROM decision_review
+        GROUP BY COALESCE(review_label, 'unlabeled')
+    """)
+    review_rows = rows(conn, """
+        SELECT *
+        FROM decision_review
+        ORDER BY COALESCE(updated_at, created_at) DESC, id DESC
+        LIMIT 50
+    """)
+    if not review_rows:
+        return {"total_reviews": total, "by_label": {}, "recent": []}
+
+    by_label = {row["label"]: row["count"] for row in label_rows}
+
+    recent = [
+        {
+            "id": row["id"],
+            "analysis_run_id": row["analysis_run_id"],
+            "trade_date": row["trade_date"],
+            "session_name": row["session_name"],
+            "code": row["code"],
+            "name": row["name"],
+            "original_decision": row["original_decision"],
+            "outcome_1d": row["outcome_1d"],
+            "outcome_5d": row["outcome_5d"],
+            "outcome_10d": row["outcome_10d"],
+            "review_label": row["review_label"],
+            "human_note": row["human_note"],
+            "rule_adjustment_hint": row["rule_adjustment_hint"],
+            "updated_at": row["updated_at"] or row["created_at"],
+        }
+        for row in review_rows[:20]
+    ]
+    return {
+        "total_reviews": total,
+        "by_label": by_label,
         "recent": recent,
     }
 
@@ -171,6 +219,7 @@ def build_report(conn, config, session):
         "exclude": exclude,
         "exit_queue": exit_queue,
         "backtest": compute_backtest_summary(conn),
+        "decision_reviews": compute_review_summary(conn),
         "risk_notes": ["不自动下单", "不追高开", "首笔不超过计划仓位1/3", "TREND_DOWN只做有序退出"],
     }
 
