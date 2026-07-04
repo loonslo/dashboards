@@ -7,17 +7,22 @@
   <style>
     :root {
       color-scheme: light;
-      --bg: #f4f6f8;
+      --bg: #f6f7f9;
       --panel: #ffffff;
-      --text: #16212a;
-      --muted: #66727e;
+      --text: #17202a;
+      --muted: #66717d;
       --line: #dde3ea;
-      --soft: #eef2f6;
-      --blue: #1a73e8;
-      --green: #16833a;
-      --red: #c5221f;
-      --amber: #966600;
-      --shadow: 0 8px 24px rgba(28, 39, 49, 0.08);
+      --soft: #eef2f5;
+      --blue: #1769e0;
+      --blue-soft: #eaf2ff;
+      --green: #157a3c;
+      --green-soft: #e7f4ec;
+      --red: #bd2b2b;
+      --red-soft: #fbe9e9;
+      --amber: #8a6200;
+      --amber-soft: #fbf1dc;
+      --shadow: 0 8px 24px rgba(25, 35, 45, 0.07);
+      --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono", Menlo, Consolas, monospace;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -26,21 +31,23 @@
       min-width: 320px;
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-variant-numeric: tabular-nums;
       letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
     }
     header {
       position: sticky;
       top: 0;
       z-index: 5;
-      background: rgba(244, 246, 248, 0.96);
+      background: rgba(246, 247, 249, 0.94);
       border-bottom: 1px solid var(--line);
       backdrop-filter: blur(14px);
     }
     .wrap {
-      width: min(100%, 1120px);
+      width: min(100%, 1180px);
       margin: 0 auto;
-      padding: 14px 14px;
+      padding: 14px;
     }
     .hero {
       display: grid;
@@ -48,10 +55,13 @@
     }
     h1 {
       margin: 0;
-      font-size: 22px;
-      line-height: 1.18;
+      font-size: 21px;
+      font-weight: 780;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
     }
     .meta {
+      margin-top: 5px;
       color: var(--muted);
       font-size: 12px;
       line-height: 1.45;
@@ -63,14 +73,16 @@
     }
     .summary-card {
       min-width: 0;
-      padding: 9px 10px;
+      padding: 9px 11px;
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 10px;
       background: var(--panel);
     }
     .summary-card b {
       display: block;
-      font-size: 18px;
+      font-family: var(--mono);
+      font-size: 19px;
+      font-weight: 700;
       line-height: 1.15;
     }
     .summary-card span {
@@ -82,25 +94,32 @@
     }
     .toolbar {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: minmax(0, 1fr) auto;
       gap: 8px;
       align-items: center;
     }
-    input, button {
+    input, button, .btn {
       height: 40px;
       min-width: 0;
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 10px;
       background: var(--panel);
       color: var(--text);
       font-size: 15px;
+      font-family: inherit;
     }
     input { padding: 0 12px; }
+    input:focus-visible, button:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 1px;
+    }
     button {
-      padding: 0 12px;
+      padding: 0 14px;
       cursor: pointer;
       font-weight: 650;
+      transition: border-color .15s, background .15s;
     }
+    button:hover { border-color: #c2ccd6; }
     .chips {
       display: flex;
       gap: 8px;
@@ -115,75 +134,147 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       background: var(--panel);
-      padding: 0 12px;
+      padding: 0 13px;
       color: #34404a;
       font-size: 13px;
       font-weight: 650;
+      cursor: pointer;
+      transition: border-color .15s, background .15s, color .15s;
     }
+    .chip:hover { border-color: #c2ccd6; }
     .chip.active {
       border-color: #b8cff8;
-      background: #eaf2ff;
+      background: var(--blue-soft);
       color: #174ea6;
     }
-    main.wrap {
-      padding-bottom: calc(76px + env(safe-area-inset-bottom));
-    }
+    main.wrap { padding-bottom: calc(78px + env(safe-area-inset-bottom)); }
     section {
-      scroll-margin-top: 178px;
-      margin: 16px 0 22px;
+      scroll-margin-top: 188px;
+      margin: 18px 0 22px;
     }
     .section-head {
       display: flex;
       align-items: baseline;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 10px;
+      margin-bottom: 11px;
+    }
+    .head-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     h2 {
       margin: 0;
-      font-size: 18px;
+      font-size: 17px;
+      font-weight: 720;
       line-height: 1.2;
+      letter-spacing: -0.01em;
     }
     .hint {
       color: var(--muted);
       font-size: 12px;
       white-space: nowrap;
     }
+    .btn-sm {
+      height: 30px;
+      padding: 0 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .btn-sm:hover { border-color: #b8cff8; background: var(--blue-soft); }
+
+    /* 概览：三张一眼看懂的状态卡 */
+    .pulse-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .pulse {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--muted);
+      border-radius: 10px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    .pulse.ok { border-left-color: var(--green); }
+    .pulse.warn { border-left-color: var(--amber); }
+    .pulse.info { border-left-color: var(--blue); }
+    .pulse .k {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 680;
+    }
+    .pulse .k .tag {
+      margin-left: auto;
+      font-size: 11px;
+      font-weight: 680;
+      padding: 2px 9px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--muted);
+    }
+    .pulse.ok .k .tag { background: var(--green-soft); color: var(--green); }
+    .pulse.warn .k .tag { background: var(--amber-soft); color: var(--amber); }
+    .pulse.info .k .tag { background: var(--blue-soft); color: var(--blue); }
+    .pulse .v {
+      margin-top: 7px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
     .card-list {
       display: grid;
       gap: 10px;
     }
-    .asset-card {
+    .card {
       min-width: 0;
       border: 1px solid var(--line);
-      border-radius: 10px;
+      border-radius: 12px;
       background: var(--panel);
       box-shadow: var(--shadow);
-      padding: 12px;
+      padding: 13px;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     }
-    .asset-top {
+    .card:hover {
+      transform: translateY(-1px);
+      border-color: #cdd6df;
+      box-shadow: 0 12px 28px rgba(25, 35, 45, 0.10);
+    }
+    .top {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 10px;
       align-items: start;
     }
-    .asset-name {
+    .name {
       min-width: 0;
       font-size: 16px;
-      font-weight: 750;
+      font-weight: 740;
       line-height: 1.25;
       overflow-wrap: anywhere;
     }
-    .asset-code {
+    .code {
       margin-top: 3px;
       color: var(--muted);
       font-size: 12px;
+      font-family: var(--mono);
       overflow-wrap: anywhere;
     }
     .price {
       text-align: right;
-      font-size: 21px;
-      font-weight: 800;
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 750;
       line-height: 1.15;
       white-space: nowrap;
     }
@@ -195,8 +286,8 @@
     }
     .metric {
       min-width: 0;
-      padding: 8px;
-      border-radius: 8px;
+      padding: 8px 9px;
+      border-radius: 9px;
       background: var(--soft);
     }
     .metric span {
@@ -208,34 +299,38 @@
     .metric b {
       display: block;
       margin-top: 3px;
+      font-family: var(--mono);
       font-size: 14px;
+      font-weight: 680;
       line-height: 1.2;
-      white-space: nowrap;
+      overflow-wrap: anywhere;
     }
     .signal {
-      margin-top: 10px;
-      padding: 8px 9px;
-      border-radius: 8px;
+      margin-top: 11px;
+      padding: 8px 10px;
+      border-left: 3px solid #9db8e8;
+      border-radius: 6px;
       background: #eef5ff;
       color: #174ea6;
       font-size: 13px;
-      line-height: 1.4;
+      line-height: 1.45;
       overflow-wrap: anywhere;
     }
     .reason {
       margin-top: 8px;
       color: var(--muted);
       font-size: 12px;
-      line-height: 1.45;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
     }
     .pill {
       display: inline-flex;
       align-items: center;
       max-width: 132px;
-      min-height: 25px;
-      padding: 3px 8px;
+      min-height: 24px;
+      padding: 3px 9px;
       border-radius: 999px;
-      background: #f1f3f4;
+      background: var(--soft);
       color: #3c4043;
       font-size: 12px;
       font-weight: 650;
@@ -246,20 +341,77 @@
     .pos { color: var(--green); }
     .neg { color: var(--red); }
     .flat { color: var(--muted); }
+
+    /* 短线资金摘要条 + 状态标签 + 跳转 */
+    .mini-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .mini {
+      min-width: 0;
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+    }
+    .mini span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+    .mini b {
+      display: block;
+      margin-top: 3px;
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .tag {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 650;
+      background: var(--soft);
+      color: var(--muted);
+    }
+    .tag.live { background: var(--green-soft); color: var(--green); }
+    .tag.stale { background: var(--amber-soft); color: var(--amber); }
+    .tag.na { background: var(--red-soft); color: var(--red); }
+    .flow-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 12px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 650;
+      text-decoration: none;
+    }
+    .flow-link:hover { text-decoration: underline; }
+
     .gap-box, .empty {
       border: 1px solid var(--line);
       border-radius: 10px;
       background: var(--panel);
-      padding: 12px;
+      padding: 13px;
       color: var(--muted);
       font-size: 13px;
       line-height: 1.5;
+      overflow-wrap: anywhere;
     }
     .gap-box {
       border-color: #efd58a;
       background: #fff8e1;
       color: #5f4300;
     }
+    .gap-box div + div { margin-top: 4px; }
+
     .bottom-nav {
       position: fixed;
       left: 0;
@@ -278,16 +430,18 @@
       display: grid;
       place-items: center;
       min-height: 42px;
-      border-radius: 8px;
+      border-radius: 9px;
       color: #34404a;
       text-decoration: none;
       font-size: 12px;
       font-weight: 700;
+      transition: background .15s, color .15s;
     }
     .bottom-nav a.active {
-      background: #eaf2ff;
+      background: var(--blue-soft);
       color: #174ea6;
     }
+
     .add-panel {
       position: fixed;
       left: 10px;
@@ -295,21 +449,16 @@
       bottom: calc(66px + env(safe-area-inset-bottom));
       z-index: 7;
       display: none;
-      padding: 12px;
+      padding: 14px;
       border: 1px solid var(--line);
-      border-radius: 12px;
+      border-radius: 14px;
       background: var(--panel);
       box-shadow: 0 18px 48px rgba(28, 39, 49, 0.22);
     }
     .add-panel.open { display: block; }
-    .add-panel h2 { margin-bottom: 10px; }
-    .form-grid {
-      display: grid;
-      gap: 8px;
-    }
-    .form-grid input {
-      width: 100%;
-    }
+    .add-panel h2 { margin-bottom: 12px; }
+    .form-grid { display: grid; gap: 8px; }
+    .form-grid input { width: 100%; }
     .form-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -318,10 +467,14 @@
     }
     .primary {
       border-color: #b8cff8;
-      background: #eaf2ff;
+      background: var(--blue-soft);
       color: #174ea6;
     }
-    .desktop-table { display: none; }
+    .primary:hover { border-color: #9dbcf5; }
+
+    @media (min-width: 640px) {
+      .pulse-grid { grid-template-columns: repeat(3, 1fr); }
+    }
     @media (min-width: 820px) {
       .wrap { padding-left: 20px; padding-right: 20px; }
       .hero { grid-template-columns: minmax(0, 1fr) 360px; align-items: start; }
@@ -335,10 +488,14 @@
       .card-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
     @media (max-width: 370px) {
-      h1 { font-size: 20px; }
+      h1 { font-size: 19px; }
       .summary { grid-template-columns: 1fr; }
       .metrics { grid-template-columns: 1fr 1fr; }
-      .price { font-size: 19px; }
+      .price { font-size: 18px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+      html { scroll-behavior: auto; }
     }
   </style>
   <script src="../api-client.js"></script>
@@ -370,8 +527,9 @@
         <h2>持仓概览</h2>
         <span class="hint">一屏看清节奏</span>
       </div>
-      <div id="overviewBar" class="gap-box">等待数据</div>
+      <div id="overview" class="pulse-grid"></div>
     </section>
+
     <section id="indices-section">
       <div class="section-head">
         <h2>核心指数</h2>
@@ -380,18 +538,21 @@
       <div id="indices" class="card-list"></div>
     </section>
 
-
     <section id="short-flow-section">
       <div class="section-head">
         <h2>短线资金跟随</h2>
         <span class="hint">资金流与观察条件</span>
       </div>
-      <div id="shortFlow" class="card-list"></div>
+      <div id="shortFlow"></div>
     </section>
+
     <section id="watchlist-section">
       <div class="section-head">
         <h2>观察池</h2>
-        <span id="watchHint" class="hint">筛选后 - 个</span>
+        <div class="head-actions">
+          <span id="watchHint" class="hint">筛选后 - 个</span>
+          <button id="openAdd" class="btn-sm" type="button">+ 添加</button>
+        </div>
       </div>
       <div id="watchlist" class="card-list"></div>
     </section>
@@ -399,7 +560,7 @@
     <section id="alerts-section">
       <div class="section-head">
         <h2>提醒</h2>
-        <button id="notify" type="button">开启通知</button>
+        <button id="notify" class="btn-sm" type="button">开启通知</button>
       </div>
       <div id="alerts" class="card-list"></div>
     </section>
@@ -493,15 +654,15 @@
       const peLine = isIndex ? `${fmt(row.pe_ttm)} / ${pct(row.dividend_yield, 2)}` : `${pct(row.return_1m)} / ${pct(row.return_3m)}`;
       const peLabel = isIndex ? "PE/股息" : "1月/3月";
       return `
-        <article class="asset-card">
-          <div class="asset-top">
+        <article class="card">
+          <div class="top">
             <div>
-              <div class="asset-name">${safe(title)}</div>
-              <div class="asset-code">${safe(codeLine)}</div>
+              <div class="name">${safe(title)}</div>
+              <div class="code">${safe(codeLine)}</div>
             </div>
             <div>
               <div class="price">${fmt(row.current)}</div>
-              <div style="text-align:right;margin-top:5px"><span class="pill">${safe(group)}</span></div>
+              <div style="text-align:right;margin-top:6px"><span class="pill">${safe(group)}</span></div>
             </div>
           </div>
           <div class="metrics">
@@ -570,12 +731,11 @@
       chips.querySelectorAll("button").forEach(button => {
         button.addEventListener("click", () => {
           state.group = button.dataset.group || "";
-          renderChips();
+          renderGroupChips();
           renderWatchlist();
         });
       });
     }
-
 
     function money(v) {
       if (v === null || v === undefined || Number.isNaN(Number(v))) return "N/A";
@@ -587,7 +747,7 @@
     }
 
     function dataStatusClass(status) {
-      return status === "live" ? "tag-live" : status === "stale" ? "tag-stale" : "tag-unavailable";
+      return status === "live" ? "live" : status === "stale" ? "stale" : "na";
     }
 
     function renderShortFlow() {
@@ -600,12 +760,12 @@
       const source = data.source_status || {};
       const counts = data.status_counts || {};
       const picks = (data.watch_signals || []).slice(0, 3);
-      const rows = picks.length ? picks.map(row => `
-        <article class="asset-card">
-          <div class="asset-top">
+      const cards = picks.length ? picks.map(row => `
+        <article class="card">
+          <div class="top">
             <div>
-              <div class="asset-name">${safe(row.display_name || row.name || row.code)}</div>
-              <div class="asset-code">${safe(row.code)} · ${safe(row.group)} · <span class="${dataStatusClass(row.data_status)}">${safe(row.data_status || "unknown")}</span></div>
+              <div class="name">${safe(row.display_name || row.name || row.code)}</div>
+              <div class="code">${safe(row.code)} · ${safe(row.group)} · <span class="tag ${dataStatusClass(row.data_status)}">${safe(row.data_status || "unknown")}</span></div>
             </div>
             <div class="price ${cls(row.main_net)}">${money(row.main_net)}</div>
           </div>
@@ -619,15 +779,16 @@
         </article>
       `).join("") : '<div class="empty">观察池暂无可展示标的。</div>';
       box.innerHTML = `
-        <div class="flow-status">
-          <div class="metric"><span>Focus</span><b>${counts["Focus watch"] || 0}</b></div>
-          <div class="metric"><span>Wait/Exclude</span><b>${(counts["Wait for strength"] || 0) + (counts["Exclude for now"] || 0)}</b></div>
-          <div class="metric"><span>接口状态</span><b>${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0}</b></div>
+        <div class="mini-strip">
+          <div class="mini"><span>Focus watch</span><b>${counts["Focus watch"] || 0}</b></div>
+          <div class="mini"><span>Wait / Exclude</span><b>${(counts["Wait for strength"] || 0) + (counts["Exclude for now"] || 0)}</b></div>
+          <div class="mini"><span>接口 live/stale/NA</span><b>${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0}</b></div>
         </div>
-        ${rows}
-        <a class="flow-link" href="../short-flow/">打开完整 short-flow 看板</a>
+        <div class="card-list">${cards}</div>
+        <a class="flow-link" href="../short-flow/">打开完整 short-flow 看板 →</a>
       `;
     }
+
     function renderIndices() {
       document.getElementById("indices").innerHTML = (state.data?.indices || [])
         .map(row => assetCard(row, { type: "index" }))
@@ -659,18 +820,18 @@
       const gaps = state.data?.data_gaps || [];
       const box = document.getElementById("gaps");
       box.className = gaps.length ? "gap-box" : "empty";
-      box.innerHTML = gaps.length ? gaps.map(gap => `<div>- ${safe(gap)}</div>`).join("") : "暂无数据缺口";
+      box.innerHTML = gaps.length ? gaps.map(gap => `<div>· ${safe(gap)}</div>`).join("") : "暂无数据缺口";
     }
 
     function renderAlerts() {
       const rows = alertRows();
       document.getElementById("alerts").innerHTML = rows.length
         ? rows.map(row => `
-          <article class="asset-card">
-            <div class="asset-top">
+          <article class="card">
+            <div class="top">
               <div>
-                <div class="asset-name">${safe(row.name || row.ticker)}</div>
-                <div class="asset-code">${safe(row.ticker)} · ${safe(row.level || "alert")} ${row.notify ? "· 通知级" : "· 观察级"}</div>
+                <div class="name">${safe(row.name || row.ticker)}</div>
+                <div class="code">${safe(row.ticker)} · ${safe(row.level || "alert")} ${row.notify ? "· 通知级" : "· 观察级"}</div>
               </div>
               <span class="pill">${row.notify ? "通知" : "观察"}</span>
             </div>
@@ -681,54 +842,54 @@
     }
 
     function renderOverview() {
-      const box = document.getElementById("overviewBar");
+      const box = document.getElementById("overview");
       const indices = state.data?.indices || [];
       const shortFlow = state.shortFlow;
-
-      // US market: find SPX and NDX
       const spx = indices.find(r => r.code === "^GSPC");
       const ndx = indices.find(r => r.code === "^NDX");
-      // Dividend: find H30269
       const div = indices.find(r => r.code === "H30269");
+      const pulses = [];
 
-      // US summary line
-      let usLine = "美股：数据暂缺";
       if (spx || ndx) {
         const spxDD = spx?.drawdown_52w != null ? `${spx.drawdown_52w.toFixed(1)}%` : "N/A";
         const ndxPE = ndx?.pe_forward != null ? ndx.pe_forward.toFixed(1) : "N/A";
-        const spxSignal = spx?.signal || "";
-        const paused = spxSignal.includes("暂停");
-        usLine = `📊 美股：标普距高点 ${spxDD}，纳指前瞻PE ${ndxPE} → ${paused ? "暂停新增" : "正常定投节奏"}`;
+        const paused = (spx?.signal || "").includes("暂停");
+        pulses.push({ icon: "📈", label: "美股", tone: paused ? "warn" : "ok",
+          text: `标普距高点 ${spxDD} · 纳指前瞻 PE ${ndxPE}`, tag: paused ? "暂停新增" : "正常定投" });
+      } else {
+        pulses.push({ icon: "📈", label: "美股", tone: "info", text: "数据暂缺", tag: "待更新" });
       }
 
-      // Dividend summary
-      let divLine = "🛡️ 红利：数据暂缺";
       if (div) {
         const dy = div.dividend_yield != null ? `${div.dividend_yield.toFixed(2)}%` : "N/A";
         const pe = div.pe_ttm != null ? div.pe_ttm.toFixed(1) : "N/A";
         const pePct = div.pe_percentile_label || "N/A";
-        const divSignal = div.signal || "";
-        const accelerate = divSignal.includes("加速") || divSignal.includes("允许买入");
-        const pauseDiv = divSignal.includes("暂停");
-        divLine = `🛡️ 红利：股息率 ${dy}，PE ${pe}（${pePct}） → ${accelerate ? "可加速买入" : pauseDiv ? "暂停新增" : "正常小额"}`;
+        const sig = div.signal || "";
+        const accelerate = sig.includes("加速") || sig.includes("允许买入");
+        const pauseDiv = sig.includes("暂停");
+        pulses.push({ icon: "🛡️", label: "红利", tone: accelerate ? "ok" : pauseDiv ? "warn" : "ok",
+          text: `股息率 ${dy} · PE ${pe}（${pePct}）`, tag: accelerate ? "可加速买入" : pauseDiv ? "暂停新增" : "正常小额" });
+      } else {
+        pulses.push({ icon: "🛡️", label: "红利", tone: "info", text: "数据暂缺", tag: "待更新" });
       }
 
-      // Short-flow summary
-      let sfLine = "🚀 短线：数据暂缺";
       if (shortFlow) {
         const counts = shortFlow.status_counts || {};
         const focusCount = counts["Focus watch"] || 0;
         const waitCount = counts["Wait for strength"] || 0;
-        const source = shortFlow.source_status || {};
         const asof = shortFlow.asof || "N/A";
-        sfLine = `🚀 A股短线：Focus ${focusCount} 个，Wait ${waitCount} 个 · 数据 ${asof}（${source.live_rows || 0} live）`;
+        pulses.push({ icon: "⚡", label: "A股短线", tone: focusCount > 0 ? "ok" : "info",
+          text: `Focus ${focusCount} · Wait ${waitCount} · ${asof}`, tag: focusCount > 0 ? "有机会" : "观望" });
+      } else {
+        pulses.push({ icon: "⚡", label: "A股短线", tone: "info", text: "数据暂缺", tag: "待更新" });
       }
 
-      box.innerHTML = `
-        <div style="line-height:2">${usLine}</div>
-        <div style="line-height:2">${divLine}</div>
-        <div style="line-height:2">${sfLine}</div>
-      `;
+      box.innerHTML = pulses.map(p => `
+        <div class="pulse ${p.tone}">
+          <div class="k">${p.icon} ${safe(p.label)}<span class="tag">${safe(p.tag)}</span></div>
+          <div class="v">${safe(p.text)}</div>
+        </div>
+      `).join("");
     }
 
     function render() {
@@ -751,8 +912,7 @@
 
     document.getElementById("search")?.addEventListener("input", renderWatchlist);
     document.getElementById("reload")?.addEventListener("click", () => loadData().catch(showError));
-    document.getElementById("openAdd")?.addEventListener("click", event => {
-      event.preventDefault();
+    document.getElementById("openAdd")?.addEventListener("click", () => {
       document.getElementById("addPanel").classList.add("open");
       document.getElementById("addTicker").focus();
     });
