@@ -321,6 +321,29 @@
       background: #fff8e1;
       color: #5f4300;
     }
+    .attention-grid {
+      display: grid;
+      gap: 10px;
+    }
+    .attention-card {
+      min-height: 0;
+      padding: 12px;
+    }
+    .attention-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .attention-source {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .attention-card .signal {
+      min-height: 0;
+      align-items: flex-start;
+    }
     .etf-overview {
       display: grid;
       gap: 12px;
@@ -693,6 +716,14 @@
       <div class="empty">请选择一个筛选，或点击“全部”查看所有内容。</div>
     </section>
 
+    <section id="focus-section">
+      <div class="section-head">
+        <h2 id="focusTitle">今日关注</h2>
+        <span id="focusHint" class="hint">优先处理可观察</span>
+      </div>
+      <div id="focusPanel" class="attention-grid"></div>
+    </section>
+
     <section id="etf-section">
       <div class="section-head">
         <h2>ETF训练仓</h2>
@@ -792,7 +823,8 @@
   </main>
 
   <nav class="bottom-nav" aria-label="页面导航">
-    <a href="#etf-section" class="active">ETF</a>
+    <a href="#focus-section" class="active">关注</a>
+    <a href="#etf-section">ETF</a>
     <a href="#rank-section">排名</a>
     <a href="#watch-section">观察</a>
     <a href="#market-section">资金</a>
@@ -977,7 +1009,7 @@
       const sections = selectedSections();
       if (sections.length) return sections.includes(section);
       if (!state.filters.size) return false;
-      return section === "main";
+      return true;
     }
 
     function statusMatches(row) {
@@ -1025,6 +1057,7 @@
       const showMain = sectionMatches("main");
       const selectedSectionKeys = selectedSections();
       setSectionVisible("filter-empty", !state.showAll && !state.filters.size);
+      setSectionVisible("focus-section", state.showAll || !!state.filters.size);
       setSectionVisible("etf-section", showEtf);
       setSectionVisible("rank-section", showMain);
       setSectionVisible("watch-section", showMain);
@@ -1091,6 +1124,78 @@
           <td class="${cls(row.main_net_pct)}">${pct(row.main_net_pct)}</td>
         </tr>
       `;
+    }
+
+    function etfRowsForAttention() {
+      const buckets = [
+        ["focus_watch", "focus", "ETF训练仓"],
+        ["wait", "wait", "ETF训练仓"],
+        ["exclude", "exclude", "ETF训练仓"],
+        ["exit_queue", "exclude", "退出队列"]
+      ];
+      return buckets.flatMap(([bucket, decision, source]) =>
+        (state.etf?.[bucket] || []).map(row => ({
+          ...row,
+          _section: "etf",
+          _source: source,
+          _decision: decision,
+          status: decisionStatusMap[decision],
+          group: row.group || row.category || row.bucket
+        }))
+      );
+    }
+
+    function attentionRows() {
+      const statuses = selectedStatuses();
+      const targetStatuses = statuses.length ? statuses : ["Focus watch"];
+      const mainRows = [
+        ...(state.data?.watch_signals || []).map(row => ({ ...row, _section: "main", _source: "观察池" })),
+        ...(state.data?.market_flow || []).map(row => ({ ...row, _section: "main", _source: "市场/板块" }))
+      ];
+      return [...mainRows, ...etfRowsForAttention()]
+        .filter(row => targetStatuses.includes(row.status))
+        .filter(row => filterMatches(row, row._section || "main") && textMatches(row))
+        .sort((a, b) => {
+          const sourceRank = (a._source === "观察池" ? 0 : a._source === "ETF训练仓" ? 1 : 2) -
+            (b._source === "观察池" ? 0 : b._source === "ETF训练仓" ? 1 : 2);
+          return sourceRank || (b.score ?? 0) - (a.score ?? 0) || (b.main_net_pct ?? 0) - (a.main_net_pct ?? 0);
+        });
+    }
+
+    function attentionCard(row) {
+      const title = row.display_name || row.name || row.code;
+      const value = row.score != null ? fmt(row.score, 1) : row.main_net_pct != null ? pct(row.main_net_pct) : "";
+      const note = row.reason || row.trigger || row.next_trigger || "等待下一次确认";
+      const trigger = row.next_trigger || row.trigger || "";
+      const failure = row.failure || "";
+      return `
+        <article class="card attention-card">
+          <div class="attention-head">
+            <div>
+              <div class="name">${safe(title)}</div>
+              <div class="code">${safe(row.code)} · ${safe(row.group || row.category || "-")} · ${safe(decisionLabel(row.status))}</div>
+            </div>
+            <div>
+              <div class="attention-source">${safe(row._source || "看板")}</div>
+              ${value ? `<div style="text-align:right;margin-top:5px"><span class="pill">${safe(value)}</span></div>` : ""}
+            </div>
+          </div>
+          <div class="signal ${statusClass(row.status)}">${safe(note)}</div>
+          ${trigger ? `<div class="plan"><b>触发：</b>${safe(trigger)}</div>` : ""}
+          ${failure ? `<div class="reason"><b>失败：</b>${safe(failure)}</div>` : ""}
+        </article>
+      `;
+    }
+
+    function renderAttention() {
+      const rows = attentionRows();
+      const statuses = selectedStatuses();
+      const title = statuses.length ? `${statuses.map(status => statusFilterLabels[status]).join(" / ")}清单` : "今日关注";
+      document.getElementById("focusTitle").textContent = title;
+      document.getElementById("focusHint").textContent = rows.length > 6 ? `筛选后 ${rows.length} 个，显示前 6 个` : rows.length ? `筛选后 ${rows.length} 个` : "暂无匹配";
+      document.getElementById("focusPanel").innerHTML = rows.length
+        ? rows.slice(0, 6).map(attentionCard).join("")
+        : '<div class="empty">当前筛选下没有需要优先关注的标的。可以点“待观察”看候选，或点“全部”复核全量。</div>';
     }
 
     function renderRanks() {
@@ -1278,6 +1383,7 @@
       renderSummary();
       renderChips();
       updateSectionVisibility();
+      renderAttention();
       renderRanks();
       renderSections();
       renderEtfPool();
@@ -1289,6 +1395,7 @@
     function renderFilteredViews() {
       renderChips();
       updateSectionVisibility();
+      renderAttention();
       renderRanks();
       renderSections();
       renderEtfPool();
@@ -1487,7 +1594,7 @@
 
     // --- End Trade Journal ---
 
-    const sections = ["etf-section", "rank-section", "watch-section", "market-section", "backtest-section", "journal-section", "gaps-section"];
+    const sections = ["etf-section", "focus-section", "rank-section", "watch-section", "market-section", "backtest-section", "journal-section", "gaps-section"];
     window.addEventListener("scroll", () => {
       const visibleSections = sections.filter(id => {
         const section = document.getElementById(id);
