@@ -510,7 +510,7 @@
       <div class="summary" aria-label="摘要">
         <div class="summary-card"><b id="indexCount">-</b><span>核心指数</span></div>
         <div class="summary-card"><b id="watchCount">-</b><span>观察标的</span></div>
-        <div class="summary-card"><b id="alertCount">-</b><span>观察提醒</span></div>
+        <div class="summary-card"><b id="alertCount">-</b><span>重点提醒</span></div>
       </div>
       <div class="toolbar">
         <input id="search" type="search" placeholder="搜代码、名称、分组">
@@ -530,20 +530,12 @@
       <div id="overview" class="pulse-grid"></div>
     </section>
 
-    <section id="indices-section">
+    <section id="alerts-section">
       <div class="section-head">
-        <h2>核心指数</h2>
-        <span class="hint">先看仓位节奏</span>
+        <h2>重点提醒</h2>
+        <button id="notify" class="btn-sm" type="button">开启通知</button>
       </div>
-      <div id="indices" class="card-list"></div>
-    </section>
-
-    <section id="short-flow-section">
-      <div class="section-head">
-        <h2>短线资金跟随</h2>
-        <span class="hint">资金流与观察条件</span>
-      </div>
-      <div id="shortFlow"></div>
+      <div id="alerts" class="card-list"></div>
     </section>
 
     <section id="watchlist-section">
@@ -557,12 +549,20 @@
       <div id="watchlist" class="card-list"></div>
     </section>
 
-    <section id="alerts-section">
+    <section id="short-flow-section">
       <div class="section-head">
-        <h2>提醒</h2>
-        <button id="notify" class="btn-sm" type="button">开启通知</button>
+        <h2>A股短线资金</h2>
+        <span class="hint">资金流与观察条件</span>
       </div>
-      <div id="alerts" class="card-list"></div>
+      <div id="shortFlow"></div>
+    </section>
+
+    <section id="indices-section">
+      <div class="section-head">
+        <h2>核心指数</h2>
+        <span class="hint">仓位节奏依据</span>
+      </div>
+      <div id="indices" class="card-list"></div>
     </section>
 
     <section id="gaps-section">
@@ -576,10 +576,10 @@
 
   <nav class="bottom-nav" aria-label="页面导航">
     <a href="#overview-section" class="active">概览</a>
-    <a href="#indices-section">指数</a>
-    <a href="#short-flow-section">资金</a>
-    <a href="#watchlist-section">观察</a>
     <a href="#alerts-section">提醒</a>
+    <a href="#watchlist-section">观察</a>
+    <a href="#short-flow-section">资金</a>
+    <a href="#indices-section">指数</a>
     <a href="#gaps-section">缺口</a>
   </nav>
 
@@ -587,7 +587,7 @@
     <h2>添加观察标的</h2>
     <div class="form-grid">
       <input id="addTicker" placeholder="代码，例如 MSFT / 0700.HK / 600900.SH">
-      <input id="addName" placeholder="名称，例如 Microsoft">
+      <input id="addName" placeholder="名称，例如 微软">
       <input id="addGroup" placeholder="分组，例如 临时观察">
       <input id="addReason" placeholder="观察理由">
     </div>
@@ -600,10 +600,27 @@
   <script>
     const LOCAL_KEY = "finance_dashboard_local_watchlist_v1";
     const state = { data: null, shortFlow: null, mode: "all", group: "", localItems: [] };
-    const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "N/A" : Number(v).toFixed(d);
-    const pct = (v, d = 1) => v === null || v === undefined || Number.isNaN(Number(v)) ? "N/A" : `${Number(v).toFixed(d)}%`;
+    const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : Number(v).toFixed(d);
+    const pct = (v, d = 1) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : `${Number(v).toFixed(d)}%`;
     const cls = v => Number(v) > 0 ? "pos" : Number(v) < 0 ? "neg" : "flat";
     const safe = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+    const dataStatusLabel = status => ({
+      live: "实时",
+      stale: "延迟",
+      unavailable: "不可用",
+      unknown: "未知"
+    }[status] || "未知");
+    const flowStatusLabel = status => ({
+      "Focus watch": "重点观察",
+      "Wait for strength": "等待走强",
+      "Exclude for now": "暂不纳入"
+    }[status] || status || "资金观察");
+    const alertLevelLabel = level => ({
+      local: "本机",
+      alert: "提醒",
+      warning: "预警",
+      info: "观察"
+    }[level] || level || "提醒");
 
     async function loadData() {
       state.data = await DashboardApi.fetchLatest("index-decision", "dashboard_latest.json");
@@ -680,7 +697,7 @@
       document.getElementById("indexCount").textContent = state.data?.indices?.length ?? 0;
       document.getElementById("watchCount").textContent = watchRows().length;
       document.getElementById("alertCount").textContent = alertRows().length;
-      document.getElementById("meta").textContent = `生成时间：${state.data?.asof || "N/A"} · 只做观察，不执行交易`;
+      document.getElementById("meta").textContent = `生成时间：${state.data?.asof || "暂无"} · 只做观察，不执行交易`;
     }
 
     function alertRows() {
@@ -738,7 +755,7 @@
     }
 
     function money(v) {
-      if (v === null || v === undefined || Number.isNaN(Number(v))) return "N/A";
+      if (v === null || v === undefined || Number.isNaN(Number(v))) return "暂无";
       const value = Number(v);
       const abs = Math.abs(value);
       if (abs >= 100000000) return `${(value / 100000000).toFixed(2)}亿`;
@@ -754,7 +771,7 @@
       const box = document.getElementById("shortFlow");
       const data = state.shortFlow;
       if (!data) {
-        box.innerHTML = '<div class="empty">未读取到 short-flow 数据。可先运行 scripts/refresh_short_flow.sh。</div>';
+        box.innerHTML = '<div class="empty">未读取到 A股短线资金数据。请先刷新短线资金数据。</div>';
         return;
       }
       const source = data.source_status || {};
@@ -765,12 +782,12 @@
           <div class="top">
             <div>
               <div class="name">${safe(row.display_name || row.name || row.code)}</div>
-              <div class="code">${safe(row.code)} · ${safe(row.group)} · <span class="tag ${dataStatusClass(row.data_status)}">${safe(row.data_status || "unknown")}</span></div>
+              <div class="code">${safe(row.code)} · ${safe(row.group)} · <span class="tag ${dataStatusClass(row.data_status)}">${safe(dataStatusLabel(row.data_status))}</span></div>
             </div>
             <div class="price ${cls(row.main_net)}">${money(row.main_net)}</div>
           </div>
           <div class="metrics">
-            <div class="metric"><span>状态</span><b>${safe(row.status || "N/A")}</b></div>
+            <div class="metric"><span>状态</span><b>${safe(flowStatusLabel(row.status))}</b></div>
             <div class="metric"><span>涨跌幅</span><b class="${cls(row.pct)}">${pct(row.pct)}</b></div>
             <div class="metric"><span>主力占比</span><b class="${cls(row.main_net_pct)}">${pct(row.main_net_pct)}</b></div>
           </div>
@@ -780,12 +797,12 @@
       `).join("") : '<div class="empty">观察池暂无可展示标的。</div>';
       box.innerHTML = `
         <div class="mini-strip">
-          <div class="mini"><span>Focus watch</span><b>${counts["Focus watch"] || 0}</b></div>
-          <div class="mini"><span>Wait / Exclude</span><b>${(counts["Wait for strength"] || 0) + (counts["Exclude for now"] || 0)}</b></div>
-          <div class="mini"><span>接口 live/stale/NA</span><b>${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0}</b></div>
+          <div class="mini"><span>重点观察</span><b>${counts["Focus watch"] || 0}</b></div>
+          <div class="mini"><span>等待/排除</span><b>${(counts["Wait for strength"] || 0) + (counts["Exclude for now"] || 0)}</b></div>
+          <div class="mini"><span>接口 实时/延迟/不可用</span><b>${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0}</b></div>
         </div>
         <div class="card-list">${cards}</div>
-        <a class="flow-link" href="../short-flow/">打开完整 short-flow 看板 →</a>
+        <a class="flow-link" href="../short-flow/">打开完整 A股短线看板 →</a>
       `;
     }
 
@@ -831,7 +848,7 @@
             <div class="top">
               <div>
                 <div class="name">${safe(row.name || row.ticker)}</div>
-                <div class="code">${safe(row.ticker)} · ${safe(row.level || "alert")} ${row.notify ? "· 通知级" : "· 观察级"}</div>
+                <div class="code">${safe(row.ticker)} · ${safe(alertLevelLabel(row.level))} ${row.notify ? "· 通知级" : "· 观察级"}</div>
               </div>
               <span class="pill">${row.notify ? "通知" : "观察"}</span>
             </div>
@@ -851,8 +868,8 @@
       const pulses = [];
 
       if (spx || ndx) {
-        const spxDD = spx?.drawdown_52w != null ? `${spx.drawdown_52w.toFixed(1)}%` : "N/A";
-        const ndxPE = ndx?.pe_forward != null ? ndx.pe_forward.toFixed(1) : "N/A";
+        const spxDD = spx?.drawdown_52w != null ? `${spx.drawdown_52w.toFixed(1)}%` : "暂无";
+        const ndxPE = ndx?.pe_forward != null ? ndx.pe_forward.toFixed(1) : "暂无";
         const paused = (spx?.signal || "").includes("暂停");
         pulses.push({ icon: "📈", label: "美股", tone: paused ? "warn" : "ok",
           text: `标普距高点 ${spxDD} · 纳指前瞻 PE ${ndxPE}`, tag: paused ? "暂停新增" : "正常定投" });
@@ -861,9 +878,9 @@
       }
 
       if (div) {
-        const dy = div.dividend_yield != null ? `${div.dividend_yield.toFixed(2)}%` : "N/A";
-        const pe = div.pe_ttm != null ? div.pe_ttm.toFixed(1) : "N/A";
-        const pePct = div.pe_percentile_label || "N/A";
+        const dy = div.dividend_yield != null ? `${div.dividend_yield.toFixed(2)}%` : "暂无";
+        const pe = div.pe_ttm != null ? div.pe_ttm.toFixed(1) : "暂无";
+        const pePct = div.pe_percentile_label || "暂无";
         const sig = div.signal || "";
         const accelerate = sig.includes("加速") || sig.includes("允许买入");
         const pauseDiv = sig.includes("暂停");
@@ -877,9 +894,9 @@
         const counts = shortFlow.status_counts || {};
         const focusCount = counts["Focus watch"] || 0;
         const waitCount = counts["Wait for strength"] || 0;
-        const asof = shortFlow.asof || "N/A";
+        const asof = shortFlow.asof || "暂无";
         pulses.push({ icon: "⚡", label: "A股短线", tone: focusCount > 0 ? "ok" : "info",
-          text: `Focus ${focusCount} · Wait ${waitCount} · ${asof}`, tag: focusCount > 0 ? "有机会" : "观望" });
+          text: `重点 ${focusCount} · 等待 ${waitCount} · ${asof}`, tag: focusCount > 0 ? "有机会" : "观望" });
       } else {
         pulses.push({ icon: "⚡", label: "A股短线", tone: "info", text: "数据暂缺", tag: "待更新" });
       }
@@ -905,8 +922,8 @@
     }
 
     function showError(error) {
-      document.getElementById("meta").textContent = "没有读到 dashboard_latest.json";
-      document.getElementById("indices").innerHTML = '<div class="empty">先运行脚本生成 dashboard_latest.json，再用本地服务器打开本页面。</div>';
+      document.getElementById("meta").textContent = "没有读到最新数据文件";
+      document.getElementById("indices").innerHTML = '<div class="empty">先运行刷新脚本生成最新数据，再用本地服务器打开本页面。</div>';
       document.getElementById("watchlist").innerHTML = `<div class="empty">${safe(error.message)}</div>`;
     }
 
@@ -955,7 +972,7 @@
       });
     });
 
-    const sections = ["overview-section", "indices-section", "short-flow-section", "watchlist-section", "alerts-section", "gaps-section"];
+    const sections = ["overview-section", "alerts-section", "watchlist-section", "short-flow-section", "indices-section", "gaps-section"];
     window.addEventListener("scroll", () => {
       const current = sections.findLast(id => document.getElementById(id)?.getBoundingClientRect().top < 220) || sections[0];
       document.querySelectorAll(".bottom-nav a").forEach(link => {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>short-flow A股短线资金跟随看板</title>
+  <title>A股短线资金跟随看板</title>
   <style>
     :root {
       color-scheme: light;
@@ -641,13 +641,13 @@
   <header>
     <div class="wrap hero">
       <div>
-        <h1>short-flow A股短线资金跟随看板</h1>
+        <h1>A股短线资金跟随看板</h1>
         <div id="meta" class="meta">等待数据</div>
       </div>
       <div class="summary" aria-label="摘要">
         <div class="summary-card"><b id="marketCount">-</b><span>市场/板块</span></div>
-        <div class="summary-card"><b id="focusCount">-</b><span>Focus watch</span></div>
-        <div class="summary-card"><b id="waitCount">-</b><span>Wait/Exclude</span></div>
+        <div class="summary-card"><b id="focusCount">-</b><span>重点观察</span></div>
+        <div class="summary-card"><b id="waitCount">-</b><span>等待/排除</span></div>
       </div>
       <div class="toolbar">
         <input id="search" type="search" placeholder="搜代码、名称、分组、状态">
@@ -663,7 +663,7 @@
         <h2>ETF训练仓</h2>
         <div class="section-tools">
           <select id="etfSession" class="session-select">
-            <option value="latest">最新 (etf_pool_latest.json)</option>
+            <option value="latest">最新报告</option>
             <option value="0850">08:50 盘前</option>
             <option value="0940">09:40 盘中确认</option>
             <option value="1130">11:30 午间</option>
@@ -768,10 +768,10 @@
 
   <script>
     const state = { data: null, etf: null, etfSession: "latest", mode: "all" };
-    const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "N/A" : Number(v).toFixed(d);
-    const pct = (v, d = 1) => v === null || v === undefined || Number.isNaN(Number(v)) ? "N/A" : `${Number(v).toFixed(d)}%`;
+    const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : Number(v).toFixed(d);
+    const pct = (v, d = 1) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : `${Number(v).toFixed(d)}%`;
     const money = v => {
-      if (v === null || v === undefined || Number.isNaN(Number(v))) return "N/A";
+      if (v === null || v === undefined || Number.isNaN(Number(v))) return "暂无";
       const abs = Math.abs(Number(v));
       if (abs >= 100000000) return `${(Number(v) / 100000000).toFixed(2)}亿`;
       if (abs >= 10000) return `${(Number(v) / 10000).toFixed(0)}万`;
@@ -780,6 +780,28 @@
     const cls = v => Number(v) > 0 ? "pos" : Number(v) < 0 ? "neg" : "flat";
     const safe = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
     const statusClass = status => status === "Focus watch" ? "" : status === "Exclude for now" ? "exclude" : "wait";
+    const decisionLabel = status => ({
+      "Focus watch": "重点观察",
+      "Wait for strength": "等待走强",
+      "Exclude for now": "暂不纳入"
+    }[status] || status || "资金观察");
+    const dataStatusLabel = status => ({
+      live: "实时",
+      stale: "延迟",
+      unavailable: "不可用",
+      unknown: "未知"
+    }[status] || "未知");
+    const priorityLabel = priority => ({
+      core: "核心",
+      high: "高优先",
+      normal: "普通",
+      low: "低优先"
+    }[priority] || "普通");
+    const regimeLabel = regime => ({
+      TREND_UP: "趋势向上",
+      RANGE: "震荡",
+      TREND_DOWN: "趋势向下"
+    }[regime] || regime || "暂无");
 
     async function loadEtfReport(session) {
       if (session === "latest") {
@@ -844,13 +866,13 @@
       document.getElementById("focusCount").textContent = counts["Focus watch"] ?? 0;
       document.getElementById("waitCount").textContent = (counts["Wait for strength"] ?? 0) + (counts["Exclude for now"] ?? 0);
       const source = state.data?.source_status || {};
-      document.getElementById("meta").textContent = `生成时间：${state.data?.asof || "N/A"} · 交易日：${state.data?.trade_date || "N/A"} · 接口 live/stale/N/A：${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0} · 不自动交易`;
+      document.getElementById("meta").textContent = `生成时间：${state.data?.asof || "暂无"} · 交易日：${state.data?.trade_date || "暂无"} · 接口 实时/延迟/不可用：${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0} · 不自动交易`;
     }
 
     function renderChips() {
       const groups = [...new Set(allRows().map(row => row.group).filter(Boolean))].sort();
       const modes = ["all", "Focus watch", "Wait for strength", "Exclude for now", ...groups];
-      const labels = { all: "全部", "Focus watch": "Focus", "Wait for strength": "Wait", "Exclude for now": "Exclude" };
+      const labels = { all: "全部", "Focus watch": "重点观察", "Wait for strength": "等待走强", "Exclude for now": "暂不纳入" };
       const chips = document.getElementById("chips");
       chips.innerHTML = modes.map(mode =>
         `<button type="button" class="chip ${state.mode === mode ? "active" : ""}" data-mode="${safe(mode)}">${safe(labels[mode] || mode)}</button>`
@@ -863,11 +885,11 @@
           <div class="top">
             <div>
               <div class="name">${safe(row.display_name || row.name || row.code)}</div>
-              <div class="code">${safe(row.code)} · ${safe(row.group)} · ${safe(row.status || "资金观察")} · ${safe(row.data_status || "unknown")}</div>
+              <div class="code">${safe(row.code)} · ${safe(row.group)} · ${safe(decisionLabel(row.status))} · ${safe(dataStatusLabel(row.data_status))}</div>
             </div>
             <div>
               <div class="price">${fmt(row.close)}</div>
-              <div style="text-align:right;margin-top:5px"><span class="pill">${safe(row.priority || "normal")}</span></div>
+              <div style="text-align:right;margin-top:5px"><span class="pill">${safe(priorityLabel(row.priority))}</span></div>
             </div>
           </div>
           <div class="metrics">
@@ -878,7 +900,7 @@
             <div class="metric"><span>5/20日涨幅</span><b>${pct(row.return_5d_pct)} / ${pct(row.return_20d_pct)}</b></div>
             <div class="metric"><span>额/20日均</span><b>${fmt(row.amount_ratio_20, 2)}x</b></div>
           </div>
-          <div class="signal ${statusClass(row.status)}">${safe(row.status || "资金观察")}：${safe(row.reason || "等待数据")}</div>
+          <div class="signal ${statusClass(row.status)}">${safe(decisionLabel(row.status))}：${safe(row.reason || "等待数据")}</div>
           ${row.next_trigger ? `<div class="plan"><b>触发：</b>${safe(row.next_trigger)}</div>` : ""}
           ${row.failure ? `<div class="plan"><b>失败：</b>${safe(row.failure)}</div>` : ""}
           ${row.plan_note ? `<div class="reason">${safe(row.plan_note)}</div>` : ""}
@@ -932,7 +954,7 @@
               <div class="decision-row ${decision === "exclude" ? "compact" : ""}">
                 <div class="decision-main">
                   <b>${safe(row.code)} ${safe(row.name)}</b>
-                  <span class="score-pill">${row.score != null ? fmt(row.score, 1) : "N/A"}</span>
+                  <span class="score-pill">${row.score != null ? fmt(row.score, 1) : "暂无"}</span>
                 </div>
                 <div class="decision-note">${safe(row.reason || "-")}</div>
                 ${decision === "exclude" ? "" : `<div class="decision-meta">
@@ -954,15 +976,15 @@
       if (!bt || !bt.total_signals) {
         hint.textContent = bt ? "暂无回测数据" : "等待回测数据";
         panel.className = "empty";
-        panel.innerHTML = "回测数据将在每日收盘后自动生成。<br>当积累足够信号后，这里会展示历史 Focus watch 信号的实际命中率。";
+        panel.innerHTML = "回测数据将在每日收盘后自动生成。<br>当积累足够信号后，这里会展示历史重点观察信号的实际命中率。";
         return;
       }
       hint.textContent = `共 ${bt.total_signals} 个历史信号`;
       panel.className = "";
 
       function statRow(label, wr, avgRet) {
-        const wrText = wr != null ? `${(wr * 100).toFixed(0)}%` : "N/A";
-        const retText = avgRet != null ? `${avgRet >= 0 ? "+" : ""}${avgRet.toFixed(2)}%` : "N/A";
+        const wrText = wr != null ? `${(wr * 100).toFixed(0)}%` : "暂无";
+        const retText = avgRet != null ? `${avgRet >= 0 ? "+" : ""}${avgRet.toFixed(2)}%` : "暂无";
         const retCls = avgRet > 0 ? "pos" : avgRet < 0 ? "neg" : "flat";
         return `<div class="etf-mini"><span>${label}</span><b>${wrText} <span class="${retCls}" style="font-size:13px">${retText}</span></b></div>`;
       }
@@ -971,7 +993,7 @@
       let html = `
         <div class="etf-overview">
           <div class="etf-strip">
-            ${statRow("总信号数", null, null).replace("<b>", "<b>").replace("N/A", String(bt.total_signals)).replace(/<span[^>]*>.*?<\/span>/, "")}
+            ${statRow("总信号数", null, null).replace("<b>", "<b>").replace("暂无", String(bt.total_signals)).replace(/<span[^>]*>.*?<\/span>/, "")}
             ${statRow("1日胜率/均收益", overall?.win_rate_1d, overall?.avg_return_1d)}
             ${statRow("5日胜率/均收益", overall?.win_rate_5d, overall?.avg_return_5d)}
             ${statRow("10日胜率/均收益", overall?.win_rate_10d, overall?.avg_return_10d)}
@@ -985,10 +1007,10 @@
           if (!stats) continue;
           html += `
             <div class="etf-strip" style="margin-bottom:6px">
-              <div class="etf-mini"><span>${safe(reg)}</span><b>${stats.count}个</b></div>
+              <div class="etf-mini"><span>${safe(regimeLabel(reg))}</span><b>${stats.count}个</b></div>
               ${statRow("5日胜率", stats.win_rate_5d, stats.avg_return_5d)}
               ${statRow("10日胜率", stats.win_rate_10d, stats.avg_return_10d)}
-              <div class="etf-mini"><span>均分</span><b>${stats.avg_score != null ? stats.avg_score.toFixed(0) : "N/A"}</b></div>
+              <div class="etf-mini"><span>均分</span><b>${stats.avg_score != null ? stats.avg_score.toFixed(0) : "暂无"}</b></div>
             </div>`;
         }
       }
@@ -1007,9 +1029,9 @@
             <td>${safe(r.signal_date)}</td>
             <td>${safe(r.code)}</td>
             <td>${safe(r.name)}</td>
-            <td>${safe(r.regime)}</td>
-            <td class="${r.return_1d > 0 ? 'pos' : r.return_1d < 0 ? 'neg' : 'flat'}">${hit1} ${r.return_1d != null ? (r.return_1d >= 0 ? '+' : '') + r.return_1d.toFixed(2) + '%' : 'N/A'}</td>
-            <td class="${r.return_5d > 0 ? 'pos' : r.return_5d < 0 ? 'neg' : 'flat'}">${hit5} ${r.return_5d != null ? (r.return_5d >= 0 ? '+' : '') + r.return_5d.toFixed(2) + '%' : 'N/A'}</td>
+            <td>${safe(regimeLabel(r.regime))}</td>
+            <td class="${r.return_1d > 0 ? 'pos' : r.return_1d < 0 ? 'neg' : 'flat'}">${hit1} ${r.return_1d != null ? (r.return_1d >= 0 ? '+' : '') + r.return_1d.toFixed(2) + '%' : '暂无'}</td>
+            <td class="${r.return_5d > 0 ? 'pos' : r.return_5d < 0 ? 'neg' : 'flat'}">${hit5} ${r.return_5d != null ? (r.return_5d >= 0 ? '+' : '') + r.return_5d.toFixed(2) + '%' : '暂无'}</td>
           </tr>`;
         }
         html += `</tbody></table></div></div>`;
@@ -1022,7 +1044,7 @@
       const hint = document.getElementById("etfHint");
       const data = state.etf;
       if (!data) {
-        hint.textContent = "等待 etf_pool_latest.json";
+        hint.textContent = "等待最新训练仓数据";
         root.className = "empty";
         root.innerHTML = "还没有导出 ETF 训练仓结果";
         return;
@@ -1030,29 +1052,29 @@
       const regime = data.market_regime || {};
       const permission = data.trading_permission || {};
       const guardrails = data.guardrails || {};
-      hint.textContent = `${data.session_name || data.session || "最新"} · ${data.trade_date || "N/A"}`;
+      hint.textContent = `${data.session_name || data.session || "最新"} · ${data.trade_date || "暂无"}`;
       root.className = "";
       root.innerHTML = `
         <div class="etf-overview">
           <div class="etf-status-grid">
-            <div class="status-card primary"><span>市场状态</span><b>${safe(regime.regime || "N/A")}</b></div>
+            <div class="status-card primary"><span>市场状态</span><b>${safe(regimeLabel(regime.regime))}</b></div>
             <div class="status-card ${permission.can_open ? "ok" : "warn"}"><span>训练仓</span><b>${permission.can_open ? "允许开仓" : "停止新开"}</b></div>
             <div class="status-card"><span>最大敞口</span><b>${pct((permission.max_exposure_pct || 0) * 100, 0)}</b></div>
-            <div class="status-card"><span>分析ID / 时间</span><b>#${safe(data.analysis_run_id || "N/A")} · ${safe(data.generated_at || "N/A")}</b></div>
+            <div class="status-card"><span>分析编号 / 时间</span><b>#${safe(data.analysis_run_id || "暂无")} · ${safe(data.generated_at || "暂无")}</b></div>
           </div>
           <div class="guardrail-strip" aria-label="训练仓配置">
             <span class="guardrail">本金 <b>${money(guardrails.train_capital)}</b></span>
             <span class="guardrail">首笔 <b>${pct((guardrails.first_entry_ratio || 0) * 100, 0)}</b></span>
             <span class="guardrail">单ETF <b>${pct((guardrails.max_single_etf_pct || 0) * 100, 0)}</b></span>
             <span class="guardrail">主题 <b>${permission.theme_enabled ? "启用" : "关闭"}</b></span>
-            <span class="guardrail">TREND_DOWN <b>${safe(guardrails.trend_down_exit_days || 3)}日退出</b></span>
+            <span class="guardrail">趋势向下 <b>${safe(guardrails.trend_down_exit_days || 3)}日退出</b></span>
           </div>
           <div class="decision-grid">
             ${decisionCard("可观察", data.focus_watch || [], "focus")}
             ${decisionCard("待观察", data.wait || [], "wait")}
             ${decisionCard("待排除", data.exclude || [], "exclude")}
           </div>
-          ${data.exit_queue?.length ? decisionCard("TREND_DOWN退出队列", data.exit_queue, "exclude") : ""}
+          ${data.exit_queue?.length ? decisionCard("趋势向下退出队列", data.exit_queue, "exclude") : ""}
         </div>
       `;
     }
@@ -1084,8 +1106,8 @@
     }
 
     function showError(error) {
-      document.getElementById("meta").textContent = "没有读到 dashboard_latest.json";
-      document.getElementById("marketFlow").innerHTML = '<div class="empty">先运行脚本生成 dashboard_latest.json，再用本地服务器打开本页面。</div>';
+      document.getElementById("meta").textContent = "没有读到最新数据文件";
+      document.getElementById("marketFlow").innerHTML = '<div class="empty">先运行刷新脚本生成最新数据，再用本地服务器打开本页面。</div>';
       document.getElementById("watchSignals").innerHTML = `<div class="empty">${safe(error.message)}</div>`;
     }
 
@@ -1126,9 +1148,9 @@
         open: open.length,
         closed: closed.length,
         wins: wins.length,
-        winRate: closed.length ? (wins.length / closed.length * 100).toFixed(0) + "%" : "N/A",
+        winRate: closed.length ? (wins.length / closed.length * 100).toFixed(0) + "%" : "暂无",
         totalPnl: totalPnl,
-        avgReturn: closed.length ? (closed.reduce((s, e) => s + (e.pnl_pct || 0), 0) / closed.length).toFixed(2) + "%" : "N/A",
+        avgReturn: closed.length ? (closed.reduce((s, e) => s + (e.pnl_pct || 0), 0) / closed.length).toFixed(2) + "%" : "暂无",
       };
     }
 
@@ -1162,10 +1184,10 @@
               <div class="top">
                 <div>
                   <div class="name">${safe(e.code)} ${safe(e.name || "")}</div>
-                  <div class="code">开仓：${safe(e.entry_date || "N/A")} @ ${fmt(e.entry_price, 3)} · ${safe(e.shares || 100)}股 ${isOpen ? '· <span style="color:var(--blue)">持仓中</span>' : `· 平仓：${safe(e.exit_date || "N/A")} @ ${fmt(e.exit_price, 3)}`}</div>
+                  <div class="code">开仓：${safe(e.entry_date || "暂无")} @ ${fmt(e.entry_price, 3)} · ${safe(e.shares || 100)}股 ${isOpen ? '· <span style="color:var(--blue)">持仓中</span>' : `· 平仓：${safe(e.exit_date || "暂无")} @ ${fmt(e.exit_price, 3)}`}</div>
                 </div>
                 <div style="text-align:right">
-                  <div class="price ${pnlCls}">${pnl != null ? (pnl >= 0 ? '+' : '') + pnl.toFixed(0) : "N/A"}</div>
+                  <div class="price ${pnlCls}">${pnl != null ? (pnl >= 0 ? '+' : '') + pnl.toFixed(0) : "暂无"}</div>
                   <div style="font-size:12px;color:var(--muted)">${pnlPct != null ? (pnlPct >= 0 ? '+' : '') + pnlPct.toFixed(2) + '%' : ''}</div>
                 </div>
               </div>
