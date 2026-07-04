@@ -905,24 +905,40 @@
       for (const bucket of ["focus_watch", "wait", "exclude", "exit_queue"]) {
         rows.push(...(state.etf?.[bucket] || []));
       }
+      try {
+        const res = await fetch("../instrument_universe.json", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          rows.push(...(data.items || []));
+        }
+      } catch { /* maintained universe is optional */ }
       const seen = new Set();
       state.candidates = rows
         .map(row => ({
           code: String(row.code || "").trim(),
           name: String(row.display_name || row.name || "").trim(),
-          group: String(row.group || row.category || "").trim()
+          group: String(row.group || row.category || row.bucket || "").trim(),
+          market: String(row.market || "").trim(),
+          assetType: String(row.asset_type || "").trim()
         }))
-        .filter(row => row.code && !seen.has(row.code) && seen.add(row.code))
-        .sort((a, b) => a.code.localeCompare(b.code));
+        .filter(row => {
+          const key = `${row.market || "LOCAL"}:${row.code}`;
+          return row.code && !seen.has(key) && seen.add(key);
+        })
+        .sort((a, b) => {
+          const rankA = a.market === "A" ? 0 : a.market === "US" ? 1 : 2;
+          const rankB = b.market === "A" ? 0 : b.market === "US" ? 1 : 2;
+          return rankA - rankB || a.code.localeCompare(b.code);
+        });
       renderCandidateOptions();
     }
 
     function renderCandidateOptions() {
       const codeOptions = state.candidates.map(row =>
-        `<option value="${safe(row.code)}" label="${safe([row.name, row.group].filter(Boolean).join(" · "))}"></option>`
+        `<option value="${safe(row.code)}" label="${safe([row.name, row.group, row.market].filter(Boolean).join(" · "))}"></option>`
       ).join("");
       const nameOptions = state.candidates.map(row =>
-        `<option value="${safe(row.name || row.code)}" label="${safe([row.code, row.group].filter(Boolean).join(" · "))}"></option>`
+        `<option value="${safe(row.name || row.code)}" label="${safe([row.code, row.group, row.market].filter(Boolean).join(" · "))}"></option>`
       ).join("");
       document.getElementById("instrumentOptions").innerHTML = codeOptions;
       document.getElementById("instrumentNameOptions").innerHTML = nameOptions;

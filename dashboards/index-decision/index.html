@@ -546,7 +546,7 @@
         <div class="summary-card"><b id="alertCount">-</b><span>重点提醒</span></div>
       </div>
       <div class="toolbar">
-        <input id="search" type="search" placeholder="搜代码、名称、分组">
+        <input id="search" type="search" list="instrumentOptions" placeholder="搜代码、名称、分组">
         <button id="reload" type="button">刷新</button>
       </div>
       <nav id="modeChips" class="chips" aria-label="快速筛选"></nav>
@@ -619,8 +619,8 @@
   <div id="addPanel" class="add-panel" role="dialog" aria-label="添加观察标的">
     <h2>添加观察标的</h2>
     <div class="form-grid">
-      <input id="addTicker" placeholder="代码，例如 MSFT / 0700.HK / 600900.SH">
-      <input id="addName" placeholder="名称，例如 微软">
+      <input id="addTicker" list="instrumentOptions" placeholder="代码，例如 MSFT / 0700.HK / 600900.SH">
+      <input id="addName" list="instrumentNameOptions" placeholder="名称，例如 微软">
       <input id="addGroup" placeholder="分组，例如 临时观察">
       <input id="addReason" placeholder="观察理由">
     </div>
@@ -629,10 +629,12 @@
       <button id="saveAdd" class="primary" type="button">保存</button>
     </div>
   </div>
+  <datalist id="instrumentOptions"></datalist>
+  <datalist id="instrumentNameOptions"></datalist>
 
   <script>
     const LOCAL_KEY = "finance_dashboard_local_watchlist_v1";
-    const state = { data: null, shortFlow: null, mode: "all", group: "", localItems: [] };
+    const state = { data: null, shortFlow: null, mode: "all", group: "", localItems: [], candidates: [] };
     const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : Number(v).toFixed(d);
     const pct = (v, d = 1) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : `${Number(v).toFixed(d)}%`;
     const cls = v => Number(v) > 0 ? "pos" : Number(v) < 0 ? "neg" : "flat";
@@ -672,7 +674,91 @@
         state.shortFlow = null;
       }
       state.localItems = loadLocalItems();
+      await loadCandidateList();
       render();
+    }
+
+    function aShareTicker(code) {
+      const raw = String(code || "").trim();
+      if (!/^\d{6}$/.test(raw)) return raw;
+      if (/^[569]/.test(raw)) return `${raw}.SH`;
+      if (/^[0123]/.test(raw)) return `${raw}.SZ`;
+      if (/^[48]/.test(raw)) return `${raw}.BJ`;
+      return raw;
+    }
+
+    function displayTicker(row) {
+      const code = String(row.ticker || row.code || "").trim();
+      if (row.market === "A" || row.market === "CN") return aShareTicker(code);
+      return code.toUpperCase();
+    }
+
+    async function loadCandidateList() {
+      const rows = [];
+      try {
+        const res = await fetch("../instrument_universe.json", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          rows.push(...(data.items || []));
+        }
+      } catch { /* maintained universe is optional */ }
+      rows.push(
+        ...(state.data?.watchlist || []),
+        ...(state.data?.indices || []),
+        ...state.localItems,
+        ...(state.shortFlow?.market_flow || []),
+        ...(state.shortFlow?.watch_signals || [])
+      );
+      const seen = new Set();
+      state.candidates = rows
+        .map(row => {
+          const code = String(row.ticker || row.code || "").trim();
+          const market = row.market === "A" ? "CN" : String(row.market || "").trim();
+          const ticker = displayTicker({ ...row, market });
+          return {
+            code,
+            ticker,
+            market,
+            name: String(row.display_name || row.name || "").trim(),
+            group: String(row.group || row.category || row.bucket || row.kind || "").trim()
+          };
+        })
+        .filter(row => row.ticker && !seen.has(row.ticker) && seen.add(row.ticker))
+        .sort((a, b) => {
+          const rankA = a.market === "CN" ? 0 : a.market === "US" ? 1 : 2;
+          const rankB = b.market === "CN" ? 0 : b.market === "US" ? 1 : 2;
+          return rankA - rankB || a.ticker.localeCompare(b.ticker);
+        });
+      renderCandidateOptions();
+    }
+
+    function renderCandidateOptions() {
+      const codeOptions = state.candidates.map(row =>
+        `<option value="${safe(row.ticker)}" label="${safe([row.name, row.group, row.market].filter(Boolean).join(" · "))}"></option>`
+      ).join("");
+      const nameOptions = state.candidates.map(row =>
+        `<option value="${safe(row.name || row.ticker)}" label="${safe([row.ticker, row.group, row.market].filter(Boolean).join(" · "))}"></option>`
+      ).join("");
+      document.getElementById("instrumentOptions").innerHTML = codeOptions;
+      document.getElementById("instrumentNameOptions").innerHTML = nameOptions;
+    }
+
+    function candidateByInput(value) {
+      const query = String(value || "").trim().toLowerCase();
+      if (!query) return null;
+      return state.candidates.find(row =>
+        row.ticker.toLowerCase() === query ||
+        row.code.toLowerCase() === query ||
+        row.name.toLowerCase() === query
+      ) || null;
+    }
+
+    function applyAddCandidate(value) {
+      const candidate = candidateByInput(value);
+      if (!candidate) return;
+      document.getElementById("addTicker").value = candidate.ticker;
+      document.getElementById("addName").value = candidate.name || candidate.ticker;
+      document.getElementById("addGroup").value = candidate.group || document.getElementById("addGroup").value.trim() || "本机新增";
     }
 
     function loadLocalItems() {
@@ -1017,14 +1103,19 @@
     document.getElementById("closeAdd")?.addEventListener("click", () => {
       document.getElementById("addPanel").classList.remove("open");
     });
+    for (const eventName of ["input", "change"]) {
+      document.getElementById("addTicker")?.addEventListener(eventName, event => applyAddCandidate(event.target.value));
+      document.getElementById("addName")?.addEventListener(eventName, event => applyAddCandidate(event.target.value));
+    }
     document.getElementById("saveAdd")?.addEventListener("click", () => {
-      const ticker = document.getElementById("addTicker").value.trim().toUpperCase();
+      const candidate = candidateByInput(document.getElementById("addTicker").value) || candidateByInput(document.getElementById("addName").value);
+      const ticker = (candidate?.ticker || document.getElementById("addTicker").value).trim().toUpperCase();
       if (!ticker) return;
       const row = {
-        market: ticker.endsWith(".HK") ? "HK" : ticker.endsWith(".SH") || ticker.endsWith(".SZ") ? "CN" : "US",
+        market: candidate?.market || (ticker.endsWith(".HK") ? "HK" : ticker.endsWith(".SH") || ticker.endsWith(".SZ") || ticker.endsWith(".BJ") ? "CN" : "US"),
         ticker,
-        name: document.getElementById("addName").value.trim() || ticker,
-        group: document.getElementById("addGroup").value.trim() || "本机新增",
+        name: document.getElementById("addName").value.trim() || candidate?.name || ticker,
+        group: document.getElementById("addGroup").value.trim() || candidate?.group || "本机新增",
         reason: document.getElementById("addReason").value.trim() || "手动添加观察",
         priority: "local"
       };

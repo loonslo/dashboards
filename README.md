@@ -10,10 +10,21 @@ Current dashboards:
 Refresh flow:
 
 1. Server runs `scripts/refresh_all.sh`.
-2. Each dashboard writes its own `dashboard_latest.json`.
-3. Each refresh archives a dated copy in `history/`.
-4. Server commits and pushes the changed dashboard files.
-5. Vercel deploys the latest static site.
+2. The shared instrument universe is refreshed into `dashboards/instrument_universe.json`.
+3. Each dashboard writes its own `dashboard_latest.json`.
+4. Each refresh archives a dated copy in `history/`.
+5. Server commits and pushes the changed dashboard files.
+6. Vercel deploys the latest static site.
+
+Instrument universe:
+
+```bash
+python scripts/refresh_instrument_universe.py
+```
+
+This maintains the shared code/name candidate pool used by dashboard search and
+manual entry forms. It combines a curated mainstream A-share/US ETF list,
+US TOP100 by market cap, and A-share main-board TOP1000 by market cap.
 
 Server API mode:
 
