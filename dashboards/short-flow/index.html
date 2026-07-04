@@ -178,6 +178,9 @@
       border-radius: 8px;
       font-size: 13px;
     }
+    #etfChips {
+      margin-bottom: 10px;
+    }
     .grid {
       display: grid;
       gap: 10px;
@@ -677,11 +680,11 @@
       </div>
       <div class="summary" aria-label="摘要">
         <div class="summary-card"><b id="marketCount">-</b><span>市场/板块</span></div>
-        <div class="summary-card"><b id="focusCount">-</b><span>重点观察</span></div>
-        <div class="summary-card"><b id="waitCount">-</b><span>等待/排除</span></div>
+        <div class="summary-card"><b id="focusCount">-</b><span>可观察</span></div>
+        <div class="summary-card"><b id="waitCount">-</b><span>待走强/暂排除</span></div>
       </div>
       <div class="toolbar">
-        <input id="search" type="search" placeholder="搜代码、名称、分组、状态">
+        <input id="search" type="search" list="instrumentOptions" placeholder="搜代码、名称、分组、状态">
         <button id="reload" type="button">刷新</button>
       </div>
       <nav id="chips" class="chips" aria-label="快速筛选"></nav>
@@ -704,6 +707,7 @@
           <span id="etfHint" class="hint">等待数据</span>
         </div>
       </div>
+      <nav id="etfChips" class="chips" aria-label="训练仓筛选"></nav>
       <div id="etfPool" class="empty">等待数据</div>
     </section>
 
@@ -764,8 +768,8 @@
       </div>
       <div id="journalAddPanel" class="journal-panel">
         <div class="form-grid" style="display:grid;gap:8px">
-          <input id="jCode" placeholder="代码，如 510300">
-          <input id="jName" placeholder="名称，如 沪深300ETF">
+          <input id="jCode" list="instrumentOptions" placeholder="代码或名称，如 510300 / 沪深300ETF">
+          <input id="jName" list="instrumentNameOptions" placeholder="名称，如 沪深300ETF">
           <input id="jEntryDate" placeholder="开仓日期，如 2026-07-01" type="date">
           <input id="jEntryPrice" placeholder="开仓价" type="number" step="0.001">
           <input id="jShares" placeholder="股数" type="number" step="1">
@@ -796,9 +800,11 @@
     <a href="#journal-section">交易</a>
     <a href="#gaps-section">缺口</a>
   </nav>
+  <datalist id="instrumentOptions"></datalist>
+  <datalist id="instrumentNameOptions"></datalist>
 
   <script>
-    const state = { data: null, etf: null, etfSession: "latest", mode: "all" };
+    const state = { data: null, etf: null, etfSession: "latest", filters: new Set(), etfFilters: new Set(), candidates: [] };
     const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : Number(v).toFixed(d);
     const pct = (v, d = 1) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : `${Number(v).toFixed(d)}%`;
     const money = v => {
@@ -812,9 +818,9 @@
     const safe = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
     const statusClass = status => status === "Focus watch" ? "" : status === "Exclude for now" ? "exclude" : "wait";
     const decisionLabel = status => ({
-      "Focus watch": "重点观察",
-      "Wait for strength": "等待走强",
-      "Exclude for now": "暂不纳入"
+      "Focus watch": "可观察",
+      "Wait for strength": "待走强",
+      "Exclude for now": "暂排除"
     }[status] || status || "资金观察");
     const dataStatusLabel = status => ({
       live: "实时",
@@ -833,6 +839,22 @@
       RANGE: "震荡",
       TREND_DOWN: "趋势向下"
     }[regime] || regime || "暂无");
+    const statusFilters = ["Focus watch", "Wait for strength", "Exclude for now"];
+    const statusFilterLabels = {
+      "Focus watch": "可观察",
+      "Wait for strength": "待走强",
+      "Exclude for now": "暂排除"
+    };
+    const decisionStatusMap = {
+      focus: "Focus watch",
+      wait: "Wait for strength",
+      exclude: "Exclude for now"
+    };
+    const decisionFilterLabels = {
+      focus: "可观察",
+      wait: "待观察",
+      exclude: "待排除"
+    };
 
     async function loadEtfReport(session) {
       if (session === "latest") {
@@ -862,6 +884,7 @@
     async function loadData() {
       state.data = await DashboardApi.fetchLatest("short-flow", "dashboard_latest.json");
       await loadEtfReport(state.etfSession);
+      await loadCandidateList();
       render();
     }
 
@@ -869,25 +892,70 @@
       return [...(state.data?.market_flow || []), ...(state.data?.watch_signals || [])];
     }
 
+    async function loadCandidateList() {
+      const rows = [];
+      try {
+        const res = await fetch("watchlist_v1.json", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          rows.push(...(data.items || []));
+        }
+      } catch { /* local candidate list is optional */ }
+      rows.push(...allRows());
+      for (const bucket of ["focus_watch", "wait", "exclude", "exit_queue"]) {
+        rows.push(...(state.etf?.[bucket] || []));
+      }
+      const seen = new Set();
+      state.candidates = rows
+        .map(row => ({
+          code: String(row.code || "").trim(),
+          name: String(row.display_name || row.name || "").trim(),
+          group: String(row.group || row.category || "").trim()
+        }))
+        .filter(row => row.code && !seen.has(row.code) && seen.add(row.code))
+        .sort((a, b) => a.code.localeCompare(b.code));
+      renderCandidateOptions();
+    }
+
+    function renderCandidateOptions() {
+      const codeOptions = state.candidates.map(row =>
+        `<option value="${safe(row.code)}" label="${safe([row.name, row.group].filter(Boolean).join(" · "))}"></option>`
+      ).join("");
+      const nameOptions = state.candidates.map(row =>
+        `<option value="${safe(row.name || row.code)}" label="${safe([row.code, row.group].filter(Boolean).join(" · "))}"></option>`
+      ).join("");
+      document.getElementById("instrumentOptions").innerHTML = codeOptions;
+      document.getElementById("instrumentNameOptions").innerHTML = nameOptions;
+    }
+
+    function candidateByInput(value) {
+      const query = String(value || "").trim().toLowerCase();
+      if (!query) return null;
+      return state.candidates.find(row =>
+        row.code.toLowerCase() === query || row.name.toLowerCase() === query
+      ) || null;
+    }
+
     function textMatches(row) {
       const query = document.getElementById("search").value.trim().toLowerCase();
       if (!query) return true;
-      const text = `${row.code} ${row.display_name || row.name} ${row.name} ${row.group} ${row.status} ${row.category} ${row.reason}`.toLowerCase();
+      const text = `${row.code} ${row.display_name || row.name} ${row.name} ${row.group} ${decisionLabel(row.status)} ${row.category} ${row.reason}`.toLowerCase();
       return text.includes(query);
     }
 
-    function modeMatches(row) {
-      const mode = state.mode;
-      if (mode === "all") return true;
-      if (mode === "Focus watch") return row.status === mode || row._decision === "focus";
-      if (mode === "Wait for strength") return row.status === mode || row._decision === "wait";
-      if (mode === "Exclude for now") return row.status === mode || row._decision === "exclude";
-      return row.group === mode || row.category === mode;
+    function filterMatches(row) {
+      if (!state.filters.size) return true;
+      return [...state.filters].some(filter => {
+        if (filter === "Focus watch") return row.status === filter || row._decision === "focus";
+        if (filter === "Wait for strength") return row.status === filter || row._decision === "wait";
+        if (filter === "Exclude for now") return row.status === filter || row._decision === "exclude";
+        return row.group === filter || row.category === filter;
+      });
     }
 
     function filtered(rows) {
       return rows.filter(row => {
-        return modeMatches(row) && textMatches(row);
+        return filterMatches(row) && textMatches(row);
       });
     }
 
@@ -902,11 +970,19 @@
 
     function renderChips() {
       const groups = [...new Set(allRows().map(row => row.group).filter(Boolean))].sort();
-      const modes = ["all", "Focus watch", "Wait for strength", "Exclude for now", ...groups];
-      const labels = { all: "全部", "Focus watch": "重点观察", "Wait for strength": "等待走强", "Exclude for now": "暂不纳入" };
+      const modes = ["all", ...statusFilters, ...groups];
+      const labels = { all: "全部", ...statusFilterLabels };
       const chips = document.getElementById("chips");
       chips.innerHTML = modes.map(mode =>
-        `<button type="button" class="chip ${state.mode === mode ? "active" : ""}" data-mode="${safe(mode)}">${safe(labels[mode] || mode)}</button>`
+        `<button type="button" class="chip ${(mode === "all" ? !state.filters.size : state.filters.has(mode)) ? "active" : ""}" data-filter="${safe(mode)}">${safe(labels[mode] || mode)}</button>`
+      ).join("");
+    }
+
+    function renderEtfChips() {
+      const modes = ["all", "focus", "wait", "exclude"];
+      const chips = document.getElementById("etfChips");
+      chips.innerHTML = modes.map(mode =>
+        `<button type="button" class="chip ${(mode === "all" ? !state.etfFilters.size : state.etfFilters.has(mode)) ? "active" : ""}" data-etf-filter="${safe(mode)}">${safe(mode === "all" ? "全部" : decisionFilterLabels[mode])}</button>`
       ).join("");
     }
 
@@ -970,6 +1046,7 @@
 
 
     function decisionCard(title, rows, decision) {
+      if (!decisionVisible(decision)) return "";
       const visibleRows = filtered((rows || []).map(row => ({ ...row, _decision: decision })));
       const decisionClass = decision === "focus" ? "focus" : decision === "exclude" ? "exclude" : "wait";
       const displayRows = decision === "exclude" ? visibleRows.slice(0, 8) : visibleRows;
@@ -1000,6 +1077,13 @@
       `;
     }
 
+    function decisionVisible(decision) {
+      const byEtf = !state.etfFilters.size || state.etfFilters.has(decision);
+      const selectedStatuses = statusFilters.filter(status => state.filters.has(status));
+      const byTop = !selectedStatuses.length || selectedStatuses.includes(decisionStatusMap[decision]);
+      return byEtf && byTop;
+    }
+
     function renderBacktest() {
       const panel = document.getElementById("backtestPanel");
       const hint = document.getElementById("backtestHint");
@@ -1007,7 +1091,7 @@
       if (!bt || !bt.total_signals) {
         hint.textContent = bt ? "暂无回测数据" : "等待回测数据";
         panel.className = "empty";
-        panel.innerHTML = "回测数据将在每日收盘后自动生成。<br>当积累足够信号后，这里会展示历史重点观察信号的实际命中率。";
+        panel.innerHTML = "回测数据将在每日收盘后自动生成。<br>当积累足够信号后，这里会展示历史可观察信号的实际命中率。";
         return;
       }
       hint.textContent = `共 ${bt.total_signals} 个历史信号`;
@@ -1074,6 +1158,7 @@
       const root = document.getElementById("etfPool");
       const hint = document.getElementById("etfHint");
       const data = state.etf;
+      renderEtfChips();
       if (!data) {
         hint.textContent = "等待最新训练仓数据";
         root.className = "empty";
@@ -1108,6 +1193,10 @@
           ${data.exit_queue?.length ? decisionCard("趋势向下退出队列", data.exit_queue, "exclude") : ""}
         </div>
       `;
+      if (!root.querySelector(".decision-card")) {
+        const grid = root.querySelector(".decision-grid");
+        if (grid) grid.innerHTML = '<div class="empty">没有匹配的训练仓标的</div>';
+      }
     }
     function renderGaps() {
       const gaps = state.data?.data_gaps || [];
@@ -1119,6 +1208,7 @@
     function render() {
       renderSummary();
       renderChips();
+      renderEtfChips();
       renderRanks();
       renderSections();
       renderEtfPool();
@@ -1129,6 +1219,7 @@
 
     function renderFilteredViews() {
       renderChips();
+      renderEtfChips();
       renderRanks();
       renderSections();
       renderEtfPool();
@@ -1147,13 +1238,34 @@
     document.getElementById("etfSession").addEventListener("change", async (event) => {
       state.etfSession = event.target.value;
       await loadEtfReport(state.etfSession);
+      await loadCandidateList();
       renderEtfPool();
       renderBacktest();
     });
     document.getElementById("chips").addEventListener("click", event => {
-      const button = event.target.closest("button[data-mode]");
+      const button = event.target.closest("button[data-filter]");
       if (!button) return;
-      state.mode = button.dataset.mode || "all";
+      const filter = button.dataset.filter || "all";
+      if (filter === "all") {
+        state.filters.clear();
+      } else if (state.filters.has(filter)) {
+        state.filters.delete(filter);
+      } else {
+        state.filters.add(filter);
+      }
+      renderFilteredViews();
+    });
+    document.getElementById("etfChips").addEventListener("click", event => {
+      const button = event.target.closest("button[data-etf-filter]");
+      if (!button) return;
+      const filter = button.dataset.etfFilter || "all";
+      if (filter === "all") {
+        state.etfFilters.clear();
+      } else if (state.etfFilters.has(filter)) {
+        state.etfFilters.delete(filter);
+      } else {
+        state.etfFilters.add(filter);
+      }
       renderFilteredViews();
     });
 
@@ -1272,13 +1384,23 @@
       document.getElementById("journalAddPanel").style.display = "block";
       document.getElementById("jCode").focus();
     });
+    function applyJournalCandidate(value) {
+      const candidate = candidateByInput(value);
+      if (!candidate) return;
+      document.getElementById("jCode").value = candidate.code;
+      document.getElementById("jName").value = candidate.name || candidate.code;
+    }
+    for (const eventName of ["input", "change"]) {
+      document.getElementById("jCode").addEventListener(eventName, event => applyJournalCandidate(event.target.value));
+      document.getElementById("jName").addEventListener(eventName, event => applyJournalCandidate(event.target.value));
+    }
     document.getElementById("closeJournalAdd").addEventListener("click", () => {
       document.getElementById("journalAddPanel").style.display = "none";
     });
     document.getElementById("saveJournalAdd").addEventListener("click", () => {
       const entry = {
-        code: document.getElementById("jCode").value.trim(),
-        name: document.getElementById("jName").value.trim(),
+        code: (candidateByInput(document.getElementById("jCode").value)?.code || document.getElementById("jCode").value).trim(),
+        name: (document.getElementById("jName").value.trim() || candidateByInput(document.getElementById("jCode").value)?.name || ""),
         entry_date: document.getElementById("jEntryDate").value || new Date().toISOString().slice(0, 10),
         entry_price: parseFloat(document.getElementById("jEntryPrice").value) || 0,
         shares: parseInt(document.getElementById("jShares").value) || 100,
