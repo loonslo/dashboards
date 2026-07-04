@@ -77,6 +77,66 @@ def latest_analysis_run_id(conn, trade_date, session):
     return row["id"] if row and row["id"] else None
 
 
+def compute_backtest_summary(conn):
+    """Read backtest_result table and compute aggregate statistics."""
+    bt_rows = rows(conn, """
+        SELECT * FROM backtest_result
+        WHERE hit_1d IS NOT NULL
+        ORDER BY signal_date DESC
+    """)
+
+    if not bt_rows:
+        return {"total_signals": 0, "by_regime": {}, "recent": []}
+
+    def _mean(values):
+        vals = [v for v in values if v is not None]
+        return sum(vals) / len(vals) if vals else None
+
+    def _win_rate(hits):
+        valid = [h for h in hits if h is not None]
+        return sum(valid) / len(valid) if valid else None
+
+    def _stats(subset):
+        if not subset:
+            return None
+        return {
+            "count": len(subset),
+            "avg_score": _mean([r["score"] for r in subset]),
+            "win_rate_1d": _win_rate([r["hit_1d"] for r in subset]),
+            "avg_return_1d": round(_mean([r["return_1d_close"] for r in subset]), 2) if _mean([r["return_1d_close"] for r in subset]) else None,
+            "win_rate_5d": _win_rate([r["hit_5d"] for r in subset]),
+            "avg_return_5d": round(_mean([r["return_5d"] for r in subset]), 2) if _mean([r["return_5d"] for r in subset]) else None,
+            "win_rate_10d": _win_rate([r["hit_10d"] for r in subset]),
+            "avg_return_10d": round(_mean([r["return_10d"] for r in subset]), 2) if _mean([r["return_10d"] for r in subset]) else None,
+        }
+
+    by_regime = {}
+    for r in bt_rows:
+        reg = r["regime"] or "UNKNOWN"
+        by_regime.setdefault(reg, []).append(r)
+
+    regime_summaries = {reg: _stats(items) for reg, items in by_regime.items()}
+
+    recent_dates = sorted(set(r["signal_date"] for r in bt_rows), reverse=True)[:20]
+    recent = [
+        {
+            "signal_date": r["signal_date"], "code": r["code"], "name": r["name"],
+            "regime": r["regime"], "score": r["score"],
+            "return_1d": round(r["return_1d_close"], 2) if r["return_1d_close"] is not None else None,
+            "return_5d": round(r["return_5d"], 2) if r["return_5d"] is not None else None,
+            "hit_1d": r["hit_1d"], "hit_5d": r["hit_5d"],
+        }
+        for r in bt_rows if r["signal_date"] in recent_dates
+    ][:30]
+
+    return {
+        "total_signals": len(bt_rows),
+        "overall": _stats(bt_rows),
+        "by_regime": regime_summaries,
+        "recent": recent,
+    }
+
+
 def build_report(conn, config, session):
     trade_date = latest_trade_date(conn)
     if not trade_date:
@@ -110,6 +170,7 @@ def build_report(conn, config, session):
         "wait": wait,
         "exclude": exclude,
         "exit_queue": exit_queue,
+        "backtest": compute_backtest_summary(conn),
         "risk_notes": ["不自动下单", "不追高开", "首笔不超过计划仓位1/3", "TREND_DOWN只做有序退出"],
     }
 

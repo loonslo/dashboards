@@ -113,6 +113,29 @@ CREATE TABLE IF NOT EXISTS alert_log (
   report_path TEXT,
   error TEXT
 );
+CREATE TABLE IF NOT EXISTS backtest_result (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  signal_date TEXT,
+  code TEXT,
+  name TEXT,
+  regime TEXT,
+  score REAL,
+  rule_result TEXT,
+  reason TEXT,
+  close_price REAL,
+  next_open REAL,
+  next_close REAL,
+  return_1d_open REAL,
+  return_1d_close REAL,
+  return_5d REAL,
+  return_10d REAL,
+  hit_1d INTEGER,
+  hit_5d INTEGER,
+  hit_10d INTEGER,
+  computed_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_bt_signal_date ON backtest_result(signal_date);
+CREATE INDEX IF NOT EXISTS idx_bt_regime ON backtest_result(regime);
 CREATE TABLE IF NOT EXISTS trade_log (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   entry_date TEXT,
@@ -143,6 +166,7 @@ def connect(db_path):
     path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL")
     return conn
 
 

@@ -267,7 +267,7 @@
       bottom: 0;
       z-index: 6;
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(6, 1fr);
       gap: 6px;
       padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
       border-top: 1px solid var(--line);
@@ -373,6 +373,13 @@
   </header>
 
   <main class="wrap">
+    <section id="overview-section">
+      <div class="section-head">
+        <h2>持仓概览</h2>
+        <span class="hint">一屏看清节奏</span>
+      </div>
+      <div id="overviewBar" class="gap-box">等待数据</div>
+    </section>
     <section id="indices-section">
       <div class="section-head">
         <h2>核心指数</h2>
@@ -415,11 +422,12 @@
   </main>
 
   <nav class="bottom-nav" aria-label="页面导航">
-    <a href="#indices-section" class="active">指数</a>
+    <a href="#overview-section" class="active">概览</a>
+    <a href="#indices-section">指数</a>
     <a href="#short-flow-section">资金</a>
     <a href="#watchlist-section">观察</a>
     <a href="#alerts-section">提醒</a>
-    <a href="#add" id="openAdd">添加</a>
+    <a href="#gaps-section">缺口</a>
   </nav>
 
   <div id="addPanel" class="add-panel" role="dialog" aria-label="添加观察标的">
@@ -680,10 +688,62 @@
         : '<div class="empty">暂无提醒</div>';
     }
 
+    function renderOverview() {
+      const box = document.getElementById("overviewBar");
+      const indices = state.data?.indices || [];
+      const shortFlow = state.shortFlow;
+
+      // US market: find SPX and NDX
+      const spx = indices.find(r => r.code === "^GSPC");
+      const ndx = indices.find(r => r.code === "^NDX");
+      // Dividend: find H30269
+      const div = indices.find(r => r.code === "H30269");
+
+      // US summary line
+      let usLine = "美股：数据暂缺";
+      if (spx || ndx) {
+        const spxDD = spx?.drawdown_52w != null ? `${spx.drawdown_52w.toFixed(1)}%` : "N/A";
+        const ndxPE = ndx?.pe_forward != null ? ndx.pe_forward.toFixed(1) : "N/A";
+        const spxSignal = spx?.signal || "";
+        const paused = spxSignal.includes("暂停");
+        usLine = `📊 美股：标普距高点 ${spxDD}，纳指前瞻PE ${ndxPE} → ${paused ? "暂停新增" : "正常定投节奏"}`;
+      }
+
+      // Dividend summary
+      let divLine = "🛡️ 红利：数据暂缺";
+      if (div) {
+        const dy = div.dividend_yield != null ? `${div.dividend_yield.toFixed(2)}%` : "N/A";
+        const pe = div.pe_ttm != null ? div.pe_ttm.toFixed(1) : "N/A";
+        const pePct = div.pe_percentile_label || "N/A";
+        const divSignal = div.signal || "";
+        const accelerate = divSignal.includes("加速") || divSignal.includes("允许买入");
+        const pauseDiv = divSignal.includes("暂停");
+        divLine = `🛡️ 红利：股息率 ${dy}，PE ${pe}（${pePct}） → ${accelerate ? "可加速买入" : pauseDiv ? "暂停新增" : "正常小额"}`;
+      }
+
+      // Short-flow summary
+      let sfLine = "🚀 短线：数据暂缺";
+      if (shortFlow) {
+        const counts = shortFlow.status_counts || {};
+        const focusCount = counts["Focus watch"] || 0;
+        const waitCount = counts["Wait for strength"] || 0;
+        const source = shortFlow.source_status || {};
+        const asof = shortFlow.asof || "N/A";
+        sfLine = `🚀 A股短线：Focus ${focusCount} 个，Wait ${waitCount} 个 · 数据 ${asof}（${source.live_rows || 0} live）`;
+      }
+
+      box.innerHTML = `
+        <div style="line-height:2">${usLine}</div>
+        <div style="line-height:2">${divLine}</div>
+        <div style="line-height:2">${sfLine}</div>
+      `;
+    }
+
     function render() {
       renderSummary();
       renderModeChips();
       renderGroupChips();
+      renderOverview();
       renderIndices();
       renderShortFlow();
       renderWatchlist();
@@ -743,7 +803,7 @@
       });
     });
 
-    const sections = ["indices-section", "short-flow-section", "watchlist-section", "alerts-section", "gaps-section"];
+    const sections = ["overview-section", "indices-section", "short-flow-section", "watchlist-section", "alerts-section", "gaps-section"];
     window.addEventListener("scroll", () => {
       const current = sections.findLast(id => document.getElementById(id).getBoundingClientRect().top < 220) || sections[0];
       document.querySelectorAll(".bottom-nav a").forEach(link => {
