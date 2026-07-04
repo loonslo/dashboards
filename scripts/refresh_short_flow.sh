@@ -20,6 +20,8 @@ fi
   --dashboard-json "$TMP_JSON" \
   --previous-json "$DASHBOARD_DIR/dashboard_latest.json"
 
+"$PYTHON_BIN" short-flow/scripts/daily_job.py --session 0940
+
 "$PYTHON_BIN" - "$TMP_JSON" <<'PY'
 import json
 import sys
@@ -50,5 +52,3 @@ dates = sorted(path.stem for path in history.glob("*.json") if path.name != "ind
     encoding="utf-8",
 )
 PY
-
-

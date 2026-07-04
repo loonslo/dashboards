@@ -269,6 +269,40 @@
       background: #fff8e1;
       color: #5f4300;
     }
+    .etf-overview {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .etf-strip {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .etf-mini {
+      min-width: 0;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+    .etf-mini span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .etf-mini b {
+      display: block;
+      margin-top: 3px;
+      font-size: 15px;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+    .decision-grid {
+      display: grid;
+      gap: 10px;
+    }
     .table-wrap {
       overflow-x: auto;
       border: 1px solid var(--line);
@@ -306,7 +340,7 @@
       bottom: 0;
       z-index: 6;
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 6px;
       padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
       border-top: 1px solid var(--line);
@@ -333,6 +367,8 @@
       .summary { grid-column: 2; grid-row: 1 / span 2; }
       .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .rank-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .etf-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .decision-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .bottom-nav { display: none; }
       main.wrap { padding-bottom: 28px; }
     }
@@ -396,6 +432,14 @@
       </div>
     </section>
 
+
+    <section id="etf-section">
+      <div class="section-head">
+        <h2>ETF训练仓</h2>
+        <span id="etfHint" class="hint">等待 etf_pool_latest.json</span>
+      </div>
+      <div id="etfPool" class="empty">等待数据</div>
+    </section>
     <section id="market-section">
       <div class="section-head">
         <h2>市场/板块资金流</h2>
@@ -423,13 +467,14 @@
 
   <nav class="bottom-nav" aria-label="页面导航">
     <a href="#rank-section" class="active">排名</a>
+    <a href="#etf-section">ETF</a>
     <a href="#market-section">资金</a>
     <a href="#watch-section">观察</a>
     <a href="#gaps-section">缺口</a>
   </nav>
 
   <script>
-    const state = { data: null, mode: "all" };
+    const state = { data: null, etf: null, mode: "all" };
     const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "N/A" : Number(v).toFixed(d);
     const pct = (v, d = 1) => v === null || v === undefined || Number.isNaN(Number(v)) ? "N/A" : `${Number(v).toFixed(d)}%`;
     const money = v => {
@@ -447,6 +492,12 @@
       const res = await fetch("dashboard_latest.json", { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       state.data = await res.json();
+      try {
+        const etfRes = await fetch("etf_pool_latest.json", { cache: "no-store" });
+        state.etf = etfRes.ok ? await etfRes.json() : null;
+      } catch (error) {
+        state.etf = null;
+      }
       render();
     }
 
@@ -547,6 +598,61 @@
       document.getElementById("watchSignals").innerHTML = watchRows.length ? watchRows.map(card).join("") : '<div class="empty">没有匹配的观察标的</div>';
     }
 
+
+    function decisionCard(title, rows) {
+      return `
+        <div class="card">
+          <div class="name">${safe(title)}</div>
+          ${rows.length ? rows.map(row => `
+            <div class="reason">
+              <b>${safe(row.code)} ${safe(row.name)}</b><br>
+              原因：${safe(row.reason || "-")}<br>
+              触发：${safe(row.trigger || "-")}<br>
+              失败：${safe(row.failure || "-")}
+            </div>
+          `).join("") : '<div class="reason">无</div>'}
+        </div>
+      `;
+    }
+
+    function renderEtfPool() {
+      const root = document.getElementById("etfPool");
+      const hint = document.getElementById("etfHint");
+      const data = state.etf;
+      if (!data) {
+        hint.textContent = "等待 etf_pool_latest.json";
+        root.className = "empty";
+        root.innerHTML = "还没有导出 ETF 训练仓结果";
+        return;
+      }
+      const regime = data.market_regime || {};
+      const permission = data.trading_permission || {};
+      const guardrails = data.guardrails || {};
+      hint.textContent = `${data.session_name || data.session || "最新"} · ${data.trade_date || "N/A"}`;
+      root.className = "";
+      root.innerHTML = `
+        <div class="etf-overview">
+          <div class="etf-strip">
+            <div class="etf-mini"><span>市场状态</span><b>${safe(regime.regime || "N/A")}</b></div>
+            <div class="etf-mini"><span>能否开仓</span><b>${permission.can_open ? "允许训练仓" : "停止新开仓"}</b></div>
+            <div class="etf-mini"><span>最大敞口</span><b>${pct((permission.max_exposure_pct || 0) * 100, 0)}</b></div>
+            <div class="etf-mini"><span>主题ETF</span><b>${permission.theme_enabled ? "启用" : "关闭"}</b></div>
+            <div class="etf-mini"><span>训练本金</span><b>${money(guardrails.train_capital)}</b></div>
+            <div class="etf-mini"><span>首笔比例</span><b>${pct((guardrails.first_entry_ratio || 0) * 100, 0)}</b></div>
+            <div class="etf-mini"><span>单ETF上限</span><b>${pct((guardrails.max_single_etf_pct || 0) * 100, 0)}</b></div>
+            <div class="etf-mini"><span>TREND_DOWN</span><b>${safe(guardrails.trend_down_exit_days || 3)}日退出</b></div>
+            <div class="etf-mini"><span>分析ID</span><b>#${safe(data.analysis_run_id || "N/A")}</b></div>
+            <div class="etf-mini"><span>生成时间</span><b>${safe(data.generated_at || "N/A")}</b></div>
+          </div>
+          <div class="decision-grid">
+            ${decisionCard("可观察", data.focus_watch || [])}
+            ${decisionCard("等待", data.wait || [])}
+            ${decisionCard("今日不碰", data.exclude || [])}
+          </div>
+          ${data.exit_queue?.length ? decisionCard("TREND_DOWN退出队列", data.exit_queue) : ""}
+        </div>
+      `;
+    }
     function renderGaps() {
       const gaps = state.data?.data_gaps || [];
       const box = document.getElementById("gaps");
@@ -571,7 +677,7 @@
     document.getElementById("search").addEventListener("input", renderSections);
     document.getElementById("reload").addEventListener("click", () => loadData().catch(showError));
 
-    const sections = ["rank-section", "market-section", "watch-section", "gaps-section"];
+    const sections = ["rank-section", "etf-section", "market-section", "watch-section", "gaps-section"];
     window.addEventListener("scroll", () => {
       const current = sections.findLast(id => document.getElementById(id).getBoundingClientRect().top < 220) || sections[0];
       document.querySelectorAll(".bottom-nav a").forEach(link => {

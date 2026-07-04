@@ -1,0 +1,159 @@
+import pathlib
+import sqlite3
+
+
+SCHEMA = """
+CREATE TABLE IF NOT EXISTS etf_master (
+  code TEXT PRIMARY KEY,
+  name TEXT,
+  market TEXT,
+  category TEXT,
+  sub_category TEXT,
+  is_broad INTEGER,
+  is_theme INTEGER,
+  is_qdii INTEGER,
+  is_bond INTEGER,
+  is_money INTEGER,
+  status TEXT,
+  updated_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS etf_snapshot (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ts TEXT,
+  trade_date TEXT,
+  code TEXT,
+  name TEXT,
+  price REAL,
+  pct REAL,
+  amount REAL,
+  volume REAL,
+  main_inflow REAL,
+  main_inflow_pct REAL,
+  market_cap REAL,
+  float_market_cap REAL
+);
+
+CREATE TABLE IF NOT EXISTS etf_indicator (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  trade_date TEXT,
+  code TEXT,
+  ma5 REAL,
+  ma10 REAL,
+  ma20 REAL,
+  ma60 REAL,
+  ret5 REAL,
+  ret10 REAL,
+  ret20 REAL,
+  amount_ratio_5 REAL,
+  amount_ratio_20 REAL,
+  above_ma5 INTEGER,
+  above_ma10 INTEGER,
+  above_ma20 INTEGER,
+  ma20_slope_positive INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS market_regime (
+  trade_date TEXT PRIMARY KEY,
+  above_ma20_ratio REAL,
+  ma20_slope_positive_ratio REAL,
+  inflow_5d_ratio REAL,
+  regime TEXT
+);
+
+CREATE TABLE IF NOT EXISTS signal_result (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ts TEXT,
+  trade_date TEXT,
+  code TEXT,
+  name TEXT,
+  group_name TEXT,
+  score REAL,
+  rule_result TEXT,
+  reason TEXT,
+  entry_trigger TEXT,
+  failure_condition TEXT
+);
+
+CREATE TABLE IF NOT EXISTS llm_decision (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ts TEXT,
+  session_name TEXT,
+  decision_json TEXT,
+  decision_md TEXT
+);
+
+CREATE TABLE IF NOT EXISTS analysis_run (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ts TEXT,
+  session_name TEXT,
+  trade_date TEXT,
+  regime TEXT,
+  input_summary_json TEXT,
+  hard_rule_summary_json TEXT,
+  llm_output_json TEXT,
+  validated_output_json TEXT,
+  report_json_path TEXT,
+  report_md_path TEXT,
+  status TEXT,
+  error TEXT
+);
+CREATE TABLE IF NOT EXISTS alert_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ts TEXT,
+  session_name TEXT,
+  trade_date TEXT,
+  analysis_run_id INTEGER,
+  channel TEXT,
+  level TEXT,
+  title TEXT,
+  body TEXT,
+  reason TEXT,
+  status TEXT,
+  report_path TEXT,
+  error TEXT
+);
+CREATE TABLE IF NOT EXISTS trade_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  entry_date TEXT,
+  code TEXT,
+  name TEXT,
+  regime TEXT,
+  pattern TEXT,
+  direction_score REAL,
+  entry_price REAL,
+  stop_loss REAL,
+  position_pct REAL,
+  risk_amount REAL,
+  exit_date TEXT,
+  exit_price REAL,
+  exit_reason TEXT,
+  pnl REAL,
+  pnl_pct REAL,
+  mae REAL,
+  mfe REAL,
+  held_days INTEGER,
+  notes TEXT
+);
+"""
+
+
+def connect(db_path):
+    path = pathlib.Path(db_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(path)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def init_db(db_path):
+    with connect(db_path) as conn:
+        conn.executescript(SCHEMA)
+        conn.commit()
+
+
+def rows(conn, query, params=()):
+    return [dict(row) for row in conn.execute(query, params).fetchall()]
+
+
+
