@@ -178,9 +178,6 @@
       border-radius: 8px;
       font-size: 13px;
     }
-    #etfChips {
-      margin-bottom: 10px;
-    }
     .grid {
       display: grid;
       gap: 10px;
@@ -707,7 +704,6 @@
           <span id="etfHint" class="hint">等待数据</span>
         </div>
       </div>
-      <nav id="etfChips" class="chips" aria-label="训练仓筛选"></nav>
       <div id="etfPool" class="empty">等待数据</div>
     </section>
 
@@ -804,7 +800,7 @@
   <datalist id="instrumentNameOptions"></datalist>
 
   <script>
-    const state = { data: null, etf: null, etfSession: "latest", filters: new Set(), etfFilters: new Set(), candidates: [] };
+    const state = { data: null, etf: null, etfSession: "latest", filters: new Set(), candidates: [] };
     const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : Number(v).toFixed(d);
     const pct = (v, d = 1) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : `${Number(v).toFixed(d)}%`;
     const money = v => {
@@ -850,10 +846,9 @@
       wait: "Wait for strength",
       exclude: "Exclude for now"
     };
-    const decisionFilterLabels = {
-      focus: "可观察",
-      wait: "待观察",
-      exclude: "待排除"
+    const etfSectionFilter = "ETF训练仓";
+    const sectionFilters = {
+      [etfSectionFilter]: "etf"
     };
 
     async function loadEtfReport(session) {
@@ -959,20 +954,69 @@
       return text.includes(query);
     }
 
-    function filterMatches(row) {
-      if (!state.filters.size) return true;
-      return [...state.filters].some(filter => {
-        if (filter === "Focus watch") return row.status === filter || row._decision === "focus";
-        if (filter === "Wait for strength") return row.status === filter || row._decision === "wait";
-        if (filter === "Exclude for now") return row.status === filter || row._decision === "exclude";
-        return row.group === filter || row.category === filter;
+    function selectedStatuses() {
+      return statusFilters.filter(status => state.filters.has(status));
+    }
+
+    function selectedSections() {
+      return [...state.filters].map(filter => sectionFilters[filter]).filter(Boolean);
+    }
+
+    function selectedGroups() {
+      return [...state.filters].filter(filter => !statusFilters.includes(filter) && !sectionFilters[filter]);
+    }
+
+    function sectionMatches(section) {
+      const sections = selectedSections();
+      return !sections.length || sections.includes(section);
+    }
+
+    function statusMatches(row) {
+      const statuses = selectedStatuses();
+      if (!statuses.length) return true;
+      return statuses.some(status => {
+        if (status === "Focus watch") return row.status === status || row._decision === "focus";
+        if (status === "Wait for strength") return row.status === status || row._decision === "wait";
+        if (status === "Exclude for now") return row.status === status || row._decision === "exclude";
+        return false;
       });
     }
 
-    function filtered(rows) {
+    function groupMatches(row) {
+      const groups = selectedGroups();
+      if (!groups.length) return true;
+      return groups.some(group => row.group === group || row.category === group || row.bucket === group);
+    }
+
+    function filterMatches(row, section = "main") {
+      if (!state.filters.size) return true;
+      return sectionMatches(section) && statusMatches(row) && groupMatches(row);
+    }
+
+    function filtered(rows, section = "main") {
       return rows.filter(row => {
-        return filterMatches(row) && textMatches(row);
+        return filterMatches(row, section) && textMatches(row);
       });
+    }
+
+    function setSectionVisible(id, visible) {
+      const section = document.getElementById(id);
+      if (section) section.style.display = visible ? "" : "none";
+      const navLink = document.querySelector(`.bottom-nav a[href="#${id}"]`);
+      if (navLink) navLink.style.display = visible ? "" : "none";
+    }
+
+    function updateSectionVisibility() {
+      const showEtf = sectionMatches("etf");
+      const showMain = sectionMatches("main");
+      const selectedSectionKeys = selectedSections();
+      setSectionVisible("etf-section", showEtf);
+      setSectionVisible("rank-section", showMain);
+      setSectionVisible("watch-section", showMain);
+      setSectionVisible("market-section", showMain);
+      setSectionVisible("backtest-section", !state.filters.size || selectedSectionKeys.includes("etf"));
+      setSectionVisible("journal-section", !state.filters.size);
+      setSectionVisible("gaps-section", !state.filters.size);
     }
 
     function renderSummary() {
@@ -986,19 +1030,11 @@
 
     function renderChips() {
       const groups = [...new Set(allRows().map(row => row.group).filter(Boolean))].sort();
-      const modes = ["all", ...statusFilters, ...groups];
-      const labels = { all: "全部", ...statusFilterLabels };
+      const modes = ["all", ...statusFilters, etfSectionFilter, ...groups];
+      const labels = { all: "全部", ...statusFilterLabels, [etfSectionFilter]: "ETF训练仓" };
       const chips = document.getElementById("chips");
       chips.innerHTML = modes.map(mode =>
         `<button type="button" class="chip ${(mode === "all" ? !state.filters.size : state.filters.has(mode)) ? "active" : ""}" data-filter="${safe(mode)}">${safe(labels[mode] || mode)}</button>`
-      ).join("");
-    }
-
-    function renderEtfChips() {
-      const modes = ["all", "focus", "wait", "exclude"];
-      const chips = document.getElementById("etfChips");
-      chips.innerHTML = modes.map(mode =>
-        `<button type="button" class="chip ${(mode === "all" ? !state.etfFilters.size : state.etfFilters.has(mode)) ? "active" : ""}" data-etf-filter="${safe(mode)}">${safe(mode === "all" ? "全部" : decisionFilterLabels[mode])}</button>`
       ).join("");
     }
 
@@ -1044,7 +1080,7 @@
     }
 
     function renderRanks() {
-      const ranked = filtered(allRows());
+      const ranked = filtered(allRows(), "main");
       const inflow = [...ranked].sort((a, b) => (b.main_net ?? -1e30) - (a.main_net ?? -1e30)).slice(0, 6);
       const outflow = [...ranked].sort((a, b) => (a.main_net ?? 1e30) - (b.main_net ?? 1e30)).slice(0, 6);
       document.getElementById("inflowRows").innerHTML = inflow.length ? inflow.map(rankRow).join("") : '<tr><td colspan="5">没有匹配的流入排名</td></tr>';
@@ -1052,8 +1088,8 @@
     }
 
     function renderSections() {
-      const marketRows = filtered(state.data?.market_flow || []);
-      const watchRows = filtered(state.data?.watch_signals || []);
+      const marketRows = filtered(state.data?.market_flow || [], "main");
+      const watchRows = filtered(state.data?.watch_signals || [], "main");
       document.getElementById("marketHint").textContent = `筛选后 ${marketRows.length} 个`;
       document.getElementById("watchHint").textContent = `筛选后 ${watchRows.length} 个`;
       document.getElementById("marketFlow").innerHTML = marketRows.length ? marketRows.map(card).join("") : '<div class="empty">没有匹配的市场/板块标的</div>';
@@ -1063,7 +1099,12 @@
 
     function decisionCard(title, rows, decision) {
       if (!decisionVisible(decision)) return "";
-      const visibleRows = filtered((rows || []).map(row => ({ ...row, _decision: decision })));
+      const visibleRows = filtered((rows || []).map(row => ({
+        ...row,
+        _decision: decision,
+        status: decisionStatusMap[decision],
+        group: row.group || row.category || row.bucket
+      })), "etf");
       const decisionClass = decision === "focus" ? "focus" : decision === "exclude" ? "exclude" : "wait";
       const displayRows = decision === "exclude" ? visibleRows.slice(0, 8) : visibleRows;
       const hiddenCount = visibleRows.length - displayRows.length;
@@ -1094,10 +1135,9 @@
     }
 
     function decisionVisible(decision) {
-      const byEtf = !state.etfFilters.size || state.etfFilters.has(decision);
-      const selectedStatuses = statusFilters.filter(status => state.filters.has(status));
-      const byTop = !selectedStatuses.length || selectedStatuses.includes(decisionStatusMap[decision]);
-      return byEtf && byTop;
+      if (!sectionMatches("etf")) return false;
+      const statuses = selectedStatuses();
+      return !statuses.length || statuses.includes(decisionStatusMap[decision]);
     }
 
     function renderBacktest() {
@@ -1174,7 +1214,6 @@
       const root = document.getElementById("etfPool");
       const hint = document.getElementById("etfHint");
       const data = state.etf;
-      renderEtfChips();
       if (!data) {
         hint.textContent = "等待最新训练仓数据";
         root.className = "empty";
@@ -1224,7 +1263,7 @@
     function render() {
       renderSummary();
       renderChips();
-      renderEtfChips();
+      updateSectionVisibility();
       renderRanks();
       renderSections();
       renderEtfPool();
@@ -1235,7 +1274,7 @@
 
     function renderFilteredViews() {
       renderChips();
-      renderEtfChips();
+      updateSectionVisibility();
       renderRanks();
       renderSections();
       renderEtfPool();
@@ -1271,20 +1310,6 @@
       }
       renderFilteredViews();
     });
-    document.getElementById("etfChips").addEventListener("click", event => {
-      const button = event.target.closest("button[data-etf-filter]");
-      if (!button) return;
-      const filter = button.dataset.etfFilter || "all";
-      if (filter === "all") {
-        state.etfFilters.clear();
-      } else if (state.etfFilters.has(filter)) {
-        state.etfFilters.delete(filter);
-      } else {
-        state.etfFilters.add(filter);
-      }
-      renderFilteredViews();
-    });
-
     // --- Trade Journal ---
     const JOURNAL_KEY = "short_flow_trade_journal_v1";
 
