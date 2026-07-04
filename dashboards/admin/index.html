@@ -89,6 +89,18 @@
       display: grid;
       gap: 12px;
     }
+    .config-panel {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+    .config-panel.active {
+      display: grid;
+      gap: 10px;
+    }
     .panel {
       overflow-x: auto;
     }
@@ -187,11 +199,35 @@
         <button class="primary" type="submit">保存到数据库</button>
       </form>
     </section>
+
+    <section id="configPanel" class="config-panel">
+      <div class="muted">A股短线规则配置</div>
+      <form id="configForm" class="form">
+        <div class="fields">
+          <label><span>训练本金</span><input name="capital.train_capital" type="number" step="1"></label>
+          <label><span>总敞口上限</span><input name="capital.max_total_exposure_pct" type="number" step="0.01"></label>
+          <label><span>首笔比例</span><input name="capital.first_entry_ratio" type="number" step="0.01"></label>
+          <label><span>单ETF上限</span><input name="capital.max_single_etf_pct" type="number" step="0.01"></label>
+          <label><span>允许类别</span><input name="features.allowed_train_categories" placeholder="CORE,GROWTH"></label>
+          <label><span>最低成交额</span><input name="filters.min_amount" type="number" step="1"></label>
+          <label><span>主力流入占比</span><input name="filters.min_main_inflow_pct" type="number" step="0.1"></label>
+          <label><span>下跌退出天数</span><input name="regime.trend_down_exit_days" type="number" step="1"></label>
+          <label><span>趋势向上敞口</span><input name="regime.trend_up.max_exposure_pct" type="number" step="0.01"></label>
+          <label><span>趋势向上持仓数</span><input name="regime.trend_up.max_positions" type="number" step="1"></label>
+          <label><span>震荡敞口</span><input name="regime.range.max_exposure_pct" type="number" step="0.01"></label>
+          <label><span>震荡持仓数</span><input name="regime.range.max_positions" type="number" step="1"></label>
+          <label><span>主题ETF</span><select name="features.theme_enabled"><option value="false">关闭</option><option value="true">启用</option></select></label>
+          <label><span>要求主力转正</span><select name="filters.require_main_inflow_positive"><option value="true">是</option><option value="false">否</option></select></label>
+          <label><span>LangGraph/LLM</span><select name="features.use_llm"><option value="false">关闭</option><option value="true">启用</option></select></label>
+        </div>
+        <button class="primary" type="submit">保存短线配置</button>
+      </form>
+    </section>
   </main>
 
   <script src="../api-client.js"></script>
   <script>
-    const state = { dashboard: "index-decision", items: [] };
+    const state = { dashboard: "index-decision", items: [], config: null };
     const status = document.getElementById("status");
     const safe = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
 
@@ -262,7 +298,36 @@
       state.items = data.items || [];
       renderFields();
       renderRows();
+      await loadConfig();
       setStatus(`已读取 ${state.items.length} 个`);
+    }
+
+    function getPath(root, path) {
+      return path.split(".").reduce((obj, key) => obj && obj[key], root);
+    }
+
+    function setPath(root, path, value) {
+      const keys = path.split(".");
+      let cursor = root;
+      keys.slice(0, -1).forEach(key => {
+        cursor[key] = cursor[key] || {};
+        cursor = cursor[key];
+      });
+      cursor[keys[keys.length - 1]] = value;
+    }
+
+    async function loadConfig() {
+      const panel = document.getElementById("configPanel");
+      if (state.dashboard !== "short-flow") {
+        panel.classList.remove("active");
+        return;
+      }
+      panel.classList.add("active");
+      state.config = await DashboardApi.api("/api/config/short-flow");
+      document.querySelectorAll("#configForm [name]").forEach(input => {
+        const value = getPath(state.config, input.name);
+        input.value = value === undefined || value === null ? "" : String(value);
+      });
     }
 
     function formPayload() {
@@ -276,6 +341,19 @@
       const note = document.getElementById("note").value.trim();
       if (note) data[state.dashboard === "index-decision" ? "reason" : "plan_note"] = note;
       return data;
+    }
+
+    function configPayload() {
+      const payload = {};
+      document.querySelectorAll("#configForm [name]").forEach(input => {
+        const raw = input.value.trim();
+        if (raw === "") return;
+        let value = raw;
+        if (raw === "true" || raw === "false") value = raw === "true";
+        else if (input.type === "number") value = Number(raw);
+        setPath(payload, input.name, value);
+      });
+      return payload;
     }
 
     document.getElementById("dashboard").addEventListener("change", event => {
@@ -308,6 +386,12 @@
       await DashboardApi.api(`/api/watchlists/${state.dashboard}`, { method: "POST", body: JSON.stringify(formPayload()) });
       event.target.reset();
       await loadWatchlist();
+    });
+    document.getElementById("configForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      state.config = await DashboardApi.api("/api/config/short-flow", { method: "POST", body: JSON.stringify(configPayload()) });
+      await loadConfig();
+      setStatus("短线配置已保存");
     });
 
     DashboardApi.apiBase().then(base => {

@@ -41,6 +41,7 @@ DASHBOARDS = {
         "latest": ROOT / "dashboards" / "short-flow" / "etf_pool_latest.json",
     },
 }
+SHORT_FLOW_CONFIG = ROOT / "short-flow" / "config.yaml"
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS watchlist_items (
@@ -99,6 +100,45 @@ def load_json(path, default=None):
 def write_json(path, payload):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def load_short_flow_config():
+    sys.path.insert(0, str(ROOT / "short-flow"))
+    from short_flow.config import load_config
+
+    return load_config(SHORT_FLOW_CONFIG)
+
+
+def yaml_scalar(value):
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (int, float)):
+        return str(value)
+    return json.dumps(str(value), ensure_ascii=False)
+
+
+def yaml_lines(data, indent=0):
+    lines = []
+    pad = " " * indent
+    for key, value in data.items():
+        if isinstance(value, dict):
+            lines.append(f"{pad}{key}:")
+            lines.extend(yaml_lines(value, indent + 2))
+        else:
+            lines.append(f"{pad}{key}: {yaml_scalar(value)}")
+    return lines
+
+
+def save_short_flow_config(payload):
+    current = load_short_flow_config()
+    sys.path.insert(0, str(ROOT / "short-flow"))
+    from short_flow.config import deep_merge
+
+    allowed = {"capital", "features", "regime", "filters", "entry_params", "schedule"}
+    updates = {key: value for key, value in payload.items() if key in allowed and isinstance(value, dict)}
+    merged = deep_merge(current, updates)
+    SHORT_FLOW_CONFIG.write_text("\n".join(yaml_lines(merged)) + "\n", encoding="utf-8")
+    return merged
 
 
 def item_key(dashboard, item):
@@ -359,6 +399,8 @@ class ApiHandler(SimpleHTTPRequestHandler):
                 if len(parts) == 3 and parts[:2] == ["api", "latest"]:
                     dashboard = parts[2]
                     return self.send_json(latest_payload(conn, dashboard))
+                if parts == ["api", "config", "short-flow"]:
+                    return self.send_json(load_short_flow_config())
             return self.send_error_json(404, "not found")
         except Exception as exc:
             return self.send_error_json(500, str(exc))
@@ -376,6 +418,8 @@ class ApiHandler(SimpleHTTPRequestHandler):
                 if len(parts) == 3 and parts[:2] == ["api", "watchlists"]:
                     dashboard = parts[2]
                     return self.send_json_head({"dashboard": dashboard, "items": active_watchlist(conn, dashboard)})
+                if parts == ["api", "config", "short-flow"]:
+                    return self.send_json_head(load_short_flow_config())
             return self.send_json_head({"error": "not found"}, status=404)
         except Exception as exc:
             return self.send_json_head({"error": str(exc)}, status=500)
@@ -392,6 +436,8 @@ class ApiHandler(SimpleHTTPRequestHandler):
                 if len(parts) == 3 and parts[:2] == ["api", "refresh"]:
                     result = refresh_dashboard(conn, parts[2])
                     return self.send_json({"dashboard": parts[2], "result": result})
+                if parts == ["api", "config", "short-flow"]:
+                    return self.send_json(save_short_flow_config(payload))
             return self.send_error_json(404, "not found")
         except KeyError as exc:
             return self.send_error_json(404, str(exc))

@@ -503,15 +503,25 @@
       return [...(state.data?.market_flow || []), ...(state.data?.watch_signals || [])];
     }
 
-    function filtered(rows) {
+    function textMatches(row) {
       const query = document.getElementById("search").value.trim().toLowerCase();
+      if (!query) return true;
+      const text = `${row.code} ${row.display_name || row.name} ${row.name} ${row.group} ${row.status} ${row.category} ${row.reason}`.toLowerCase();
+      return text.includes(query);
+    }
+
+    function modeMatches(row) {
+      const mode = state.mode;
+      if (mode === "all") return true;
+      if (mode === "Focus watch") return row.status === mode || row._decision === "focus";
+      if (mode === "Wait for strength") return row.status === mode || row._decision === "wait";
+      if (mode === "Exclude for now") return row.status === mode || row._decision === "exclude";
+      return row.group === mode || row.category === mode;
+    }
+
+    function filtered(rows) {
       return rows.filter(row => {
-        const text = `${row.code} ${row.display_name || row.name} ${row.name} ${row.group} ${row.status}`.toLowerCase();
-        const modeOk =
-          state.mode === "all" ||
-          row.group === state.mode ||
-          row.status === state.mode;
-        return modeOk && (!query || text.includes(query));
+        return modeMatches(row) && textMatches(row);
       });
     }
 
@@ -530,15 +540,8 @@
       const labels = { all: "全部", "Focus watch": "Focus", "Wait for strength": "Wait", "Exclude for now": "Exclude" };
       const chips = document.getElementById("chips");
       chips.innerHTML = modes.map(mode =>
-        `<button class="chip ${state.mode === mode ? "active" : ""}" data-mode="${safe(mode)}">${safe(labels[mode] || mode)}</button>`
+        `<button type="button" class="chip ${state.mode === mode ? "active" : ""}" data-mode="${safe(mode)}">${safe(labels[mode] || mode)}</button>`
       ).join("");
-      chips.querySelectorAll("button").forEach(button => {
-        button.addEventListener("click", () => {
-          state.mode = button.dataset.mode || "all";
-          renderChips();
-          renderSections();
-        });
-      });
     }
 
     function card(row) {
@@ -583,8 +586,11 @@
     }
 
     function renderRanks() {
-      document.getElementById("inflowRows").innerHTML = (state.data?.ranked_inflow || []).map(rankRow).join("");
-      document.getElementById("outflowRows").innerHTML = (state.data?.ranked_outflow || []).map(rankRow).join("");
+      const ranked = filtered(allRows());
+      const inflow = [...ranked].sort((a, b) => (b.main_net ?? -1e30) - (a.main_net ?? -1e30)).slice(0, 8);
+      const outflow = [...ranked].sort((a, b) => (a.main_net ?? 1e30) - (b.main_net ?? 1e30)).slice(0, 8);
+      document.getElementById("inflowRows").innerHTML = inflow.length ? inflow.map(rankRow).join("") : '<tr><td colspan="5">没有匹配的流入排名</td></tr>';
+      document.getElementById("outflowRows").innerHTML = outflow.length ? outflow.map(rankRow).join("") : '<tr><td colspan="5">没有匹配的流出排名</td></tr>';
     }
 
     function renderSections() {
@@ -597,11 +603,12 @@
     }
 
 
-    function decisionCard(title, rows) {
+    function decisionCard(title, rows, decision) {
+      const visibleRows = filtered((rows || []).map(row => ({ ...row, _decision: decision })));
       return `
         <div class="card">
           <div class="name">${safe(title)}</div>
-          ${rows.length ? rows.map(row => `
+          ${visibleRows.length ? visibleRows.map(row => `
             <div class="reason">
               <b>${safe(row.code)} ${safe(row.name)}</b><br>
               原因：${safe(row.reason || "-")}<br>
@@ -643,11 +650,11 @@
             <div class="etf-mini"><span>生成时间</span><b>${safe(data.generated_at || "N/A")}</b></div>
           </div>
           <div class="decision-grid">
-            ${decisionCard("可观察", data.focus_watch || [])}
-            ${decisionCard("等待", data.wait || [])}
-            ${decisionCard("今日不碰", data.exclude || [])}
+            ${decisionCard("可观察", data.focus_watch || [], "focus")}
+            ${decisionCard("等待", data.wait || [], "wait")}
+            ${decisionCard("今日不碰", data.exclude || [], "exclude")}
           </div>
-          ${data.exit_queue?.length ? decisionCard("TREND_DOWN退出队列", data.exit_queue) : ""}
+          ${data.exit_queue?.length ? decisionCard("TREND_DOWN退出队列", data.exit_queue, "exclude") : ""}
         </div>
       `;
     }
@@ -663,7 +670,15 @@
       renderChips();
       renderRanks();
       renderSections();
+      renderEtfPool();
       renderGaps();
+    }
+
+    function renderFilteredViews() {
+      renderChips();
+      renderRanks();
+      renderSections();
+      renderEtfPool();
     }
 
     function showError(error) {
@@ -672,8 +687,14 @@
       document.getElementById("watchSignals").innerHTML = `<div class="empty">${safe(error.message)}</div>`;
     }
 
-    document.getElementById("search").addEventListener("input", renderSections);
+    document.getElementById("search").addEventListener("input", renderFilteredViews);
     document.getElementById("reload").addEventListener("click", () => loadData().catch(showError));
+    document.getElementById("chips").addEventListener("click", event => {
+      const button = event.target.closest("button[data-mode]");
+      if (!button) return;
+      state.mode = button.dataset.mode || "all";
+      renderFilteredViews();
+    });
 
     const sections = ["rank-section", "etf-section", "market-section", "watch-section", "gaps-section"];
     window.addEventListener("scroll", () => {
