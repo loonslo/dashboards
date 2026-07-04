@@ -73,10 +73,14 @@
     }
     .summary-card {
       min-width: 0;
+      min-height: 58px;
       padding: 9px 11px;
       border: 1px solid var(--line);
       border-radius: 10px;
       background: var(--panel);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .summary-card b {
       display: block;
@@ -196,12 +200,16 @@
       gap: 10px;
     }
     .pulse {
+      min-height: 92px;
       padding: 12px 14px;
       border: 1px solid var(--line);
       border-left: 3px solid var(--muted);
       border-radius: 10px;
       background: var(--panel);
       box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     .pulse.ok { border-left-color: var(--green); }
     .pulse.warn { border-left-color: var(--amber); }
@@ -238,11 +246,14 @@
     }
     .card {
       min-width: 0;
+      min-height: 216px;
       border: 1px solid var(--line);
       border-radius: 12px;
       background: var(--panel);
       box-shadow: var(--shadow);
       padding: 13px;
+      display: flex;
+      flex-direction: column;
       transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     }
     .card:hover {
@@ -255,6 +266,7 @@
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 10px;
       align-items: start;
+      min-height: 45px;
     }
     .name {
       min-width: 0;
@@ -286,9 +298,14 @@
     }
     .metric {
       min-width: 0;
+      min-height: 55px;
+      height: 58px;
       padding: 8px 9px;
       border-radius: 9px;
       background: var(--soft);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .metric span {
       display: block;
@@ -307,6 +324,7 @@
     }
     .signal {
       margin-top: 11px;
+      min-height: 57px;
       padding: 8px 10px;
       border-left: 3px solid #9db8e8;
       border-radius: 6px;
@@ -315,6 +333,8 @@
       font-size: 13px;
       line-height: 1.45;
       overflow-wrap: anywhere;
+      display: flex;
+      align-items: center;
     }
     .reason {
       margin-top: 8px;
@@ -351,10 +371,14 @@
     }
     .mini {
       min-width: 0;
+      min-height: 58px;
       padding: 9px 11px;
       border: 1px solid var(--line);
       border-radius: 10px;
       background: var(--panel);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .mini span {
       display: block;
@@ -396,6 +420,7 @@
     .flow-link:hover { text-decoration: underline; }
 
     .gap-box, .empty {
+      min-height: 54px;
       border: 1px solid var(--line);
       border-radius: 10px;
       background: var(--panel);

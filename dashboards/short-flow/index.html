@@ -73,10 +73,14 @@
     }
     .summary-card {
       min-width: 0;
+      min-height: 56px;
       padding: 9px 10px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--panel);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .summary-card b {
       display: block;
@@ -184,17 +188,21 @@
     }
     .card {
       min-width: 0;
+      min-height: 214px;
       border: 1px solid var(--line);
       border-radius: 10px;
       background: var(--panel);
       box-shadow: var(--shadow);
       padding: 11px;
+      display: flex;
+      flex-direction: column;
     }
     .top {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 10px;
       align-items: start;
+      min-height: 45px;
     }
     .name {
       min-width: 0;
@@ -224,9 +232,14 @@
     }
     .metric {
       min-width: 0;
+      min-height: 54px;
+      height: 68px;
       padding: 8px;
       border-radius: 8px;
       background: var(--soft);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .metric span {
       display: block;
@@ -244,6 +257,7 @@
     }
     .signal {
       margin-top: 10px;
+      min-height: 56px;
       padding: 8px 9px;
       border-radius: 8px;
       background: #eef5ff;
@@ -251,6 +265,8 @@
       font-size: 13px;
       line-height: 1.45;
       overflow-wrap: anywhere;
+      display: flex;
+      align-items: center;
     }
     .signal.wait {
       background: #fff7e6;
@@ -317,11 +333,15 @@
     }
     .status-card {
       min-width: 0;
+      min-height: 68px;
       padding: 10px 11px;
       border: 1px solid var(--line);
       border-radius: 10px;
       background: var(--panel);
       box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .status-card.primary {
       border-left: 3px solid var(--blue);
@@ -379,10 +399,14 @@
     }
     .etf-mini {
       min-width: 0;
+      min-height: 58px;
       padding: 9px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--panel);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .etf-mini span {
       display: block;
@@ -400,12 +424,14 @@
     .decision-grid {
       display: grid;
       gap: 10px;
-      align-items: start;
+      align-items: stretch;
     }
     .decision-card {
       display: grid;
       gap: 8px;
+      min-height: 226px;
       padding: 10px;
+      align-content: start;
     }
     .decision-head {
       display: flex;
@@ -438,12 +464,17 @@
     }
     .decision-row {
       min-width: 0;
+      min-height: 72px;
       padding: 8px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fbfcfd;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .decision-row.compact {
+      min-height: 52px;
       padding: 7px 8px;
     }
     .decision-main {
