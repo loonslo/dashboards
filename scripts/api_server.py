@@ -308,6 +308,17 @@ class ApiHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def send_json_head(self, payload, status=200):
+        body = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+
     def send_error_json(self, status, message):
         self.send_json({"error": message}, status=status)
 
@@ -351,6 +362,23 @@ class ApiHandler(SimpleHTTPRequestHandler):
             return self.send_error_json(404, "not found")
         except Exception as exc:
             return self.send_error_json(500, str(exc))
+
+    def do_HEAD(self):
+        parsed, parts = self.route_parts()
+        if not parts or parts[0] != "api":
+            return super().do_HEAD()
+        try:
+            with connect() as conn:
+                if parts == ["api", "health"]:
+                    return self.send_json_head({"ok": True, "db": str(DB_PATH), "time": now_text()})
+                if len(parts) == 3 and parts[:2] == ["api", "latest"]:
+                    return self.send_json_head(latest_payload(conn, parts[2]))
+                if len(parts) == 3 and parts[:2] == ["api", "watchlists"]:
+                    dashboard = parts[2]
+                    return self.send_json_head({"dashboard": dashboard, "items": active_watchlist(conn, dashboard)})
+            return self.send_json_head({"error": "not found"}, status=404)
+        except Exception as exc:
+            return self.send_json_head({"error": str(exc)}, status=500)
 
     def do_POST(self):
         parsed, parts = self.route_parts()
