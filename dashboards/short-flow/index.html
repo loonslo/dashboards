@@ -854,6 +854,8 @@
     const sectionFilters = {
       [etfSectionFilter]: "etf"
     };
+    const groupFilterLabels = ["宽基"];
+    const mainBroadEtfCodes = new Set(["510050", "510300", "510500", "512100", "159915", "588000", "588220"]);
 
     async function loadEtfReport(session) {
       if (session === "latest") {
@@ -992,7 +994,12 @@
     function groupMatches(row) {
       const groups = selectedGroups();
       if (!groups.length) return true;
-      return groups.some(group => row.group === group || row.category === group || row.bucket === group);
+      return groups.some(group => {
+        if (group === "宽基") {
+          return mainBroadEtfCodes.has(String(row.code || "").trim());
+        }
+        return row.group === group || row.category === group || row.bucket === group;
+      });
     }
 
     function filterMatches(row, section = "main") {
@@ -1037,8 +1044,7 @@
     }
 
     function renderChips() {
-      const groups = [...new Set(allRows().map(row => row.group).filter(Boolean))].sort();
-      const modes = ["all", ...statusFilters, etfSectionFilter, ...groups];
+      const modes = ["all", ...statusFilters, etfSectionFilter, ...groupFilterLabels];
       const labels = { all: "全部", ...statusFilterLabels, [etfSectionFilter]: "ETF训练仓" };
       const chips = document.getElementById("chips");
       chips.innerHTML = modes.map(mode =>
