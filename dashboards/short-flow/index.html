@@ -678,7 +678,7 @@
       <div class="summary" aria-label="摘要">
         <div class="summary-card"><b id="marketCount">-</b><span>市场/板块</span></div>
         <div class="summary-card"><b id="focusCount">-</b><span>可观察</span></div>
-        <div class="summary-card"><b id="waitCount">-</b><span>待走强/暂排除</span></div>
+        <div class="summary-card"><b id="waitCount">-</b><span>待观察/待排除</span></div>
       </div>
       <div class="toolbar">
         <input id="search" type="search" list="instrumentOptions" placeholder="搜代码、名称、分组、状态">
@@ -689,6 +689,10 @@
   </header>
 
   <main class="wrap">
+    <section id="filter-empty" style="display:none">
+      <div class="empty">请选择一个筛选，或点击“全部”查看所有内容。</div>
+    </section>
+
     <section id="etf-section">
       <div class="section-head">
         <h2>ETF训练仓</h2>
@@ -800,7 +804,7 @@
   <datalist id="instrumentNameOptions"></datalist>
 
   <script>
-    const state = { data: null, etf: null, etfSession: "latest", filters: new Set(), candidates: [] };
+    const state = { data: null, etf: null, etfSession: "latest", showAll: true, filters: new Set(), candidates: [] };
     const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : Number(v).toFixed(d);
     const pct = (v, d = 1) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : `${Number(v).toFixed(d)}%`;
     const money = v => {
@@ -815,8 +819,8 @@
     const statusClass = status => status === "Focus watch" ? "" : status === "Exclude for now" ? "exclude" : "wait";
     const decisionLabel = status => ({
       "Focus watch": "可观察",
-      "Wait for strength": "待走强",
-      "Exclude for now": "暂排除"
+      "Wait for strength": "待观察",
+      "Exclude for now": "待排除"
     }[status] || status || "资金观察");
     const dataStatusLabel = status => ({
       live: "实时",
@@ -838,8 +842,8 @@
     const statusFilters = ["Focus watch", "Wait for strength", "Exclude for now"];
     const statusFilterLabels = {
       "Focus watch": "可观察",
-      "Wait for strength": "待走强",
-      "Exclude for now": "暂排除"
+      "Wait for strength": "待观察",
+      "Exclude for now": "待排除"
     };
     const decisionStatusMap = {
       focus: "Focus watch",
@@ -967,8 +971,11 @@
     }
 
     function sectionMatches(section) {
+      if (state.showAll) return true;
       const sections = selectedSections();
-      return !sections.length || sections.includes(section);
+      if (sections.length) return sections.includes(section);
+      if (!state.filters.size) return false;
+      return section === "main";
     }
 
     function statusMatches(row) {
@@ -989,7 +996,7 @@
     }
 
     function filterMatches(row, section = "main") {
-      if (!state.filters.size) return true;
+      if (!state.filters.size) return sectionMatches(section);
       return sectionMatches(section) && statusMatches(row) && groupMatches(row);
     }
 
@@ -1010,13 +1017,14 @@
       const showEtf = sectionMatches("etf");
       const showMain = sectionMatches("main");
       const selectedSectionKeys = selectedSections();
+      setSectionVisible("filter-empty", !state.showAll && !state.filters.size);
       setSectionVisible("etf-section", showEtf);
       setSectionVisible("rank-section", showMain);
       setSectionVisible("watch-section", showMain);
       setSectionVisible("market-section", showMain);
-      setSectionVisible("backtest-section", !state.filters.size || selectedSectionKeys.includes("etf"));
-      setSectionVisible("journal-section", !state.filters.size);
-      setSectionVisible("gaps-section", !state.filters.size);
+      setSectionVisible("backtest-section", state.showAll || selectedSectionKeys.includes("etf"));
+      setSectionVisible("journal-section", state.showAll);
+      setSectionVisible("gaps-section", state.showAll);
     }
 
     function renderSummary() {
@@ -1034,7 +1042,7 @@
       const labels = { all: "全部", ...statusFilterLabels, [etfSectionFilter]: "ETF训练仓" };
       const chips = document.getElementById("chips");
       chips.innerHTML = modes.map(mode =>
-        `<button type="button" class="chip ${(mode === "all" ? !state.filters.size : state.filters.has(mode)) ? "active" : ""}" data-filter="${safe(mode)}">${safe(labels[mode] || mode)}</button>`
+        `<button type="button" class="chip ${(mode === "all" ? state.showAll : state.filters.has(mode)) ? "active" : ""}" data-filter="${safe(mode)}">${safe(labels[mode] || mode)}</button>`
       ).join("");
     }
 
@@ -1303,9 +1311,12 @@
       const filter = button.dataset.filter || "all";
       if (filter === "all") {
         state.filters.clear();
+        state.showAll = true;
       } else if (state.filters.has(filter)) {
+        state.showAll = false;
         state.filters.delete(filter);
       } else {
+        state.showAll = false;
         state.filters.add(filter);
       }
       renderFilteredViews();
@@ -1472,7 +1483,11 @@
 
     const sections = ["etf-section", "rank-section", "watch-section", "market-section", "backtest-section", "journal-section", "gaps-section"];
     window.addEventListener("scroll", () => {
-      const current = sections.findLast(id => document.getElementById(id).getBoundingClientRect().top < 220) || sections[0];
+      const visibleSections = sections.filter(id => {
+        const section = document.getElementById(id);
+        return section && getComputedStyle(section).display !== "none";
+      });
+      const current = visibleSections.findLast(id => document.getElementById(id).getBoundingClientRect().top < 220) || visibleSections[0] || sections[0];
       document.querySelectorAll(".bottom-nav a").forEach(link => {
         link.classList.toggle("active", link.getAttribute("href") === `#${current}`);
       });
