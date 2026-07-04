@@ -214,7 +214,7 @@ def fetch_flow(code):
         "fields1": fields1,
         "fields2": fields2,
     })
-    payload = get_json(f"https://push2.eastmoney.com/api/qt/stock/fflow/kline/get?{query}")
+    payload = get_json(f"https://push2delay.eastmoney.com/api/qt/stock/fflow/kline/get?{query}")
     data = payload.get("data") or {}
     rows = data.get("klines") or []
     return parse_flow(rows[-1]) if rows else {}
@@ -235,7 +235,7 @@ def fetch_flow_batch(items):
             "fields": fields,
         }, safe=",")
         try:
-            payload = get_json(f"https://push2.eastmoney.com/api/qt/ulist.np/get?{query}")
+            payload = get_json(f"https://push2delay.eastmoney.com/api/qt/ulist.np/get?{query}")
         except Exception:
             time.sleep(0.3)
             continue
@@ -371,10 +371,19 @@ def collect_one(item, flow_map=None):
     code = str(item["code"])
     meta, klines = fetch_klines(code)
     flow_error = None
+    flow_source = "Eastmoney:stock/fflow"
     if flow_map is not None:
         flow = flow_map.get(code) or {}
         if not flow:
-            flow_error = "批量资金流未返回"
+            try:
+                flow = fetch_flow(code)
+                if not flow:
+                    flow_error = "批量资金流未返回；单只资金流为空"
+            except Exception as exc:
+                flow = {}
+                flow_error = f"批量资金流未返回；单只资金流失败: {exc}"
+        else:
+            flow_source = "Eastmoney:qt/ulist.np"
     else:
         try:
             flow = fetch_flow(code)
@@ -418,7 +427,7 @@ def collect_one(item, flow_map=None):
         "large_net": None,
         "small_net": None,
         "source_price": "Tencent:appstock/fqkline",
-        "source_flow": "unavailable" if flow_error else "Eastmoney:qt/ulist.np",
+        "source_flow": "unavailable" if flow_error else flow_source,
         "flow_error": flow_error,
     }
     row.update(flow)

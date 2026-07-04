@@ -149,7 +149,7 @@ def fetch_quotes(codes):
             "secids": chunk,
         }, safe=",")
         try:
-            payload = get_json(f"https://push2.eastmoney.com/api/qt/ulist.np/get?{query}")
+            payload = get_json(f"https://push2delay.eastmoney.com/api/qt/ulist.np/get?{query}")
         except Exception:
             continue
         for row in ((payload.get("data") or {}).get("diff") or []):
