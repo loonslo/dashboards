@@ -4,142 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>A股短线资金跟随看板</title>
+  <link rel="stylesheet" href="../shared/tokens.css">
   <style>
-    :root {
-      color-scheme: light;
-      --bg: #f6f7f9;
-      --panel: #ffffff;
-      --text: #17202a;
-      --muted: #66717d;
-      --line: #dde3ea;
-      --soft: #eef2f5;
-      --blue: #1769e0;
-      --green: #157a3c;
-      --green-soft: #e7f4ec;
-      --red: #bd2b2b;
-      --red-soft: #fbe9e9;
-      --amber: #8a6200;
-      --amber-soft: #fbf1dc;
-      --blue-soft: #eaf2ff;
-      --shadow: 0 8px 24px rgba(25, 35, 45, 0.07);
-      --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono", Menlo, Consolas, monospace;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      min-width: 320px;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0;
-      -webkit-font-smoothing: antialiased;
-    }
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      border-bottom: 1px solid var(--line);
-      background: rgba(246, 247, 249, 0.96);
-      backdrop-filter: blur(14px);
-    }
-    .wrap {
-      width: min(100%, 1180px);
-      margin: 0 auto;
-      padding: 14px;
-    }
-    .hero {
-      display: grid;
-      gap: 10px;
-    }
-    h1 {
-      margin: 0;
-      font-size: 21px;
-      font-weight: 780;
-      line-height: 1.2;
-      letter-spacing: -0.01em;
-    }
-    .meta {
-      margin-top: 5px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.45;
-    }
-    .summary {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-    .summary-card {
-      min-width: 0;
-      min-height: 56px;
-      padding: 9px 10px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .summary-card b {
-      display: block;
-      font-size: 18px;
-      line-height: 1.15;
-    }
-    .summary-card span {
-      display: block;
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.25;
-      overflow-wrap: anywhere;
-    }
-    .toolbar {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      align-items: center;
-    }
-    input, button, select {
-      min-width: 0;
-      height: 40px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel);
-      color: var(--text);
-      font-size: 15px;
-      font-family: inherit;
-    }
-    input { padding: 0 12px; }
-    button {
-      padding: 0 12px;
-      cursor: pointer;
-      font-weight: 650;
-    }
-    .chips {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 2px;
-      scrollbar-width: none;
-    }
-    .chips::-webkit-scrollbar { display: none; }
-    .chip {
-      flex: 0 0 auto;
-      height: 34px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: var(--panel);
-      color: #34404a;
-      font-size: 13px;
-      font-weight: 650;
-    }
-    .chip.active {
-      border-color: #b8cff8;
-      background: #eaf2ff;
-      color: #174ea6;
-    }
     main.wrap { padding-bottom: 82px; }
     section {
       scroll-margin-top: 178px;
@@ -152,16 +18,6 @@
       gap: 12px;
       margin-bottom: 10px;
       flex-wrap: wrap;
-    }
-    h2 {
-      margin: 0;
-      font-size: 18px;
-      line-height: 1.2;
-    }
-    .hint {
-      color: var(--muted);
-      font-size: 12px;
-      white-space: nowrap;
     }
     .section-tools {
       display: flex;
@@ -186,88 +42,9 @@
       display: grid;
       gap: 10px;
     }
-    .card {
-      min-width: 0;
-      min-height: 214px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--panel);
-      box-shadow: var(--shadow);
-      padding: 11px;
-      display: flex;
-      flex-direction: column;
-    }
-    .top {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 10px;
-      align-items: start;
-      min-height: 45px;
-    }
-    .name {
-      min-width: 0;
-      font-size: 16px;
-      font-weight: 760;
-      line-height: 1.25;
-      overflow-wrap: anywhere;
-    }
-    .code {
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 12px;
-      overflow-wrap: anywhere;
-    }
-    .price {
-      text-align: right;
-      font-size: 20px;
-      font-weight: 800;
-      line-height: 1.15;
-      white-space: nowrap;
-    }
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 12px;
-    }
-    .metric {
-      min-width: 0;
-      min-height: 54px;
-      height: 68px;
-      padding: 8px;
-      border-radius: 8px;
-      background: var(--soft);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .metric span {
-      display: block;
-      color: var(--muted);
-      font-size: 11px;
-      white-space: nowrap;
-    }
-    .metric b {
-      display: block;
-      margin-top: 3px;
-      font-family: var(--mono);
-      font-size: 14px;
-      line-height: 1.2;
-      overflow-wrap: anywhere;
-    }
-    .signal {
-      margin-top: 10px;
-      min-height: 56px;
-      padding: 8px 9px;
-      border-radius: 8px;
-      background: #eef5ff;
-      color: #174ea6;
-      font-size: 13px;
-      line-height: 1.45;
-      overflow-wrap: anywhere;
-      display: flex;
-      align-items: center;
-    }
+    .card { min-height: 214px; }
+    .metric { height: 68px; }
+    .signal { min-height: 56px; }
     .signal.wait {
       background: #fff7e6;
       color: var(--amber);
@@ -276,50 +53,12 @@
       background: #fdeeee;
       color: var(--red);
     }
-    .reason, .plan {
+    .plan {
       margin-top: 8px;
       color: var(--muted);
       font-size: 12px;
       line-height: 1.5;
       overflow-wrap: anywhere;
-    }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      max-width: 132px;
-      min-height: 25px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: #f1f3f4;
-      color: #3c4043;
-      font-size: 12px;
-      font-weight: 650;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .pos { color: var(--green); }
-    .neg { color: var(--red); }
-    .flat { color: var(--muted); }
-    .primary {
-      border-color: #b8cff8;
-      background: #eaf2ff;
-      color: #174ea6;
-    }
-    .empty, .gap-box {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel);
-      padding: 12px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-      overflow-wrap: anywhere;
-    }
-    .gap-box {
-      border-color: #efd58a;
-      background: #fff8e1;
-      color: #5f4300;
     }
     .attention-grid {
       display: grid;
@@ -622,35 +361,7 @@
       background: var(--panel);
       margin-bottom: 10px;
     }
-    .bottom-nav {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 6;
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
-      border-top: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.97);
-      backdrop-filter: blur(14px);
-    }
-    .bottom-nav a {
-      font-size: 11px;
-      display: grid;
-      place-items: center;
-      min-height: 42px;
-      border-radius: 8px;
-      color: #34404a;
-      text-decoration: none;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .bottom-nav a.active {
-      background: #eaf2ff;
-      color: #174ea6;
-    }
+    .bottom-nav { --nav-cols: 8; }
     @media (min-width: 820px) {
       .wrap { padding-left: 20px; padding-right: 20px; }
       .hero { grid-template-columns: minmax(0, 1fr) 360px; align-items: start; }
@@ -689,7 +400,8 @@
       .journal-actions { grid-template-columns: 1fr 82px; }
     }
   </style>
-  <script src="../api-client.js"></script>
+  <script src="../shared/api-client.js"></script>
+  <script src="../shared/format.js"></script>
 </head>
 <body>
   <header>
@@ -697,6 +409,12 @@
       <div>
         <h1>A股短线资金跟随看板</h1>
         <div id="meta" class="meta">等待数据</div>
+        <nav class="switcher" aria-label="看板切换">
+          <a href="../index-decision/">投资观察</a>
+          <a class="current" href="./" aria-current="page">A股短线</a>
+          <a href="../admin/">管理台</a>
+          <a href="../../">全部</a>
+        </nav>
       </div>
       <div class="summary" aria-label="摘要">
         <div class="summary-card"><b id="marketCount">-</b><span>市场/板块</span></div>
@@ -811,6 +529,18 @@
           <button id="saveJournalAdd" class="primary" type="button">记录</button>
         </div>
       </div>
+      <div id="journalClosePanel" class="journal-panel">
+        <div id="jCloseTitle" class="hint" style="margin-bottom:8px"></div>
+        <div class="form-grid" style="display:grid;gap:8px">
+          <input id="jExitPrice" placeholder="平仓价" type="number" step="0.001">
+          <input id="jExitDate" placeholder="平仓日期" type="date">
+          <input id="jExitReason" placeholder="平仓理由（可选）">
+        </div>
+        <div class="form-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+          <button id="cancelCloseTrade" type="button">取消</button>
+          <button id="confirmCloseTrade" class="primary" type="button">确认平仓</button>
+        </div>
+      </div>
       <div id="journalList" class="grid"></div>
     </section>
     <section id="gaps-section">
@@ -837,40 +567,8 @@
 
   <script>
     const state = { data: null, etf: null, etfSession: "latest", showAll: true, filters: new Set(), candidates: [] };
-    const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : Number(v).toFixed(d);
-    const pct = (v, d = 1) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : `${Number(v).toFixed(d)}%`;
-    const money = v => {
-      if (v === null || v === undefined || Number.isNaN(Number(v))) return "暂无";
-      const abs = Math.abs(Number(v));
-      if (abs >= 100000000) return `${(Number(v) / 100000000).toFixed(2)}亿`;
-      if (abs >= 10000) return `${(Number(v) / 10000).toFixed(0)}万`;
-      return Number(v).toFixed(0);
-    };
-    const cls = v => Number(v) > 0 ? "pos" : Number(v) < 0 ? "neg" : "flat";
-    const safe = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+    const { safe, fmt, pct, cls, money, decisionLabel, dataStatusLabel, priorityLabel, regimeLabel } = DashFmt;
     const statusClass = status => status === "Focus watch" ? "" : status === "Exclude for now" ? "exclude" : "wait";
-    const decisionLabel = status => ({
-      "Focus watch": "可观察",
-      "Wait for strength": "待观察",
-      "Exclude for now": "待排除"
-    }[status] || status || "资金观察");
-    const dataStatusLabel = status => ({
-      live: "实时",
-      stale: "延迟",
-      unavailable: "不可用",
-      unknown: "未知"
-    }[status] || "未知");
-    const priorityLabel = priority => ({
-      core: "核心",
-      high: "高优先",
-      normal: "普通",
-      low: "低优先"
-    }[priority] || "普通");
-    const regimeLabel = regime => ({
-      TREND_UP: "趋势向上",
-      RANGE: "震荡",
-      TREND_DOWN: "趋势向下"
-    }[regime] || regime || "暂无");
     const statusFilters = ["Focus watch", "Wait for strength", "Exclude for now"];
     const statusFilterLabels = {
       "Focus watch": "可观察",
@@ -1082,7 +780,9 @@
       document.getElementById("focusCount").textContent = counts["Focus watch"] ?? 0;
       document.getElementById("waitCount").textContent = (counts["Wait for strength"] ?? 0) + (counts["Exclude for now"] ?? 0);
       const source = state.data?.source_status || {};
-      document.getElementById("meta").textContent = `生成时间：${state.data?.asof || "暂无"} · 交易日：${state.data?.trade_date || "暂无"} · 接口 实时/延迟/不可用：${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0} · 不自动交易`;
+      const rel = DashFmt.relativeTime(state.data?.asof);
+      const badge = rel.text ? ` <span class="freshness ${rel.level === "fresh" ? "" : safe(rel.level)}">${safe(rel.text)}</span>` : "";
+      document.getElementById("meta").innerHTML = `生成时间：${safe(state.data?.asof || "暂无")}${badge} · 交易日：${safe(state.data?.trade_date || "暂无")} · 接口 实时/延迟/不可用：${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0} · 不自动交易`;
     }
 
     function renderChips() {
@@ -1542,24 +1242,36 @@
       });
     }
 
+    let closingIdx = null;
     function closeTrade(idx) {
       const entries = loadJournal();
       const e = entries[idx];
-      const exitPrice = prompt(`平仓 ${e.code} ${e.name}\n开仓价：${e.entry_price}\n输入平仓价：`, "");
-      if (!exitPrice) return;
-      const price = parseFloat(exitPrice);
+      if (!e) return;
+      closingIdx = idx;
+      document.getElementById("jCloseTitle").textContent = `平仓 ${e.code} ${e.name || ""} · 开仓价 ${fmt(e.entry_price, 3)} · ${e.shares || 100} 股`;
+      document.getElementById("jExitPrice").value = "";
+      document.getElementById("jExitDate").value = new Date().toISOString().slice(0, 10);
+      document.getElementById("jExitReason").value = "";
+      document.getElementById("journalClosePanel").style.display = "block";
+      document.getElementById("jExitPrice").focus();
+    }
+    function confirmCloseTrade() {
+      if (closingIdx === null) return;
+      const entries = loadJournal();
+      const e = entries[closingIdx];
+      if (!e) return;
+      const price = parseFloat(document.getElementById("jExitPrice").value);
       if (isNaN(price)) return;
-      const exitDate = prompt("平仓日期（YYYY-MM-DD）：", new Date().toISOString().slice(0, 10));
-      if (!exitDate) return;
-      const exitReason = prompt("平仓理由：", "") || "";
       e.exit_price = price;
-      e.exit_date = exitDate;
-      e.exit_reason = exitReason;
+      e.exit_date = document.getElementById("jExitDate").value || new Date().toISOString().slice(0, 10);
+      e.exit_reason = document.getElementById("jExitReason").value.trim();
       e.shares = e.shares || 100;
       e.pnl = (price - e.entry_price) * e.shares;
       e.pnl_pct = (price / e.entry_price - 1) * 100;
-      entries[idx] = e;
+      entries[closingIdx] = e;
       saveJournal(entries);
+      closingIdx = null;
+      document.getElementById("journalClosePanel").style.display = "none";
       renderJournal();
     }
 
@@ -1618,6 +1330,11 @@
         renderJournal();
       }
     });
+    document.getElementById("cancelCloseTrade").addEventListener("click", () => {
+      closingIdx = null;
+      document.getElementById("journalClosePanel").style.display = "none";
+    });
+    document.getElementById("confirmCloseTrade").addEventListener("click", confirmCloseTrade);
 
     // --- End Trade Journal ---
 

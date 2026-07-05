@@ -4,25 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dashboard Admin</title>
+  <link rel="stylesheet" href="../shared/tokens.css">
   <style>
-    :root {
-      color-scheme: light;
-      --bg: #f6f8fb;
-      --panel: #ffffff;
-      --text: #17202a;
-      --muted: #66717f;
-      --line: #dfe5ec;
-      --accent: #1368d8;
-      --danger: #c4382b;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
-      letter-spacing: 0;
-    }
     .wrap {
       width: min(100%, 1120px);
       margin: 0 auto;
@@ -72,8 +55,8 @@
       font-weight: 650;
     }
     button.primary {
-      border-color: var(--accent);
-      background: var(--accent);
+      border-color: var(--blue);
+      background: var(--blue);
       color: #fff;
     }
     button.danger {
@@ -225,11 +208,12 @@
     </section>
   </main>
 
-  <script src="../api-client.js"></script>
+  <script src="../shared/api-client.js"></script>
+  <script src="../shared/format.js"></script>
   <script>
+    const { safe } = DashFmt;
     const state = { dashboard: "index-decision", items: [], config: null };
     const status = document.getElementById("status");
-    const safe = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
 
     function setStatus(text) {
       status.textContent = text;
