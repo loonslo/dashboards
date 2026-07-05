@@ -1053,8 +1053,13 @@
     }
 
     function updateSectionVisibility() {
-      const showEtf = sectionMatches("etf");
-      const showMain = sectionMatches("main");
+      const explicitSections = selectedSections();
+      const hasExplicitEtf = explicitSections.includes("etf");
+      const hasExplicitMain = !explicitSections.length;
+      const mainCount = filtered(allRows(), "main").length;
+      const etfCount = etfVisibleCount();
+      const showEtf = state.showAll || hasExplicitEtf || (hasExplicitMain && etfCount > 0);
+      const showMain = state.showAll || (hasExplicitMain && mainCount > 0);
       const selectedSectionKeys = selectedSections();
       setSectionVisible("filter-empty", !state.showAll && !state.filters.size);
       setSectionVisible("focus-section", state.showAll || !!state.filters.size);
@@ -1068,7 +1073,11 @@
     }
 
     function renderSummary() {
-      const counts = state.data?.status_counts || {};
+      const rows = allRows();
+      const counts = Object.fromEntries(statusFilters.map(status => [
+        status,
+        rows.filter(row => row.status === status).length
+      ]));
       document.getElementById("marketCount").textContent = state.data?.market_flow?.length ?? 0;
       document.getElementById("focusCount").textContent = counts["Focus watch"] ?? 0;
       document.getElementById("waitCount").textContent = (counts["Wait for strength"] ?? 0) + (counts["Exclude for now"] ?? 0);
@@ -1145,6 +1154,29 @@
       );
     }
 
+    function filteredEtfRows(decision, rows) {
+      const buckets = {
+        focus: "focus_watch",
+        wait: "wait",
+        exclude: "exclude"
+      };
+      const bucket = buckets[decision] || "exclude";
+      return filtered((rows || state.etf?.[bucket] || []).map(row => ({
+        ...row,
+        _section: "etf",
+        _decision: decision,
+        status: decisionStatusMap[decision],
+        group: row.group || row.category || row.bucket
+      })), "etf");
+    }
+
+    function etfVisibleCount() {
+      return ["focus", "wait", "exclude"].reduce((sum, decision) => {
+        if (!decisionVisible(decision)) return sum;
+        return sum + filteredEtfRows(decision).length;
+      }, 0) + (decisionVisible("exclude") ? filteredEtfRows("exclude", state.etf?.exit_queue || []).length : 0);
+    }
+
     function attentionRows() {
       const statuses = selectedStatuses();
       const targetStatuses = statuses.length ? statuses : ["Focus watch"];
@@ -1218,12 +1250,7 @@
 
     function decisionCard(title, rows, decision) {
       if (!decisionVisible(decision)) return "";
-      const visibleRows = filtered((rows || []).map(row => ({
-        ...row,
-        _decision: decision,
-        status: decisionStatusMap[decision],
-        group: row.group || row.category || row.bucket
-      })), "etf");
+      const visibleRows = filteredEtfRows(decision, rows);
       const decisionClass = decision === "focus" ? "focus" : decision === "exclude" ? "exclude" : "wait";
       const displayRows = decision === "exclude" ? visibleRows.slice(0, 8) : visibleRows;
       const hiddenCount = visibleRows.length - displayRows.length;
