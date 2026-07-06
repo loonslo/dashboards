@@ -36,13 +36,6 @@
       "priority": "normal"
     },
     {
-      "code": "588000",
-      "name": "科创50ETF",
-      "group": "宽基",
-      "role": "market",
-      "priority": "high"
-    },
-    {
       "code": "588220",
       "name": "科创100F",
       "group": "宽基",
@@ -114,22 +107,6 @@
       "group": "防守/轮动",
       "role": "market",
       "priority": "normal"
-    },
-    {
-      "code": "601138",
-      "name": "工业富联",
-      "group": "个股观察",
-      "role": "watch",
-      "priority": "core",
-      "plan_note": "误操作仓优先恢复到观察仓，盘中只看修复是否成立。"
-    },
-    {
-      "code": "000636",
-      "name": "风华高科",
-      "group": "个股观察",
-      "role": "watch",
-      "priority": "high",
-      "plan_note": "不加仓，只等待修复或后续处理。"
     }
   ]
 }

@@ -1,19 +1,17 @@
 capital:
   train_capital: 30000
-  max_total_exposure_pct: 0.40
+  max_total_exposure_pct: 0.4
   first_entry_ratio: 0.33
-  max_single_etf_pct: 0.20
-
+  max_single_etf_pct: 0.2
 features:
-  theme_enabled: false
+  theme_enabled: true
   use_llm: false
   use_n8n: false
   allowed_train_categories: "CORE,GROWTH"
-
 regime:
   trend_down_exit_days: 3
   trend_up:
-    max_exposure_pct: 0.40
+    max_exposure_pct: 0.4
     max_positions: 3
   recovery:
     max_exposure_pct: 0.25
@@ -24,23 +22,18 @@ regime:
   trend_down:
     max_exposure_pct: 0
     max_positions: 0
-
 filters:
   min_amount: 50000000
-  min_main_inflow_pct: 3.0
+  min_main_inflow_pct: 3
   require_main_inflow_positive: true
-
 entry_params:
   version: "v0.1_assumption_not_backtested"
   breakout_threshold_pct: 0.3
   volume_surge_ratio: 1.3
   pullback_ma_tolerance_pct: 0.5
-
 schedule:
   premarket: "08:50"
   morning_confirm: "09:40"
   noon_review: "11:30"
   tail_review: "14:30"
   after_close: "15:20"
-
-
