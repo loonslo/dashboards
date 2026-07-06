@@ -1,3 +1,6 @@
+THEME_TRAIN_CATEGORIES = {"THEME", "SECTOR", "DEFENSE"}
+
+
 def hard_filter(master, snapshot, indicator, config):
     filters = config["filters"]
     category = master.get("category")
@@ -6,6 +9,8 @@ def hard_filter(master, snapshot, indicator, config):
         for item in str(config["features"].get("allowed_train_categories", "CORE,GROWTH")).split(",")
         if item.strip()
     }
+    if config["features"].get("theme_enabled"):
+        allowed.update(THEME_TRAIN_CATEGORIES)
     if master.get("is_money") or master.get("is_bond"):
         return "exclude", "货币/债券类不适合训练仓短线"
     if category not in allowed:

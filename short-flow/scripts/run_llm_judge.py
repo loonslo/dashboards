@@ -50,18 +50,23 @@ def main():
         )
         workflow_result = run_workflow(workflow_state, use_llm=config["features"].get("use_llm", False))
         decisions = workflow_result.get("decisions", {})
+        theme_enabled = config["features"].get("theme_enabled", False)
         decision = {
             "summary": "v0.1规则引擎输出，大模型判断将在v0.2接入。",
             "regime": dict(regime) if regime else {},
             "train_rules": {
-                "theme_enabled": config["features"].get("theme_enabled", False),
+                "theme_enabled": theme_enabled,
                 "max_total_exposure_pct": config["capital"].get("max_total_exposure_pct"),
             },
             "workflow_note": workflow_result.get("workflow_note", "rule-only workflow executed."),
             "focus_watch": decisions.get("watch", candidates),
             "wait": decisions.get("wait", waits),
             "exclude": decisions.get("avoid", excludes),
-            "risk_notes": ["不自动下单", "首笔不超过计划仓位1/3", "主题ETF默认关闭"],
+            "risk_notes": [
+                "不自动下单",
+                "首笔不超过计划仓位1/3",
+                "主题ETF已启用" if theme_enabled else "主题ETF默认关闭",
+            ],
         }
         md_lines = [f"{args.session} short-flow", "", decision["summary"], ""]
         for title, key in (("可观察", "focus_watch"), ("等待", "wait"), ("今日不碰", "exclude")):
