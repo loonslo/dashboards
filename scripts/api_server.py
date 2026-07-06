@@ -214,6 +214,30 @@ def snapshot_payload(conn, dashboard, payload):
     conn.commit()
 
 
+def payload_time(payload):
+    if not isinstance(payload, dict):
+        return None
+    for key in ("asof", "generated_at", "trade_date"):
+        value = str(payload.get(key) or "").strip()
+        if not value:
+            continue
+        for text, fmt in (
+            (value[:19], "%Y-%m-%d %H:%M:%S"),
+            (value[:16], "%Y-%m-%d %H:%M"),
+            (value[:10], "%Y-%m-%d"),
+        ):
+            try:
+                return dt.datetime.strptime(text, fmt)
+            except ValueError:
+                pass
+        try:
+            parsed = dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+            return parsed.replace(tzinfo=None)
+        except ValueError:
+            pass
+    return None
+
+
 def latest_payload(conn, dashboard):
     row = conn.execute(
         """
@@ -224,10 +248,16 @@ def latest_payload(conn, dashboard):
         """,
         (dashboard,),
     ).fetchone()
-    if row:
-        return json.loads(row["payload_json"])
     path = DASHBOARDS[dashboard]["latest"]
-    return load_json(path, {})
+    file_payload = load_json(path, {})
+    if not row:
+        return file_payload
+    db_payload = json.loads(row["payload_json"])
+    file_time = payload_time(file_payload)
+    db_time = payload_time(db_payload)
+    if file_payload and file_time and (not db_time or file_time > db_time):
+        return file_payload
+    return db_payload
 
 
 def update_history(cfg, payload):
