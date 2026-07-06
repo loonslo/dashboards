@@ -1,5 +1,5 @@
 {
-  "asof": "2026-07-06 12:35",
+  "asof": "2026-07-06 13:05",
   "indices": [
     {
       "return_1m": -1.96,
@@ -164,8 +164,8 @@
     }
   ],
   "data_gaps": [
-    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpLMKwzyXJcRo_Vj649r8oBeGBCK5woaLXHeVbkA04SuI29mgZYoGM\"'",
-    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpLMKxYeUilfXxgpQPKftENVcUTK5woaLtKMyZ8I3pfWrLktF_4knk\"'"
+    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpLN66BNXeFl3u-0KQJYpsjt7pVK5woaPKTwmpsETbsydOPVTpzTbI\"'",
+    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpLN6-kG4lOd5dZqwpej781P6zQK5woaHAPvM7_GH34XJLPw8JKL-c\"'"
   ],
   "watchlist": [
     {
