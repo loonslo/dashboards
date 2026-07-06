@@ -1,5 +1,5 @@
 {
-  "asof": "2026-07-06 10:36",
+  "asof": "2026-07-06 11:01",
   "indices": [
     {
       "return_1m": -1.96,
@@ -8,36 +8,33 @@
       "return_1y": 22.03,
       "performance_date": "2026-07-03",
       "source_performance": "CSI:get-index-yield-item",
-      "pe_static": 14.86,
+      "current": 4842.17,
+      "high_52w": 5064.27,
+      "drawdown_52w": -4.3856271486314995,
+      "change_1d_pct": 0.6207011200465518,
+      "drawdown_1d_delta": 0.5898184733436391,
       "pe_ttm": 14.53,
+      "date": "2026-07-03",
+      "source_price": "CSI:index-perf",
+      "pe_static": 14.86,
       "pb": 1.43,
       "dividend_yield": 2.64,
       "valuation_date": "20260703",
       "source_valuation": "CSI:indexValuation",
-      "roe": 10.100000000000001,
-      "pe_percentile": 0.8592,
-      "pb_percentile": 0.464,
-      "source_valuation_extra": "Danjuan:index_eva",
       "code": "000300",
       "name": "沪深300",
       "kind": "cn_broad",
       "product": "-",
-      "pe_percentile_label": "高位",
-      "signal": "未到-5%回撤档，维持基础节奏；PE历史分位高，不因回撤自动加速",
-      "snapshot_compare_date": "2026-07-04",
-      "pe_ttm_snapshot_delta": 0.0,
+      "pe_percentile_label": "未知",
+      "signal": "未到-5%回撤档，维持基础节奏",
+      "snapshot_compare_date": null,
+      "pe_ttm_snapshot_delta": null,
       "pe_forward_snapshot_delta": null,
-      "pb_snapshot_delta": 0.0,
-      "dividend_yield_snapshot_delta": 0.0,
-      "signal_snapshot_delta": "无变化"
+      "pb_snapshot_delta": null,
+      "dividend_yield_snapshot_delta": null,
+      "signal_snapshot_delta": null
     },
     {
-      "return_1m": 4.58,
-      "return_3m": 16.06,
-      "return_ytd": 17.14,
-      "return_1y": 47.66,
-      "performance_date": "2026-07-03",
-      "source_performance": "CSI:get-index-yield-item",
       "current": 8745.26,
       "high_52w": 9147.56,
       "drawdown_52w": -4.397894083230936,
@@ -51,135 +48,105 @@
       "dividend_yield": 1.19,
       "valuation_date": "20260703",
       "source_valuation": "CSI:indexValuation",
-      "roe": 6.69,
-      "pe_percentile": 0.894,
-      "pb_percentile": 0.8792,
-      "source_valuation_extra": "Danjuan:index_eva",
       "code": "000905",
       "name": "中证500",
       "kind": "cn_broad",
       "product": "-",
-      "pe_percentile_label": "高位",
-      "signal": "未到-5%回撤档，维持基础节奏；PE历史分位高，不因回撤自动加速",
-      "snapshot_compare_date": "2026-07-04",
-      "pe_ttm_snapshot_delta": 0.0,
+      "pe_percentile_label": "未知",
+      "signal": "未到-5%回撤档，维持基础节奏",
+      "snapshot_compare_date": null,
+      "pe_ttm_snapshot_delta": null,
       "pe_forward_snapshot_delta": null,
-      "pb_snapshot_delta": 0.0,
-      "dividend_yield_snapshot_delta": 0.0,
-      "signal_snapshot_delta": "无变化"
+      "pb_snapshot_delta": null,
+      "dividend_yield_snapshot_delta": null,
+      "signal_snapshot_delta": null
     },
     {
-      "return_1m": -8.38,
-      "return_3m": -10.2,
-      "return_ytd": -9.29,
-      "return_1y": -12.81,
-      "performance_date": "2026-07-03",
-      "source_performance": "CSI:get-index-yield-item",
-      "current": 10195.28,
-      "high_52w": 11999.28,
-      "drawdown_52w": -15.034235387456585,
-      "change_1d_pct": 0.21743489731804733,
-      "drawdown_1d_delta": 0.18434439399697133,
-      "pe_ttm": 7.07,
-      "date": "2026-07-03",
-      "source_price": "CSI:index-perf",
-      "pb": 0.7688,
-      "dividend_yield": 5.34,
-      "roe": 10.14,
-      "pe_percentile": 0.6772,
-      "pb_percentile": 0.4088,
-      "valuation_date": "07-03",
-      "source_valuation_extra": "Danjuan:index_eva",
       "code": "H30269",
       "name": "中证红利低波动",
       "kind": "dividend",
       "product": "512890/563020",
-      "pe_percentile_label": "中高",
-      "signal": "允许买入/加速：股息率>6%或PE<11",
-      "snapshot_compare_date": "2026-07-04",
-      "pe_ttm_snapshot_delta": 0.0,
+      "pe_percentile_label": "未知",
+      "signal": "数据不足：至少需要PE和股息率",
+      "snapshot_compare_date": null,
+      "pe_ttm_snapshot_delta": null,
       "pe_forward_snapshot_delta": null,
-      "pb_snapshot_delta": 0.0,
-      "dividend_yield_snapshot_delta": 0.0,
-      "signal_snapshot_delta": "无变化"
+      "pb_snapshot_delta": null,
+      "dividend_yield_snapshot_delta": null,
+      "signal_snapshot_delta": null
     },
     {
-      "current": 7483.24,
-      "high_52w": 7620.9,
-      "drawdown_52w": -1.8063483315618911,
+      "current": 7483.240234375,
+      "high_52w": 7620.89990234375,
+      "drawdown_52w": -1.806343997857962,
+      "change_1d_pct": 0.00013702513856905796,
+      "drawdown_1d_delta": 0.0001345498088389796,
+      "return_1m": -1.6628543052990774,
+      "return_3m": 13.808003784274092,
+      "return_ytd": 9.109466104832876,
+      "return_1y": 20.736180118302848,
       "date": "2026-07-02",
-      "source_price": "CNBC",
+      "source_price": "Yahoo:query2.finance.yahoo.com",
       "pe_ttm": 25.37,
       "pe_forward": 21.74,
       "pe_52w_ago": 24.09,
       "dividend_yield": 1.09,
       "valuation_date": "7/02/26",
-      "source_valuation": "Cache:WSJ:P/E & Yields@2026-07-04 14:52",
+      "source_valuation": "Cache:WSJ:P/E & Yields@2026-07-06 10:57",
       "code": "^GSPC",
       "name": "标普500",
       "kind": "us_broad",
       "product": "标普QDII/VOO",
       "pe_percentile_label": "未知",
       "signal": "未到-5%回撤档，维持基础节奏",
-      "snapshot_compare_date": "2026-07-04",
-      "pe_ttm_snapshot_delta": 0.0,
-      "pe_forward_snapshot_delta": 0.0,
+      "snapshot_compare_date": null,
+      "pe_ttm_snapshot_delta": null,
+      "pe_forward_snapshot_delta": null,
       "pb_snapshot_delta": null,
-      "dividend_yield_snapshot_delta": 0.0,
-      "signal_snapshot_delta": "无变化"
+      "dividend_yield_snapshot_delta": null,
+      "signal_snapshot_delta": null
     },
     {
-      "current": 29329.213,
-      "high_52w": 30762.199,
-      "drawdown_52w": -4.658269065875298,
+      "current": 29329.2109375,
+      "high_52w": 30762.19921875,
+      "drawdown_52w": -4.658276448507537,
+      "change_1d_pct": -1.6099762322458466,
+      "drawdown_1d_delta": -1.5600962677027375,
+      "return_1m": -4.342343883802924,
+      "return_3m": 22.103342471500987,
+      "return_ytd": 16.357268987728467,
+      "return_1y": 30.478869088297024,
       "date": "2026-07-02",
-      "source_price": "CNBC",
+      "source_price": "Yahoo:query1.finance.yahoo.com",
       "pe_ttm": 35.22,
       "pe_forward": 26.97,
       "pe_52w_ago": 31.95,
       "dividend_yield": 0.52,
       "valuation_date": "7/02/26",
-      "source_valuation": "Cache:WSJ:P/E & Yields@2026-07-04 14:52",
+      "source_valuation": "Cache:WSJ:P/E & Yields@2026-07-06 10:57",
       "code": "^NDX",
       "name": "纳斯达克100",
       "kind": "nasdaq",
       "product": "纳指QDII/QQQ",
       "pe_percentile_label": "未知",
       "signal": "未到-5%回撤档，维持基础节奏；PE较一年前扩张>10%",
-      "snapshot_compare_date": "2026-07-04",
-      "pe_ttm_snapshot_delta": 0.0,
-      "pe_forward_snapshot_delta": 0.0,
+      "snapshot_compare_date": null,
+      "pe_ttm_snapshot_delta": null,
+      "pe_forward_snapshot_delta": null,
       "pb_snapshot_delta": null,
-      "dividend_yield_snapshot_delta": 0.0,
-      "signal_snapshot_delta": "无变化"
+      "dividend_yield_snapshot_delta": null,
+      "signal_snapshot_delta": null
     }
   ],
   "data_gaps": [
-    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpLFL1laUbeUsZCDIDzFkBN6FWuK5woaPrlqND-4t6DWzKSEaxYIf8\"'",
-    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpLFL-8l9rR3XOK2ooGaeTwoVCkK5woaA7ztGGOI9yIhGhJJ6opRxg\"'",
-    "000300/history: The read operation timed out",
-    "^GSPC/valuation: WSJ未返回指数PE/股息率字段",
-    "^NDX/valuation: WSJ未返回指数PE/股息率字段",
+    "000905/performance: <urlopen error timed out>",
+    "H30269/history: <urlopen error timed out>",
+    "H30269/performance: <urlopen error timed out>",
+    "Danjuan/valuation: <urlopen error timed out>",
+    "US/valuation: WSJ不可用，将尝试缓存估值: <urlopen error timed out>",
     "^GSPC/valuation: WSJ不可用，使用缓存估值(7/02/26)",
     "^NDX/valuation: WSJ不可用，使用缓存估值(7/02/26)",
-    "TSM/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "MSFT/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "NVDA/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "AVGO/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "GOOGL/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "AMD/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "QQQ/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "VOO/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "BRK.B/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "UNH/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "KO/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "LLY/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "0700.HK/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "9988.HK/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "1211.HK/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "META/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "600519.SH/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-    "600900.SH/watchlist: Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests"
+    "9988.HK/cache: 观察池行情源暂不可用，使用缓存数据"
   ],
   "watchlist": [
     {
@@ -192,16 +159,19 @@
       "alert_drawdown_pct": -5,
       "alert_1d_abs_pct": 4,
       "alert_1m_pct": -7,
-      "signal": "数据不足",
-      "alerts": [
-        {
-          "ticker": "QQQ",
-          "name": "Invesco QQQ",
-          "level": "data",
-          "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
-        }
-      ],
+      "current": 712.5999755859375,
+      "high_52w": 748.6500244140625,
+      "drawdown_52w": -4.815340633474219,
+      "change_1d_pct": -1.7333877050142776,
+      "drawdown_1d_delta": -1.6790231636012787,
+      "return_1m": -4.497694699055266,
+      "return_3m": 21.955807458947163,
+      "return_ytd": 16.22520571193182,
+      "return_1y": 30.276602553659473,
+      "date": "2026-07-02",
+      "source_price": "Yahoo:query1.finance.yahoo.com",
+      "signal": "正常观察",
+      "alerts": [],
       "has_alert": false
     },
     {
@@ -214,16 +184,15 @@
       "alert_drawdown_pct": -5,
       "alert_1d_abs_pct": 3,
       "alert_1m_pct": -5,
-      "signal": "数据不足",
-      "alerts": [
-        {
-          "ticker": "VOO",
-          "name": "Vanguard S&P 500 ETF",
-          "level": "data",
-          "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
-        }
-      ],
+      "current": 684.84,
+      "high_52w": 699.15,
+      "drawdown_52w": -2.046771079167553,
+      "change_1d_pct": -0.0905,
+      "date": "2026-07-02",
+      "source_price": "CNBC:quote-fallback",
+      "history_error": "Yahoo/Stooq历史均失败: <urlopen error timed out>",
+      "signal": "接近52周高位",
+      "alerts": [],
       "has_alert": false
     },
     {
@@ -236,17 +205,35 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 4,
       "alert_1m_pct": -10,
-      "signal": "数据不足",
+      "current": 390.489990234375,
+      "high_52w": 555.4500122070312,
+      "drawdown_52w": -29.698446007265755,
+      "change_1d_pct": 1.616006941502235,
+      "drawdown_1d_delta": 1.1180108594116902,
+      "return_1m": -11.515716300415624,
+      "return_3m": 5.717842650020044,
+      "return_ytd": -17.43350356946095,
+      "return_1y": -20.64017885949534,
+      "date": "2026-07-02",
+      "source_price": "Yahoo:query1.finance.yahoo.com",
+      "signal": "深回撤观察",
       "alerts": [
         {
           "ticker": "MSFT",
           "name": "Microsoft",
-          "level": "data",
+          "level": "deep",
+          "notify": true,
+          "message": "52周回撤 -29.7% 触发阈值 -15.0%"
+        },
+        {
+          "ticker": "MSFT",
+          "name": "Microsoft",
+          "level": "trend",
           "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
+          "message": "近1月表现 -11.5% 低于阈值 -10.0%"
         }
       ],
-      "has_alert": false
+      "has_alert": true
     },
     {
       "market": "US",
@@ -258,16 +245,19 @@
       "alert_drawdown_pct": -18,
       "alert_1d_abs_pct": 6,
       "alert_1m_pct": -15,
-      "signal": "数据不足",
-      "alerts": [
-        {
-          "ticker": "NVDA",
-          "name": "NVIDIA",
-          "level": "data",
-          "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
-        }
-      ],
+      "current": 194.8300018310547,
+      "high_52w": 236.5399932861328,
+      "drawdown_52w": -17.633378134336564,
+      "change_1d_pct": -1.3918412665829716,
+      "drawdown_1d_delta": -1.1625940974275046,
+      "return_1m": -12.561711055164192,
+      "return_3m": 10.856331056076641,
+      "return_ytd": 3.166531921773519,
+      "return_1y": 27.090670549612007,
+      "date": "2026-07-02",
+      "source_price": "Yahoo:query1.finance.yahoo.com",
+      "signal": "回撤观察",
+      "alerts": [],
       "has_alert": false
     },
     {
@@ -280,16 +270,19 @@
       "alert_drawdown_pct": -8,
       "alert_1d_abs_pct": 3,
       "alert_1m_pct": -5,
-      "signal": "数据不足",
-      "alerts": [
-        {
-          "ticker": "BRK.B",
-          "name": "Berkshire Hathaway",
-          "level": "data",
-          "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
-        }
-      ],
+      "current": 507.7799987792969,
+      "high_52w": 516.8499755859375,
+      "drawdown_52w": -1.754856773739466,
+      "change_1d_pct": 1.608838336341889,
+      "drawdown_1d_delta": 1.5555787800526022,
+      "return_1m": 7.692305202958627,
+      "return_3m": 6.119122001942912,
+      "return_ytd": 2.1998576112534085,
+      "return_1y": 3.7111198650671806,
+      "date": "2026-07-02",
+      "source_price": "Yahoo:query2.finance.yahoo.com",
+      "signal": "接近52周高位",
+      "alerts": [],
       "has_alert": false
     },
     {
@@ -302,17 +295,35 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 6,
       "alert_1m_pct": -12,
-      "signal": "数据不足",
+      "current": 360.45001220703125,
+      "high_52w": 495.0,
+      "drawdown_52w": -27.181815715751267,
+      "change_1d_pct": -2.4069919908501825,
+      "drawdown_1d_delta": -1.7959563900726039,
+      "return_1m": -25.15106698404559,
+      "return_3m": 14.97975164615224,
+      "return_ytd": 3.6908167740807185,
+      "return_1y": 36.15246109510086,
+      "date": "2026-07-02",
+      "source_price": "Yahoo:query1.finance.yahoo.com",
+      "signal": "深回撤观察",
       "alerts": [
         {
           "ticker": "AVGO",
           "name": "Broadcom",
-          "level": "data",
+          "level": "deep",
           "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
+          "message": "52周回撤 -27.2% 触发阈值 -15.0%"
+        },
+        {
+          "ticker": "AVGO",
+          "name": "Broadcom",
+          "level": "trend",
+          "notify": false,
+          "message": "近1月表现 -25.2% 低于阈值 -12.0%"
         }
       ],
-      "has_alert": false
+      "has_alert": true
     },
     {
       "market": "US",
@@ -324,16 +335,19 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -12,
-      "signal": "数据不足",
-      "alerts": [
-        {
-          "ticker": "TSM",
-          "name": "Taiwan Semiconductor",
-          "level": "data",
-          "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
-        }
-      ],
+      "current": 434.1600036621094,
+      "high_52w": 479.0,
+      "drawdown_52w": -9.361168337764225,
+      "change_1d_pct": -2.266845344793389,
+      "drawdown_1d_delta": -2.10229798000392,
+      "return_1m": -2.8050770580970164,
+      "return_3m": 27.13696333064759,
+      "return_ytd": 35.84056304891254,
+      "return_1y": 93.2348307882549,
+      "date": "2026-07-02",
+      "source_price": "Yahoo:query1.finance.yahoo.com",
+      "signal": "正常观察",
+      "alerts": [],
       "has_alert": false
     },
     {
@@ -346,17 +360,28 @@
       "alert_drawdown_pct": -8,
       "alert_1d_abs_pct": 3,
       "alert_1m_pct": -5,
-      "signal": "数据不足",
+      "current": 27.1299991607666,
+      "high_52w": 31.190000534057617,
+      "drawdown_52w": -13.016996805940217,
+      "change_1d_pct": 0.2957483399720351,
+      "drawdown_1d_delta": 0.25649221653170073,
+      "return_1m": -2.128427731611271,
+      "return_3m": 0.930059552847351,
+      "return_ytd": -0.5498589519916552,
+      "return_1y": -10.75658058814727,
+      "date": "2026-07-06",
+      "source_price": "Yahoo:query1.finance.yahoo.com",
+      "signal": "回撤观察",
       "alerts": [
         {
           "ticker": "600900.SH",
           "name": "长江电力",
-          "level": "data",
+          "level": "deep",
           "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
+          "message": "52周回撤 -13.0% 触发阈值 -8.0%"
         }
       ],
-      "has_alert": false
+      "has_alert": true
     },
     {
       "market": "US",
@@ -368,16 +393,19 @@
       "alert_drawdown_pct": -12,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -10,
-      "signal": "数据不足",
-      "alerts": [
-        {
-          "ticker": "UNH",
-          "name": "UnitedHealth",
-          "level": "data",
-          "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
-        }
-      ],
+      "current": 425.3599853515625,
+      "high_52w": 430.20001220703125,
+      "drawdown_52w": -1.1250643231361712,
+      "change_1d_pct": -0.27665006088991584,
+      "drawdown_1d_delta": -0.7792906427619317,
+      "return_1m": 12.552913378031395,
+      "return_3m": 55.252196618383365,
+      "return_ytd": 26.444706619837977,
+      "return_1y": 30.422507587754644,
+      "date": "2026-07-02",
+      "source_price": "Yahoo:query1.finance.yahoo.com",
+      "signal": "接近52周高位",
+      "alerts": [],
       "has_alert": false
     },
     {
@@ -390,17 +418,28 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -10,
-      "signal": "数据不足",
+      "current": 447.6000061035156,
+      "high_52w": 683.0,
+      "drawdown_52w": -34.46559207854823,
+      "change_1d_pct": 3.8033379944827805,
+      "drawdown_1d_delta": 2.4011704094413417,
+      "return_1m": -4.030872221053528,
+      "return_3m": -7.059800574980057,
+      "return_ytd": -28.15409211821579,
+      "return_1y": -12.149164650929222,
+      "date": "2026-07-06",
+      "source_price": "Yahoo:query1.finance.yahoo.com",
+      "signal": "深回撤观察",
       "alerts": [
         {
           "ticker": "0700.HK",
           "name": "腾讯控股",
-          "level": "data",
+          "level": "deep",
           "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
+          "message": "52周回撤 -34.5% 触发阈值 -15.0%"
         }
       ],
-      "has_alert": false
+      "has_alert": true
     },
     {
       "market": "US",
@@ -412,16 +451,19 @@
       "alert_drawdown_pct": -12,
       "alert_1d_abs_pct": 4,
       "alert_1m_pct": -10,
-      "signal": "数据不足",
-      "alerts": [
-        {
-          "ticker": "GOOGL",
-          "name": "Alphabet",
-          "level": "data",
-          "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
-        }
-      ],
+      "current": 359.9100036621094,
+      "high_52w": 408.6099853515625,
+      "drawdown_52w": -11.91845119681848,
+      "change_1d_pct": -0.35989807140492935,
+      "drawdown_1d_delta": -0.3181488068262137,
+      "return_1m": -0.536134422739587,
+      "return_3m": 21.02289449347534,
+      "return_ytd": 14.202763963983166,
+      "return_1y": 104.68039761017369,
+      "date": "2026-07-02",
+      "source_price": "Yahoo:query1.finance.yahoo.com",
+      "signal": "回撤观察",
+      "alerts": [],
       "has_alert": false
     },
     {
@@ -434,16 +476,19 @@
       "alert_drawdown_pct": -20,
       "alert_1d_abs_pct": 7,
       "alert_1m_pct": -15,
-      "signal": "数据不足",
-      "alerts": [
-        {
-          "ticker": "AMD",
-          "name": "Advanced Micro Devices",
-          "level": "data",
-          "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
-        }
-      ],
+      "current": 517.8200073242188,
+      "high_52w": 584.72998046875,
+      "drawdown_52w": -11.442883960027627,
+      "change_1d_pct": -4.263422080760771,
+      "drawdown_1d_delta": -3.9437002255481524,
+      "return_1m": -0.713266644907129,
+      "return_3m": 146.33461337978213,
+      "return_ytd": 131.71790598095092,
+      "return_1y": 280.44229299991423,
+      "date": "2026-07-02",
+      "source_price": "Yahoo:query2.finance.yahoo.com",
+      "signal": "回撤观察",
+      "alerts": [],
       "has_alert": false
     },
     {
@@ -456,17 +501,28 @@
       "alert_drawdown_pct": -12,
       "alert_1d_abs_pct": 4,
       "alert_1m_pct": -8,
-      "signal": "数据不足",
+      "current": 1209.68994140625,
+      "high_52w": 1568.0,
+      "drawdown_52w": -22.851406798070794,
+      "change_1d_pct": 1.2759002768950811,
+      "drawdown_1d_delta": 0.971938152702478,
+      "return_1m": -4.598585062598581,
+      "return_3m": -17.112728856752558,
+      "return_ytd": -15.169008316532262,
+      "return_1y": -15.326955856168144,
+      "date": "2026-07-06",
+      "source_price": "Yahoo:query2.finance.yahoo.com",
+      "signal": "深回撤观察",
       "alerts": [
         {
           "ticker": "600519.SH",
           "name": "贵州茅台",
-          "level": "data",
+          "level": "deep",
           "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
+          "message": "52周回撤 -22.9% 触发阈值 -12.0%"
         }
       ],
-      "has_alert": false
+      "has_alert": true
     },
     {
       "market": "US",
@@ -478,16 +534,19 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -12,
-      "signal": "数据不足",
-      "alerts": [
-        {
-          "ticker": "LLY",
-          "name": "Eli Lilly",
-          "level": "data",
-          "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
-        }
-      ],
+      "current": 1213.9100341796875,
+      "high_52w": 1238.0,
+      "drawdown_52w": -1.9458776914630493,
+      "change_1d_pct": 1.8603088028414927,
+      "drawdown_1d_delta": 1.7907951490559348,
+      "return_1m": 14.073204560427023,
+      "return_3m": 27.174916119184168,
+      "return_ytd": 12.361624887899403,
+      "return_1y": 56.45186183573041,
+      "date": "2026-07-02",
+      "source_price": "Yahoo:query1.finance.yahoo.com",
+      "signal": "接近52周高位",
+      "alerts": [],
       "has_alert": false
     },
     {
@@ -500,17 +559,28 @@
       "alert_drawdown_pct": -18,
       "alert_1d_abs_pct": 6,
       "alert_1m_pct": -12,
-      "signal": "数据不足",
+      "current": 85.6500015258789,
+      "high_52w": 136.3000030517578,
+      "drawdown_52w": -37.160675269130664,
+      "change_1d_pct": 1.8430476574084365,
+      "drawdown_1d_delta": 2.7249557936205946,
+      "return_1m": -8.150132411926103,
+      "return_3m": -19.045369512911492,
+      "return_ytd": -13.265821239616294,
+      "return_1y": -34.21658714790373,
+      "date": "2026-07-06",
+      "source_price": "Yahoo:query1.finance.yahoo.com",
+      "signal": "深回撤观察",
       "alerts": [
         {
           "ticker": "1211.HK",
           "name": "比亚迪股份",
-          "level": "data",
+          "level": "deep",
           "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
+          "message": "52周回撤 -37.2% 触发阈值 -18.0%"
         }
       ],
-      "has_alert": false
+      "has_alert": true
     },
     {
       "market": "US",
@@ -522,17 +592,28 @@
       "alert_drawdown_pct": -8,
       "alert_1d_abs_pct": 3,
       "alert_1m_pct": -5,
-      "signal": "数据不足",
+      "current": 84.13999938964844,
+      "high_52w": 84.13999938964844,
+      "drawdown_52w": 0.0,
+      "change_1d_pct": 3.5059643769504545,
+      "drawdown_1d_delta": 3.272251273252791,
+      "return_1m": 7.307735569342921,
+      "return_3m": 10.594107997646995,
+      "return_ytd": 21.730318353914036,
+      "return_1y": 17.39919288306384,
+      "date": "2026-07-02",
+      "source_price": "Yahoo:query2.finance.yahoo.com",
+      "signal": "接近52周高位",
       "alerts": [
         {
           "ticker": "KO",
           "name": "Coca-Cola",
-          "level": "data",
+          "level": "move",
           "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
+          "message": "单日波动 +3.5% 超过阈值 3.0%"
         }
       ],
-      "has_alert": false
+      "has_alert": true
     },
     {
       "market": "HK",
@@ -544,17 +625,36 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -10,
-      "signal": "数据不足",
+      "current": 96.9000015258789,
+      "high_52w": 186.1999969482422,
+      "drawdown_52w": -47.95918200105337,
+      "change_1d_pct": 2.975561208460431,
+      "drawdown_1d_delta": 1.5037610621100654,
+      "return_1m": -23.459713512013437,
+      "return_3m": -19.585060974374347,
+      "return_ytd": -34.96644192894033,
+      "return_1y": -14.01951716965838,
+      "date": "2026-07-06",
+      "source_price": "Cache:Yahoo:query1.finance.yahoo.com@2026-07-06 10:57",
+      "data_status": "cached",
+      "signal": "深回撤观察",
       "alerts": [
         {
           "ticker": "9988.HK",
           "name": "阿里巴巴-W",
-          "level": "data",
+          "level": "deep",
           "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
+          "message": "52周回撤 -48.0% 触发阈值 -15.0%"
+        },
+        {
+          "ticker": "9988.HK",
+          "name": "阿里巴巴-W",
+          "level": "trend",
+          "notify": false,
+          "message": "近1月表现 -23.5% 低于阈值 -10.0%"
         }
       ],
-      "has_alert": false
+      "has_alert": true
     },
     {
       "market": "US",
@@ -566,147 +666,124 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -12,
-      "signal": "数据不足",
+      "current": 582.9000244140625,
+      "high_52w": 796.25,
+      "drawdown_52w": -26.794345442503918,
+      "change_1d_pct": -4.896306153496388,
+      "drawdown_1d_delta": -3.768910358614594,
+      "return_1m": -2.464732417783866,
+      "return_3m": 0.6336073872320158,
+      "return_ytd": -10.379599255540162,
+      "return_1y": -18.953859993041235,
+      "date": "2026-07-02",
+      "source_price": "Yahoo:query2.finance.yahoo.com",
+      "signal": "深回撤观察",
       "alerts": [
         {
           "ticker": "META",
           "name": "Meta Platforms",
-          "level": "data",
+          "level": "deep",
           "notify": false,
-          "message": "行情源临时限流，等待下次刷新"
+          "message": "52周回撤 -26.8% 触发阈值 -15.0%"
         }
       ],
-      "has_alert": false
+      "has_alert": true
     }
   ],
-  "alerts": [],
-  "data_alerts": [
+  "alerts": [
     {
-      "ticker": "QQQ",
-      "name": "Invesco QQQ",
-      "level": "data",
-      "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
-    },
-    {
-      "ticker": "VOO",
-      "name": "Vanguard S&P 500 ETF",
-      "level": "data",
-      "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
+      "ticker": "MSFT",
+      "name": "Microsoft",
+      "level": "deep",
+      "notify": true,
+      "message": "52周回撤 -29.7% 触发阈值 -15.0%"
     },
     {
       "ticker": "MSFT",
       "name": "Microsoft",
-      "level": "data",
+      "level": "trend",
       "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
-    },
-    {
-      "ticker": "NVDA",
-      "name": "NVIDIA",
-      "level": "data",
-      "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
-    },
-    {
-      "ticker": "BRK.B",
-      "name": "Berkshire Hathaway",
-      "level": "data",
-      "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
+      "message": "近1月表现 -11.5% 低于阈值 -10.0%"
     },
     {
       "ticker": "AVGO",
       "name": "Broadcom",
-      "level": "data",
+      "level": "deep",
       "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
+      "message": "52周回撤 -27.2% 触发阈值 -15.0%"
     },
     {
-      "ticker": "TSM",
-      "name": "Taiwan Semiconductor",
-      "level": "data",
+      "ticker": "AVGO",
+      "name": "Broadcom",
+      "level": "trend",
       "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
+      "message": "近1月表现 -25.2% 低于阈值 -12.0%"
     },
     {
       "ticker": "600900.SH",
       "name": "长江电力",
-      "level": "data",
+      "level": "deep",
       "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
-    },
-    {
-      "ticker": "UNH",
-      "name": "UnitedHealth",
-      "level": "data",
-      "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
+      "message": "52周回撤 -13.0% 触发阈值 -8.0%"
     },
     {
       "ticker": "0700.HK",
       "name": "腾讯控股",
-      "level": "data",
+      "level": "deep",
       "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
-    },
-    {
-      "ticker": "GOOGL",
-      "name": "Alphabet",
-      "level": "data",
-      "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
-    },
-    {
-      "ticker": "AMD",
-      "name": "Advanced Micro Devices",
-      "level": "data",
-      "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
+      "message": "52周回撤 -34.5% 触发阈值 -15.0%"
     },
     {
       "ticker": "600519.SH",
       "name": "贵州茅台",
-      "level": "data",
+      "level": "deep",
       "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
-    },
-    {
-      "ticker": "LLY",
-      "name": "Eli Lilly",
-      "level": "data",
-      "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
+      "message": "52周回撤 -22.9% 触发阈值 -12.0%"
     },
     {
       "ticker": "1211.HK",
       "name": "比亚迪股份",
-      "level": "data",
+      "level": "deep",
       "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
+      "message": "52周回撤 -37.2% 触发阈值 -18.0%"
     },
     {
       "ticker": "KO",
       "name": "Coca-Cola",
-      "level": "data",
+      "level": "move",
       "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
+      "message": "单日波动 +3.5% 超过阈值 3.0%"
     },
     {
       "ticker": "9988.HK",
       "name": "阿里巴巴-W",
-      "level": "data",
+      "level": "deep",
       "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
+      "message": "52周回撤 -48.0% 触发阈值 -15.0%"
+    },
+    {
+      "ticker": "9988.HK",
+      "name": "阿里巴巴-W",
+      "level": "trend",
+      "notify": false,
+      "message": "近1月表现 -23.5% 低于阈值 -10.0%"
     },
     {
       "ticker": "META",
       "name": "Meta Platforms",
-      "level": "data",
+      "level": "deep",
       "notify": false,
-      "message": "行情源临时限流，等待下次刷新"
+      "message": "52周回撤 -26.8% 触发阈值 -15.0%"
     }
   ],
-  "notifications": []
+  "data_alerts": [],
+  "notifications": [
+    {
+      "ticker": "MSFT",
+      "name": "Microsoft",
+      "level": "deep",
+      "notify": true,
+      "message": "52周回撤 -29.7% 触发阈值 -15.0%"
+    }
+  ]
 }

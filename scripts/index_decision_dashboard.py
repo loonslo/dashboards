@@ -20,6 +20,20 @@ CACHE_FILE = os.path.join(HERE, "index_decision_dashboard_cache.json")
 HISTORY_FILE = os.path.join(HERE, "index_decision_dashboard_history.json")
 WATCHLIST_V1_FILE = os.path.join(HERE, "watchlist_v1.json")
 DASHBOARD_LATEST_FILE = os.path.join(HERE, "dashboard_latest.json")
+WATCHLIST_CACHE_KEY = "__watchlist_history"
+WATCHLIST_CACHE_FIELDS = (
+    "current",
+    "high_52w",
+    "drawdown_52w",
+    "change_1d_pct",
+    "drawdown_1d_delta",
+    "return_1m",
+    "return_3m",
+    "return_ytd",
+    "return_1y",
+    "date",
+    "source_price",
+)
 CSI_INDICES = {
     "000300": {"name": "沪深300", "kind": "cn_broad", "product": "-"},
     "000905": {"name": "中证500", "kind": "cn_broad", "product": "-"},
@@ -268,6 +282,31 @@ def fetch_yahoo_history(ticker):
     return fetch_stooq_history(ticker, last_error)
 
 
+def fetch_watchlist_quote(ticker):
+    symbol = ticker
+    if ticker.endswith(".SH"):
+        symbol = ticker[:-3] + ".SS"
+    quote = fetch_cnbc_quote(symbol)
+    return {
+        key: value
+        for key, value in quote.items()
+        if key in WATCHLIST_CACHE_FIELDS and value is not None
+    }
+
+
+def fetch_watchlist_data(ticker):
+    try:
+        return fetch_yahoo_history(yahoo_symbol(ticker))
+    except Exception as history_error:
+        try:
+            row = fetch_watchlist_quote(ticker)
+            row["source_price"] = f"{row.get('source_price', 'CNBC')}:quote-fallback"
+            row["history_error"] = str(history_error)
+            return row
+        except Exception as quote_error:
+            raise RuntimeError(f"Yahoo/Stooq历史失败: {history_error}; CNBC报价失败: {quote_error}")
+
+
 def yahoo_symbol(ticker):
     """Convert local watchlist tickers to Yahoo symbols."""
     if ticker == "BRK.B":
@@ -325,10 +364,13 @@ def fetch_cnbc_quote(symbol):
     fundamentals = row.get("FundamentalData") or {}
     current = to_float(row.get("last"))
     high_52w = to_float(fundamentals.get("yrhiprice"))
+    yragoprice = to_float(fundamentals.get("yragoprice"))
     return {
         "current": current,
         "high_52w": high_52w,
         "drawdown_52w": drawdown(current, high_52w),
+        "change_1d_pct": to_float(row.get("change_pct")),
+        "return_1y": None if current is None or yragoprice in (None, 0) else (current / yragoprice - 1.0) * 100.0,
         "date": row.get("last_time") or "N/A",
         "source_price": "CNBC",
     }
@@ -531,6 +573,46 @@ def fill_cached_us_valuations(rows, gaps):
         gaps.append(f"{ticker}/valuation: WSJ不可用，使用缓存估值({cached.get('valuation_date', 'N/A')})")
 
 
+def load_watchlist_cache():
+    cache = load_cache().get(WATCHLIST_CACHE_KEY, {})
+    return cache if isinstance(cache, dict) else {}
+
+
+def cached_watchlist_data(ticker):
+    cached = load_watchlist_cache().get(ticker) or {}
+    if cached.get("current") is None:
+        return None
+    row = {key: cached.get(key) for key in WATCHLIST_CACHE_FIELDS if cached.get(key) is not None}
+    row["source_price"] = f"Cache:{cached.get('source_price', 'watchlist')}@{cached.get('cached_at', 'N/A')}"
+    row["data_status"] = "cached"
+    return row
+
+
+def save_watchlist_cache(rows):
+    cached = {}
+    for row in rows:
+        ticker = row.get("ticker")
+        source = str(row.get("source_price") or "")
+        if not ticker or row.get("current") is None or source.startswith("Cache:"):
+            continue
+        values = {key: row.get(key) for key in WATCHLIST_CACHE_FIELDS if row.get(key) is not None}
+        values["cached_at"] = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
+        cached[ticker] = values
+    if not cached:
+        return
+    try:
+        old = load_cache()
+        watchlist_cache = old.get(WATCHLIST_CACHE_KEY, {})
+        if not isinstance(watchlist_cache, dict):
+            watchlist_cache = {}
+        watchlist_cache.update(cached)
+        old[WATCHLIST_CACHE_KEY] = watchlist_cache
+        with open(CACHE_FILE, "w", encoding="utf-8") as handle:
+            json.dump(old, handle, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+
 def dividend_signal(row):
     pe = row.get("pe_ttm")
     dy = row.get("dividend_yield")
@@ -646,13 +728,13 @@ def collect_watchlist(path):
     if not items:
         return rows, ["watchlist: 未读取到观察池"]
 
-    with ThreadPoolExecutor(max_workers=8) as pool:
+    with ThreadPoolExecutor(max_workers=3) as pool:
         futures = {}
         for item in items:
             ticker = item.get("ticker")
             if not ticker:
                 continue
-            futures[pool.submit(fetch_yahoo_history, yahoo_symbol(ticker))] = item
+            futures[pool.submit(fetch_watchlist_data, ticker)] = item
         for future in as_completed(futures):
             item = futures[future]
             ticker = item.get("ticker")
@@ -665,20 +747,29 @@ def collect_watchlist(path):
                 row["alerts"] = build_watchlist_alerts(row)
                 row["has_alert"] = any(alert.get("level") != "data" for alert in row["alerts"])
             except Exception as exc:
-                row["signal"] = "数据不足"
-                row["alerts"] = [{
-                    "ticker": ticker,
-                    "name": row.get("name") or ticker,
-                    "level": "data",
-                    "notify": False,
-                    "message": friendly_fetch_error(exc),
-                }]
-                row["has_alert"] = False
-                gaps.append(f"{ticker}/watchlist: {exc}")
+                cached = cached_watchlist_data(ticker)
+                if cached:
+                    merge_non_null(row, cached)
+                    row["signal"] = watchlist_signal(row)
+                    row["alerts"] = build_watchlist_alerts(row)
+                    row["has_alert"] = any(alert.get("level") != "data" for alert in row["alerts"])
+                    gaps.append(f"{ticker}/cache: 观察池行情源暂不可用，使用缓存数据")
+                else:
+                    row["signal"] = "数据不足"
+                    row["alerts"] = [{
+                        "ticker": ticker,
+                        "name": row.get("name") or ticker,
+                        "level": "data",
+                        "notify": False,
+                        "message": friendly_fetch_error(exc),
+                    }]
+                    row["has_alert"] = False
+                    gaps.append(f"{ticker}/watchlist: {exc}")
             rows.append(row)
 
     priority_order = {"core": 0, "high": 1, "normal": 2}
     rows.sort(key=lambda row: (priority_order.get(row.get("priority"), 9), row.get("group") or "", row.get("ticker") or ""))
+    save_watchlist_cache(rows)
     return rows, gaps
 
 
