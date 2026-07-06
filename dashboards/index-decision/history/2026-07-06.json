@@ -1,7 +1,13 @@
 {
-  "asof": "2026-07-06 12:06",
+  "asof": "2026-07-06 12:35",
   "indices": [
     {
+      "return_1m": -1.96,
+      "return_3m": 9.04,
+      "return_ytd": 4.58,
+      "return_1y": 22.03,
+      "performance_date": "2026-07-03",
+      "source_performance": "CSI:get-index-yield-item",
       "current": 4842.17,
       "high_52w": 5064.27,
       "drawdown_52w": -4.3856271486314995,
@@ -10,12 +16,6 @@
       "pe_ttm": 14.53,
       "date": "2026-07-03",
       "source_price": "CSI:index-perf",
-      "return_1m": -1.96,
-      "return_3m": 9.04,
-      "return_ytd": 4.58,
-      "return_1y": 22.03,
-      "performance_date": "2026-07-03",
-      "source_performance": "CSI:get-index-yield-item",
       "pe_static": 14.86,
       "pb": 1.43,
       "dividend_yield": 2.64,
@@ -45,8 +45,15 @@
       "return_1y": 47.66,
       "performance_date": "2026-07-03",
       "source_performance": "CSI:get-index-yield-item",
-      "pe_static": 32.34,
+      "current": 8745.26,
+      "high_52w": 9147.56,
+      "drawdown_52w": -4.397894083230936,
+      "change_1d_pct": 0.5875194670457606,
+      "drawdown_1d_delta": 0.5584002728596378,
       "pe_ttm": 31.02,
+      "date": "2026-07-03",
+      "source_price": "CSI:index-perf",
+      "pe_static": 32.34,
       "pb": 2.47,
       "dividend_yield": 1.19,
       "valuation_date": "20260703",
@@ -69,6 +76,12 @@
       "signal_snapshot_delta": "无变化"
     },
     {
+      "return_1m": -8.38,
+      "return_3m": -10.2,
+      "return_ytd": -9.29,
+      "return_1y": -12.81,
+      "performance_date": "2026-07-03",
+      "source_performance": "CSI:get-index-yield-item",
       "current": 10195.28,
       "high_52w": 11999.28,
       "drawdown_52w": -15.034235387456585,
@@ -77,12 +90,6 @@
       "pe_ttm": 7.07,
       "date": "2026-07-03",
       "source_price": "CSI:index-perf",
-      "return_1m": -8.38,
-      "return_3m": -10.2,
-      "return_ytd": -9.29,
-      "return_1y": -12.81,
-      "performance_date": "2026-07-03",
-      "source_performance": "CSI:get-index-yield-item",
       "pb": 0.7688,
       "dividend_yield": 5.34,
       "roe": 10.14,
@@ -157,9 +164,8 @@
     }
   ],
   "data_gaps": [
-    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpLKZsmVbj0df_kULxPjzC14W-KK5woaDMEXrX9N5FmPL7EXoGMSi0\"'",
-    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpLKZt2hd4r-hoA93dy48N5fzVrK5woaK_UgVdkr2yRdSJytCicDHs\"'",
-    "000905/history: The read operation timed out"
+    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpLMKwzyXJcRo_Vj649r8oBeGBCK5woaLXHeVbkA04SuI29mgZYoGM\"'",
+    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpLMKxYeUilfXxgpQPKftENVcUTK5woaLtKMyZ8I3pfWrLktF_4knk\"'"
   ],
   "watchlist": [
     {
@@ -393,12 +399,12 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -10,
-      "current": 447.0,
+      "current": 447.4,
       "high_52w": 683.0,
-      "drawdown_52w": -34.55344070278185,
-      "change_1d_pct": 3.66,
-      "return_1y": -10.867397806580259,
-      "date": "2026-07-06T11:50:58.000+0800",
+      "drawdown_52w": -34.494875549048324,
+      "change_1d_pct": 3.76,
+      "return_1y": -10.787637088733803,
+      "date": "2026-07-06T11:59:57.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -408,7 +414,7 @@
           "name": "腾讯控股",
           "level": "deep",
           "notify": false,
-          "message": "52周回撤 -34.6% 触发阈值 -15.0%"
+          "message": "52周回撤 -34.5% 触发阈值 -15.0%"
         }
       ],
       "has_alert": true
@@ -519,12 +525,12 @@
       "alert_drawdown_pct": -18,
       "alert_1d_abs_pct": 6,
       "alert_1m_pct": -12,
-      "current": 84.25,
+      "current": 84.15,
       "high_52w": 136.3,
-      "drawdown_52w": -38.18782098312546,
-      "change_1d_pct": 0.18,
-      "return_1y": -31.11201962387571,
-      "date": "2026-07-06T11:51:00.000+0800",
+      "drawdown_52w": -38.261188554658844,
+      "change_1d_pct": 0.06,
+      "return_1y": -31.1937857726901,
+      "date": "2026-07-06T11:59:58.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -534,7 +540,7 @@
           "name": "比亚迪股份",
           "level": "deep",
           "notify": false,
-          "message": "52周回撤 -38.2% 触发阈值 -18.0%"
+          "message": "52周回撤 -38.3% 触发阈值 -18.0%"
         }
       ],
       "has_alert": true
@@ -579,12 +585,12 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -10,
-      "current": 95.65,
+      "current": 95.7,
       "high_52w": 186.2,
-      "drawdown_52w": -48.63050483351235,
-      "change_1d_pct": 1.65,
-      "return_1y": -12.56855575868373,
-      "date": "2026-07-06T11:51:00.000+0800",
+      "drawdown_52w": -48.60365198711063,
+      "change_1d_pct": 1.7,
+      "return_1y": -12.52285191956124,
+      "date": "2026-07-06T11:59:50.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -657,7 +663,7 @@
       "name": "腾讯控股",
       "level": "deep",
       "notify": false,
-      "message": "52周回撤 -34.6% 触发阈值 -15.0%"
+      "message": "52周回撤 -34.5% 触发阈值 -15.0%"
     },
     {
       "ticker": "600519.SH",
@@ -671,7 +677,7 @@
       "name": "比亚迪股份",
       "level": "deep",
       "notify": false,
-      "message": "52周回撤 -38.2% 触发阈值 -18.0%"
+      "message": "52周回撤 -38.3% 触发阈值 -18.0%"
     },
     {
       "ticker": "KO",

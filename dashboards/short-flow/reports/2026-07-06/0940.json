@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-06 12:06",
+  "generated_at": "2026-07-06 12:36",
   "trade_date": "2026-07-06",
   "session": "0940",
   "session_name": "09:40 盘中确认",
-  "analysis_run_id": 12,
+  "analysis_run_id": 13,
   "market_regime": {
     "trade_date": "2026-07-06",
     "above_ma20_ratio": 0.6,
