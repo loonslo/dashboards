@@ -1,5 +1,5 @@
 {
-  "asof": "2026-07-06 11:05",
+  "asof": "2026-07-06 11:35",
   "indices": [
     {
       "return_1m": -1.96,
@@ -122,7 +122,7 @@
       "pe_52w_ago": 24.09,
       "dividend_yield": 1.09,
       "valuation_date": "7/02/26",
-      "source_valuation": "Cache:WSJ:P/E & Yields@2026-07-04 14:52",
+      "source_valuation": "WSJ:P/E & Yields",
       "code": "^GSPC",
       "name": "标普500",
       "kind": "us_broad",
@@ -148,7 +148,7 @@
       "pe_52w_ago": 31.95,
       "dividend_yield": 0.52,
       "valuation_date": "7/02/26",
-      "source_valuation": "Cache:WSJ:P/E & Yields@2026-07-04 14:52",
+      "source_valuation": "WSJ:P/E & Yields",
       "code": "^NDX",
       "name": "纳斯达克100",
       "kind": "nasdaq",
@@ -164,11 +164,8 @@
     }
   ],
   "data_gaps": [
-    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpLG48Rg_VRyNsjI42xiVwYMn9dK5woaO6_Q4EVno9G75njHXKEjjI\"'",
-    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpLG5CeyLnUTL1HME1C-PgvzqXyK5woaBhzzw1FaKz4o_2KtRlz0Pg\"'",
-    "US/valuation: WSJ不可用，将尝试缓存估值: HTTP Error 502: Bad Gateway",
-    "^GSPC/valuation: WSJ不可用，使用缓存估值(7/02/26)",
-    "^NDX/valuation: WSJ不可用，使用缓存估值(7/02/26)"
+    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpLIpkvq9UskCb_Z5MLKtuK_c1NK5woaIqntsQUHfEU2jLoxm71R1Y\"'",
+    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpLIpqSlfpYTLhDunYLUHrfxRz5K5woaMIbVQxVZ7HnyaTDYCGOIMk\"'"
   ],
   "watchlist": [
     {
@@ -350,12 +347,12 @@
       "alert_drawdown_pct": -8,
       "alert_1d_abs_pct": 3,
       "alert_1m_pct": -5,
-      "current": 27.12,
+      "current": 27.06,
       "high_52w": 30.79,
-      "drawdown_52w": -11.919454368301386,
-      "change_1d_pct": 0.259,
-      "return_1y": -10.347107438016522,
-      "date": "2026-07-06T10:50:00.000+0800",
+      "drawdown_52w": -12.114322832088343,
+      "change_1d_pct": 0.037,
+      "return_1y": -10.545454545454547,
+      "date": "2026-07-06T11:20:00.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "回撤观察",
@@ -363,9 +360,9 @@
         {
           "ticker": "600900.SH",
           "name": "长江电力",
-          "level": "watch",
+          "level": "deep",
           "notify": false,
-          "message": "52周回撤 -11.9% 触发阈值 -8.0%"
+          "message": "52周回撤 -12.1% 触发阈值 -8.0%"
         }
       ],
       "has_alert": true
@@ -402,12 +399,12 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -10,
-      "current": 447.6,
+      "current": 447.2,
       "high_52w": 683.0,
-      "drawdown_52w": -34.46559297218155,
-      "change_1d_pct": 3.8,
-      "return_1y": -10.747756729810565,
-      "date": "2026-07-06T10:50:56.000+0800",
+      "drawdown_52w": -34.524158125915086,
+      "change_1d_pct": 3.71,
+      "return_1y": -10.827517447657032,
+      "date": "2026-07-06T11:20:57.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -476,12 +473,12 @@
       "alert_drawdown_pct": -12,
       "alert_1d_abs_pct": 4,
       "alert_1m_pct": -8,
-      "current": 1208.88,
+      "current": 1203.17,
       "high_52w": 1568.0,
-      "drawdown_52w": -22.903061224489786,
-      "change_1d_pct": 1.208,
-      "return_1y": -14.239500567536878,
-      "date": "2026-07-06T10:50:00.000+0800",
+      "drawdown_52w": -23.2672193877551,
+      "change_1d_pct": 0.73,
+      "return_1y": -14.64458002270147,
+      "date": "2026-07-06T11:20:00.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -491,7 +488,7 @@
           "name": "贵州茅台",
           "level": "deep",
           "notify": false,
-          "message": "52周回撤 -22.9% 触发阈值 -12.0%"
+          "message": "52周回撤 -23.3% 触发阈值 -12.0%"
         }
       ],
       "has_alert": true
@@ -528,12 +525,12 @@
       "alert_drawdown_pct": -18,
       "alert_1d_abs_pct": 6,
       "alert_1m_pct": -12,
-      "current": 85.05,
+      "current": 84.3,
       "high_52w": 136.3,
-      "drawdown_52w": -37.60088041085841,
-      "change_1d_pct": 1.13,
-      "return_1y": -30.45789043336059,
-      "date": "2026-07-06T10:50:57.000+0800",
+      "drawdown_52w": -38.15113719735878,
+      "change_1d_pct": 0.24,
+      "return_1y": -31.071136549468527,
+      "date": "2026-07-06T11:20:54.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -543,7 +540,7 @@
           "name": "比亚迪股份",
           "level": "deep",
           "notify": false,
-          "message": "52周回撤 -37.6% 触发阈值 -18.0%"
+          "message": "52周回撤 -38.2% 触发阈值 -18.0%"
         }
       ],
       "has_alert": true
@@ -593,7 +590,7 @@
       "drawdown_52w": -48.469387755102034,
       "change_1d_pct": 1.97,
       "return_1y": -12.29433272394881,
-      "date": "2026-07-06T10:50:57.000+0800",
+      "date": "2026-07-06T11:20:53.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -657,9 +654,9 @@
     {
       "ticker": "600900.SH",
       "name": "长江电力",
-      "level": "watch",
+      "level": "deep",
       "notify": false,
-      "message": "52周回撤 -11.9% 触发阈值 -8.0%"
+      "message": "52周回撤 -12.1% 触发阈值 -8.0%"
     },
     {
       "ticker": "0700.HK",
@@ -673,14 +670,14 @@
       "name": "贵州茅台",
       "level": "deep",
       "notify": false,
-      "message": "52周回撤 -22.9% 触发阈值 -12.0%"
+      "message": "52周回撤 -23.3% 触发阈值 -12.0%"
     },
     {
       "ticker": "1211.HK",
       "name": "比亚迪股份",
       "level": "deep",
       "notify": false,
-      "message": "52周回撤 -37.6% 触发阈值 -18.0%"
+      "message": "52周回撤 -38.2% 触发阈值 -18.0%"
     },
     {
       "ticker": "KO",
