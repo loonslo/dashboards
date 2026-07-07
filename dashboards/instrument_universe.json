@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-06 15:06",
+  "updated_at": "2026-07-07 09:05",
   "sources": [
     "curated:mainstream_etf",
     "Eastmoney:A_mainboard_market_cap",
@@ -1440,7 +1440,7 @@
     {
       "market": "A",
       "code": "600089",
-      "name": "XD特变电",
+      "name": "特变电工",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
       "rank": 144,
@@ -2034,7 +2034,7 @@
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
       "rank": 203,
-      "market_cap": 76226739671,
+      "market_cap": 76267262192,
       "source": "Eastmoney:mainboard_market_cap"
     },
     {
@@ -3319,22 +3319,22 @@
     },
     {
       "market": "A",
-      "code": "603629",
-      "name": "利通电子",
-      "asset_type": "stock",
-      "bucket": "A股主板TOP1000",
-      "rank": 332,
-      "market_cap": 45355128000,
-      "source": "Eastmoney:mainboard_market_cap"
-    },
-    {
-      "market": "A",
       "code": "601699",
       "name": "潞安环能",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 333,
+      "rank": 332,
       "market_cap": 45319849380,
+      "source": "Eastmoney:mainboard_market_cap"
+    },
+    {
+      "market": "A",
+      "code": "603629",
+      "name": "DR利通电",
+      "asset_type": "stock",
+      "bucket": "A股主板TOP1000",
+      "rank": 333,
+      "market_cap": 45257902480,
       "source": "Eastmoney:mainboard_market_cap"
     },
     {
@@ -3500,7 +3500,7 @@
     {
       "market": "A",
       "code": "601108",
-      "name": "XD财通证",
+      "name": "财通证券",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
       "rank": 350,
@@ -3979,21 +3979,11 @@
     },
     {
       "market": "A",
-      "code": "601963",
-      "name": "重庆银行",
-      "asset_type": "stock",
-      "bucket": "A股主板TOP1000",
-      "rank": 398,
-      "market_cap": 37127954350,
-      "source": "Eastmoney:mainboard_market_cap"
-    },
-    {
-      "market": "A",
       "code": "601665",
       "name": "齐鲁银行",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 399,
+      "rank": 398,
       "market_cap": 37107670426,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4003,7 +3993,7 @@
       "name": "恺英网络",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 400,
+      "rank": 399,
       "market_cap": 36939103516,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4013,7 +4003,7 @@
       "name": "华林证券",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 401,
+      "rank": 400,
       "market_cap": 36909000000,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4023,7 +4013,7 @@
       "name": "振华股份",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 402,
+      "rank": 401,
       "market_cap": 36816752937,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4033,7 +4023,7 @@
       "name": "万  科Ａ",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 403,
+      "rank": 402,
       "market_cap": 36627278076,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4043,7 +4033,7 @@
       "name": "火炬电子",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 404,
+      "rank": 403,
       "market_cap": 36585340923,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4053,7 +4043,7 @@
       "name": "天风证券",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 405,
+      "rank": 404,
       "market_cap": 36568566399,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4063,7 +4053,7 @@
       "name": "山西焦煤",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 406,
+      "rank": 405,
       "market_cap": 36560530820,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4073,7 +4063,7 @@
       "name": "海信家电",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 407,
+      "rank": 406,
       "market_cap": 36518789079,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4083,7 +4073,7 @@
       "name": "章源钨业",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 408,
+      "rank": 407,
       "market_cap": 36487054516,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4093,7 +4083,7 @@
       "name": "海信视像",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 409,
+      "rank": 408,
       "market_cap": 36434825332,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4103,7 +4093,7 @@
       "name": "万泰生物",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 410,
+      "rank": 409,
       "market_cap": 36363937043,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4113,7 +4103,7 @@
       "name": "岩山科技",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 411,
+      "rank": 410,
       "market_cap": 36209208466,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4123,8 +4113,18 @@
       "name": "长沙银行",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 412,
+      "rank": 411,
       "market_cap": 36153768248,
+      "source": "Eastmoney:mainboard_market_cap"
+    },
+    {
+      "market": "A",
+      "code": "601963",
+      "name": "XD重庆银",
+      "asset_type": "stock",
+      "bucket": "A股主板TOP1000",
+      "rank": 412,
+      "market_cap": 36112736848,
       "source": "Eastmoney:mainboard_market_cap"
     },
     {
@@ -4209,21 +4209,11 @@
     },
     {
       "market": "A",
-      "code": "002340",
-      "name": "格林美",
-      "asset_type": "stock",
-      "bucket": "A股主板TOP1000",
-      "rank": 421,
-      "market_cap": 35155258064,
-      "source": "Eastmoney:mainboard_market_cap"
-    },
-    {
-      "market": "A",
       "code": "600711",
       "name": "盛屯矿业",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 422,
+      "rank": 421,
       "market_cap": 35140253335,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4233,7 +4223,7 @@
       "name": "白云山",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 423,
+      "rank": 422,
       "market_cap": 35117084498,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4243,7 +4233,7 @@
       "name": "华能蒙电",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 424,
+      "rank": 423,
       "market_cap": 35023297333,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -4253,8 +4243,18 @@
       "name": "杭叉集团",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 425,
+      "rank": 424,
       "market_cap": 34710019299,
+      "source": "Eastmoney:mainboard_market_cap"
+    },
+    {
+      "market": "A",
+      "code": "002340",
+      "name": "格林美",
+      "asset_type": "stock",
+      "bucket": "A股主板TOP1000",
+      "rank": 425,
+      "market_cap": 34696045695,
       "source": "Eastmoney:mainboard_market_cap"
     },
     {
@@ -6509,21 +6509,11 @@
     },
     {
       "market": "A",
-      "code": "000683",
-      "name": "博源化工",
-      "asset_type": "stock",
-      "bucket": "A股主板TOP1000",
-      "rank": 651,
-      "market_cap": 22523999254,
-      "source": "Eastmoney:mainboard_market_cap"
-    },
-    {
-      "market": "A",
       "code": "002624",
       "name": "完美世界",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 652,
+      "rank": 651,
       "market_cap": 22503633486,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6533,7 +6523,7 @@
       "name": "吉林敖东",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 653,
+      "rank": 652,
       "market_cap": 22434997460,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6543,7 +6533,7 @@
       "name": "华西证券",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 654,
+      "rank": 653,
       "market_cap": 22417500000,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6553,7 +6543,7 @@
       "name": "常熟银行",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 655,
+      "rank": 654,
       "market_cap": 22399820558,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6563,7 +6553,7 @@
       "name": "深高速",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 656,
+      "rank": 655,
       "market_cap": 22383891040,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6573,7 +6563,7 @@
       "name": "*ST闻泰",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 657,
+      "rank": 656,
       "market_cap": 22356405320,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6583,7 +6573,7 @@
       "name": "广州港",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 658,
+      "rank": 657,
       "market_cap": 22256367485,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6593,7 +6583,7 @@
       "name": "江化微",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 659,
+      "rank": 658,
       "market_cap": 22251269210,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6603,7 +6593,7 @@
       "name": "凯盛科技",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 660,
+      "rank": 659,
       "market_cap": 22245492354,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6613,7 +6603,7 @@
       "name": "川能动力",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 661,
+      "rank": 660,
       "market_cap": 22172481787,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6623,7 +6613,7 @@
       "name": "湘财股份",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 662,
+      "rank": 661,
       "market_cap": 22158705008,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6633,7 +6623,7 @@
       "name": "东华软件",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 663,
+      "rank": 662,
       "market_cap": 22149883211,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6643,7 +6633,7 @@
       "name": "方大炭素",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 664,
+      "rank": 663,
       "market_cap": 22142837024,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6653,8 +6643,18 @@
       "name": "振华重工",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 665,
+      "rank": 664,
       "market_cap": 22130124921,
+      "source": "Eastmoney:mainboard_market_cap"
+    },
+    {
+      "market": "A",
+      "code": "603638",
+      "name": "艾迪精密",
+      "asset_type": "stock",
+      "bucket": "A股主板TOP1000",
+      "rank": 665,
+      "market_cap": 22076216781,
       "source": "Eastmoney:mainboard_market_cap"
     },
     {
@@ -6729,21 +6729,11 @@
     },
     {
       "market": "A",
-      "code": "603638",
-      "name": "艾迪精密",
-      "asset_type": "stock",
-      "bucket": "A股主板TOP1000",
-      "rank": 673,
-      "market_cap": 21880048471,
-      "source": "Eastmoney:mainboard_market_cap"
-    },
-    {
-      "market": "A",
       "code": "600835",
       "name": "上海机电",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 674,
+      "rank": 673,
       "market_cap": 21818004177,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6753,7 +6743,7 @@
       "name": "广州发展",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 675,
+      "rank": 674,
       "market_cap": 21771421532,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6763,7 +6753,7 @@
       "name": "西部材料",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 676,
+      "rank": 675,
       "market_cap": 21730417336,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6773,7 +6763,7 @@
       "name": "德力佳",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 677,
+      "rank": 676,
       "market_cap": 21612005403,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6783,7 +6773,7 @@
       "name": "中谷物流",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 678,
+      "rank": 677,
       "market_cap": 21567648068,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6793,7 +6783,7 @@
       "name": "天士力",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 679,
+      "rank": 678,
       "market_cap": 21557698572,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6803,7 +6793,7 @@
       "name": "南网能源",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 680,
+      "rank": 679,
       "market_cap": 21553030298,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6813,7 +6803,7 @@
       "name": "五矿资本",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 681,
+      "rank": 680,
       "market_cap": 21545733549,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6823,7 +6813,7 @@
       "name": "扬农化工",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 682,
+      "rank": 681,
       "market_cap": 21514919579,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6833,7 +6823,7 @@
       "name": "尚太科技",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 683,
+      "rank": 682,
       "market_cap": 21505061707,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6843,7 +6833,7 @@
       "name": "许继电气",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 684,
+      "rank": 683,
       "market_cap": 21503115676,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6853,7 +6843,7 @@
       "name": "济川药业",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 685,
+      "rank": 684,
       "market_cap": 21494772983,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6863,7 +6853,7 @@
       "name": "康弘药业",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 686,
+      "rank": 685,
       "market_cap": 21476117312,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -6873,8 +6863,18 @@
       "name": "中国一重",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 687,
+      "rank": 686,
       "market_cap": 21464860562,
+      "source": "Eastmoney:mainboard_market_cap"
+    },
+    {
+      "market": "A",
+      "code": "000683",
+      "name": "博源化工",
+      "asset_type": "stock",
+      "bucket": "A股主板TOP1000",
+      "rank": 687,
+      "market_cap": 21408949786,
       "source": "Eastmoney:mainboard_market_cap"
     },
     {
@@ -7699,21 +7699,11 @@
     },
     {
       "market": "A",
-      "code": "002901",
-      "name": "大博医疗",
-      "asset_type": "stock",
-      "bucket": "A股主板TOP1000",
-      "rank": 770,
-      "market_cap": 19115280592,
-      "source": "Eastmoney:mainboard_market_cap"
-    },
-    {
-      "market": "A",
       "code": "002957",
       "name": "科瑞技术",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 771,
+      "rank": 770,
       "market_cap": 19058804307,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -7723,7 +7713,7 @@
       "name": "恒邦股份",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 772,
+      "rank": 771,
       "market_cap": 19018606426,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -7733,7 +7723,7 @@
       "name": "恒铭达",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 773,
+      "rank": 772,
       "market_cap": 18990235984,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -7743,7 +7733,7 @@
       "name": "中原证券",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 774,
+      "rank": 773,
       "market_cap": 18989398423,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -7753,7 +7743,7 @@
       "name": "中科三环",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 775,
+      "rank": 774,
       "market_cap": 18928850286,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -7763,17 +7753,17 @@
       "name": "内蒙一机",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 776,
+      "rank": 775,
       "market_cap": 18906938750,
       "source": "Eastmoney:mainboard_market_cap"
     },
     {
       "market": "A",
       "code": "601133",
-      "name": "XD柏诚股",
+      "name": "柏诚股份",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 777,
+      "rank": 776,
       "market_cap": 18890672730,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -7783,8 +7773,18 @@
       "name": "华谊集团",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 778,
+      "rank": 777,
       "market_cap": 18884663153,
+      "source": "Eastmoney:mainboard_market_cap"
+    },
+    {
+      "market": "A",
+      "code": "002901",
+      "name": "大博医疗",
+      "asset_type": "stock",
+      "bucket": "A股主板TOP1000",
+      "rank": 778,
+      "market_cap": 18871009083,
       "source": "Eastmoney:mainboard_market_cap"
     },
     {
@@ -8020,7 +8020,7 @@
     {
       "market": "A",
       "code": "603816",
-      "name": "XD顾家家",
+      "name": "顾家家居",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
       "rank": 802,
@@ -9079,11 +9079,21 @@
     },
     {
       "market": "A",
+      "code": "600458",
+      "name": "时代新材",
+      "asset_type": "stock",
+      "bucket": "A股主板TOP1000",
+      "rank": 908,
+      "market_cap": 15236744320,
+      "source": "Eastmoney:mainboard_market_cap"
+    },
+    {
+      "market": "A",
       "code": "603025",
       "name": "大豪科技",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 908,
+      "rank": 909,
       "market_cap": 15197671461,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9093,7 +9103,7 @@
       "name": "浙江东方",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 909,
+      "rank": 910,
       "market_cap": 15164293824,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9103,7 +9113,7 @@
       "name": "安徽合力",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 910,
+      "rank": 911,
       "market_cap": 15150683865,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9113,7 +9123,7 @@
       "name": "金科股份",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 911,
+      "rank": 912,
       "market_cap": 15141886234,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9123,7 +9133,7 @@
       "name": "鸿远电子",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 912,
+      "rank": 913,
       "market_cap": 15138109235,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9133,7 +9143,7 @@
       "name": "天味食品",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 913,
+      "rank": 914,
       "market_cap": 15134598860,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9143,7 +9153,7 @@
       "name": "华润江中",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 914,
+      "rank": 915,
       "market_cap": 15108527880,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9153,7 +9163,7 @@
       "name": "美锦能源",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 915,
+      "rank": 916,
       "market_cap": 15104012759,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9163,7 +9173,7 @@
       "name": "莱克电气",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 916,
+      "rank": 917,
       "market_cap": 15051668153,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9173,7 +9183,7 @@
       "name": "晶科科技",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 917,
+      "rank": 918,
       "market_cap": 15041099772,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9183,7 +9193,7 @@
       "name": "鲁信创投",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 918,
+      "rank": 919,
       "market_cap": 14924403845,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9193,7 +9203,7 @@
       "name": "双欣材料",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 919,
+      "rank": 920,
       "market_cap": 14922470000,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9203,7 +9213,7 @@
       "name": "共达电声",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 920,
+      "rank": 921,
       "market_cap": 14911485600,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9213,18 +9223,8 @@
       "name": "华通线缆",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 921,
-      "market_cap": 14894839076,
-      "source": "Eastmoney:mainboard_market_cap"
-    },
-    {
-      "market": "A",
-      "code": "600458",
-      "name": "时代新材",
-      "asset_type": "stock",
-      "bucket": "A股主板TOP1000",
       "rank": 922,
-      "market_cap": 14892056320,
+      "market_cap": 14894839076,
       "source": "Eastmoney:mainboard_market_cap"
     },
     {
@@ -9750,7 +9750,7 @@
     {
       "market": "A",
       "code": "605060",
-      "name": "XD联德股",
+      "name": "联德股份",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
       "rank": 975,
@@ -9899,21 +9899,11 @@
     },
     {
       "market": "A",
-      "code": "603456",
-      "name": "九洲药业",
-      "asset_type": "stock",
-      "bucket": "A股主板TOP1000",
-      "rank": 990,
-      "market_cap": 13608524228,
-      "source": "Eastmoney:mainboard_market_cap"
-    },
-    {
-      "market": "A",
       "code": "603194",
       "name": "中力股份",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 991,
+      "rank": 990,
       "market_cap": 13605930000,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9923,7 +9913,7 @@
       "name": "海通发展",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 992,
+      "rank": 991,
       "market_cap": 13604833883,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9933,7 +9923,7 @@
       "name": "华建集团",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 993,
+      "rank": 992,
       "market_cap": 13590693658,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9943,7 +9933,7 @@
       "name": "山东钢铁",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 994,
+      "rank": 993,
       "market_cap": 13587538934,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9953,7 +9943,7 @@
       "name": "航天科技",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 995,
+      "rank": 994,
       "market_cap": 13585387930,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9963,7 +9953,7 @@
       "name": "新坐标",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 996,
+      "rank": 995,
       "market_cap": 13584114798,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9973,7 +9963,7 @@
       "name": "华侨城Ａ",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 997,
+      "rank": 996,
       "market_cap": 13583811110,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9983,7 +9973,7 @@
       "name": "西藏珠峰",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 998,
+      "rank": 997,
       "market_cap": 13576020995,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -9993,7 +9983,7 @@
       "name": "国联股份",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 999,
+      "rank": 998,
       "market_cap": 13567727019,
       "source": "Eastmoney:mainboard_market_cap"
     },
@@ -10003,8 +9993,18 @@
       "name": "鹏欣资源",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
-      "rank": 1000,
+      "rank": 999,
       "market_cap": 13564997794,
+      "source": "Eastmoney:mainboard_market_cap"
+    },
+    {
+      "market": "A",
+      "code": "002971",
+      "name": "和远气体",
+      "asset_type": "stock",
+      "bucket": "A股主板TOP1000",
+      "rank": 1000,
+      "market_cap": 13562143750,
       "source": "Eastmoney:mainboard_market_cap"
     },
     {
@@ -10224,7 +10224,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 1,
-      "market_cap": 4714886000000,
+      "market_cap": 4732310000000,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10234,7 +10234,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 2,
-      "market_cap": 4532958682280,
+      "market_cap": 4592148726960,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10244,7 +10244,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 3,
-      "market_cap": 4378665060000,
+      "market_cap": 4458352360000,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10254,7 +10254,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 4,
-      "market_cap": 4333285880000,
+      "market_cap": 4439373400000,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10264,7 +10264,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 5,
-      "market_cap": 2900729467565,
+      "market_cap": 2872872837425,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10274,7 +10274,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 6,
-      "market_cap": 2610427746834,
+      "market_cap": 2626455839894,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10284,7 +10284,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 7,
-      "market_cap": 2251759551840,
+      "market_cap": 2343197088460,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10294,7 +10294,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 8,
-      "market_cap": 2118290158350,
+      "market_cap": 2097630291373,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10304,17 +10304,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 9,
-      "market_cap": 1714869782369,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "META",
-      "name": "Meta Platforms Inc-A",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 10,
-      "market_cap": 1479646943902,
+      "market_cap": 1778859236032,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10323,8 +10313,18 @@
       "name": "特斯拉",
       "asset_type": "stock",
       "bucket": "US TOP100",
+      "rank": 10,
+      "market_cap": 1576540209330,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "META",
+      "name": "Meta Platforms Inc-A",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
       "rank": 11,
-      "market_cap": 1477689557045,
+      "market_cap": 1523790125158,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10334,7 +10334,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 12,
-      "market_cap": 1143189310157,
+      "market_cap": 1130146191684,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10344,7 +10344,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 13,
-      "market_cap": 1101790782390,
+      "market_cap": 1112169905447,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10354,7 +10354,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 14,
-      "market_cap": 1095207413997,
+      "market_cap": 1092619188985,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10364,7 +10364,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 15,
-      "market_cap": 1095078137982,
+      "market_cap": 1088492571000,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10374,17 +10374,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 16,
-      "market_cap": 896216183978,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "WMT",
-      "name": "沃尔玛",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 17,
-      "market_cap": 890031572695,
+      "market_cap": 904924596087,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10393,8 +10383,18 @@
       "name": "超威半导体",
       "asset_type": "stock",
       "bucket": "US TOP100",
+      "rank": 17,
+      "market_cap": 900173082760,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "WMT",
+      "name": "沃尔玛",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
       "rank": 18,
-      "market_cap": 844357622887,
+      "market_cap": 880561458501,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10404,7 +10404,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 19,
-      "market_cap": 681927183038,
+      "market_cap": 703414217862,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10414,7 +10414,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 20,
-      "market_cap": 649575970977,
+      "market_cap": 640822399778,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10424,7 +10424,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 21,
-      "market_cap": 633194352052,
+      "market_cap": 624263577089,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10434,7 +10434,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 22,
-      "market_cap": 604879100000,
+      "market_cap": 614177200000,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10444,17 +10444,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 23,
-      "market_cap": 568230806439,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "AMAT",
-      "name": "应用材料",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 24,
-      "market_cap": 478789294667,
+      "market_cap": 565536590783,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10463,8 +10453,18 @@
       "name": "万事达",
       "asset_type": "stock",
       "bucket": "US TOP100",
+      "rank": 24,
+      "market_cap": 471038553101,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "AMAT",
+      "name": "应用材料",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
       "rank": 25,
-      "market_cap": 476596295548,
+      "market_cap": 470651210510,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10474,7 +10474,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 26,
-      "market_cap": 461256601778,
+      "market_cap": 450108139078,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10484,7 +10484,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 27,
-      "market_cap": 444160272399,
+      "market_cap": 449244723117,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10494,7 +10494,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 28,
-      "market_cap": 443794193380,
+      "market_cap": 446737376151,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10504,17 +10504,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 29,
-      "market_cap": 439463155110,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "COST",
-      "name": "开市客",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 30,
-      "market_cap": 422045473403,
+      "market_cap": 437949964200,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10523,8 +10513,18 @@
       "name": "美国银行",
       "asset_type": "stock",
       "bucket": "US TOP100",
+      "rank": 30,
+      "market_cap": 425085779995,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "COST",
+      "name": "开市客",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
       "rank": 31,
-      "market_cap": 416782768933,
+      "market_cap": 421415733501,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10534,7 +10534,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 32,
-      "market_cap": 404043667170,
+      "market_cap": 414096510960,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10544,7 +10544,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 33,
-      "market_cap": 393880672957,
+      "market_cap": 395090944150,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10554,7 +10554,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 34,
-      "market_cap": 386288303685,
+      "market_cap": 379595279428,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10564,27 +10564,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 35,
-      "market_cap": 362010870651,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "HD",
-      "name": "家得宝",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 36,
-      "market_cap": 356868060488,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "PG",
-      "name": "宝洁",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 37,
-      "market_cap": 352573171259,
+      "market_cap": 356933941397,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10593,18 +10573,28 @@
       "name": "摩根士丹利",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 38,
-      "market_cap": 337428540901,
+      "rank": 36,
+      "market_cap": 350314957856,
       "source": "Eastmoney:us_market_cap"
     },
     {
       "market": "US",
-      "code": "CVX",
-      "name": "雪佛龙",
+      "code": "HD",
+      "name": "家得宝",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 39,
-      "market_cap": 336978336254,
+      "rank": 37,
+      "market_cap": 349638964543,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "PG",
+      "name": "宝洁",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
+      "rank": 38,
+      "market_cap": 347683113405,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10613,8 +10603,8 @@
       "name": "Arm Holdings plc ADR",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 40,
-      "market_cap": 336743871453,
+      "rank": 39,
+      "market_cap": 344177699622,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10623,8 +10613,18 @@
       "name": "汇丰控股",
       "asset_type": "stock",
       "bucket": "US TOP100",
+      "rank": 40,
+      "market_cap": 339341018752,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "CVX",
+      "name": "雪佛龙",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
       "rank": 41,
-      "market_cap": 332605061726,
+      "market_cap": 334787578749,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10634,17 +10634,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 42,
-      "market_cap": 326968505699,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "MRK",
-      "name": "默沙东",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 43,
-      "market_cap": 319990451207,
+      "market_cap": 320104904099,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10653,38 +10643,18 @@
       "name": "Palantir Technologies Inc-A",
       "asset_type": "stock",
       "bucket": "US TOP100",
+      "rank": 43,
+      "market_cap": 317739729432,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "MRK",
+      "name": "默沙东",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
       "rank": 44,
-      "market_cap": 309972438626,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "KLAC",
-      "name": "科磊",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 45,
-      "market_cap": 307693125716,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "NVS",
-      "name": "诺华制药",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 46,
-      "market_cap": 305103905204,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "AZN",
-      "name": "阿斯利康",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 47,
-      "market_cap": 302682437810,
+      "market_cap": 313124339334,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10693,8 +10663,8 @@
       "name": "高盛",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 48,
-      "market_cap": 301202576841,
+      "rank": 45,
+      "market_cap": 311318381307,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10703,28 +10673,38 @@
       "name": "GE Vernova Inc",
       "asset_type": "stock",
       "bucket": "US TOP100",
+      "rank": 46,
+      "market_cap": 309576183040,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "KLAC",
+      "name": "科磊",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
+      "rank": 47,
+      "market_cap": 304767069245,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "NVS",
+      "name": "诺华制药",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
+      "rank": 48,
+      "market_cap": 296689219638,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "AZN",
+      "name": "阿斯利康",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
       "rank": 49,
-      "market_cap": 299114913634,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "RY",
-      "name": "加拿大皇家银行",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 50,
-      "market_cap": 284604623187,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "PM",
-      "name": "菲利普莫里斯国际",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 51,
-      "market_cap": 284078520860,
+      "market_cap": 294942825385,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10733,8 +10713,28 @@
       "name": "派拓网络",
       "asset_type": "stock",
       "bucket": "US TOP100",
+      "rank": 50,
+      "market_cap": 291386950000,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "RY",
+      "name": "加拿大皇家银行",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
+      "rank": 51,
+      "market_cap": 289135171904,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "PM",
+      "name": "菲利普莫里斯国际",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
       "rank": 52,
-      "market_cap": 283668900000,
+      "market_cap": 287959332387,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10744,17 +10744,17 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 53,
-      "market_cap": 272115586266,
+      "market_cap": 281514439066,
       "source": "Eastmoney:us_market_cap"
     },
     {
       "market": "US",
-      "code": "MLPR",
-      "name": "ETRACS Quarterly Pay 1.5X Lever",
+      "code": "TXN",
+      "name": "德州仪器",
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 54,
-      "market_cap": 268709597434,
+      "market_cap": 276213162069,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10764,17 +10764,17 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 55,
-      "market_cap": 268326673029,
+      "market_cap": 271181641896,
       "source": "Eastmoney:us_market_cap"
     },
     {
       "market": "US",
-      "code": "TXN",
-      "name": "德州仪器",
+      "code": "MLPR",
+      "name": "ETRACS Quarterly Pay 1.5X Lever",
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 56,
-      "market_cap": 266729995186,
+      "market_cap": 268797954988,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10784,7 +10784,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 57,
-      "market_cap": 261676803632,
+      "market_cap": 267613571250,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10794,27 +10794,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 58,
-      "market_cap": 260611570068,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "SNDK",
-      "name": "闪迪",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 59,
-      "market_cap": 258416627710,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "QULL",
-      "name": "ETRACS 2x Leveraged MSCI US Qua",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 60,
-      "market_cap": 257929590021,
+      "market_cap": 266958704488,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10823,8 +10803,28 @@
       "name": "戴尔科技",
       "asset_type": "stock",
       "bucket": "US TOP100",
+      "rank": 59,
+      "market_cap": 266081451850,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "SNDK",
+      "name": "闪迪",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
+      "rank": 60,
+      "market_cap": 258332216548,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "QULL",
+      "name": "ETRACS 2x Leveraged MSCI US Qua",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
       "rank": 61,
-      "market_cap": 254786882209,
+      "market_cap": 257134372036,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10834,7 +10834,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 62,
-      "market_cap": 252737533538,
+      "market_cap": 249907968001,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10844,17 +10844,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 63,
-      "market_cap": 247902743941,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "AXP",
-      "name": "美国运通",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 64,
-      "market_cap": 240151614878,
+      "market_cap": 249636326864,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10863,8 +10853,18 @@
       "name": "花旗集团",
       "asset_type": "stock",
       "bucket": "US TOP100",
+      "rank": 64,
+      "market_cap": 245364300746,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "AXP",
+      "name": "美国运通",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
       "rank": 65,
-      "market_cap": 238729606391,
+      "market_cap": 242928683501,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10874,17 +10874,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 66,
-      "market_cap": 232637558197,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "MTUL",
-      "name": "ETRACS 2x Leveraged MSCI US Mom",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 67,
-      "market_cap": 231504507960,
+      "market_cap": 238957819662,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10893,8 +10883,8 @@
       "name": "阿里巴巴",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 68,
-      "market_cap": 230811850687,
+      "rank": 67,
+      "market_cap": 235061247147,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10903,8 +10893,18 @@
       "name": "丰田汽车(ADR)",
       "asset_type": "stock",
       "bucket": "US TOP100",
+      "rank": 68,
+      "market_cap": 234350096893,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "MTUL",
+      "name": "ETRACS 2x Leveraged MSCI US Mom",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
       "rank": 69,
-      "market_cap": 227559418334,
+      "market_cap": 233185616529,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10914,17 +10914,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 70,
-      "market_cap": 223323138649,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "NVO",
-      "name": "诺和诺德",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 71,
-      "market_cap": 223193372374,
+      "market_cap": 230139017204,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10933,8 +10923,18 @@
       "name": "壳牌",
       "asset_type": "stock",
       "bucket": "US TOP100",
+      "rank": 71,
+      "market_cap": 220298399212,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "ANET",
+      "name": "Arista Networks Inc",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
       "rank": 72,
-      "market_cap": 219960085827,
+      "market_cap": 218194625315,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10944,7 +10944,17 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 73,
-      "market_cap": 214579692000,
+      "market_cap": 218061396000,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "NVO",
+      "name": "诺和诺德",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
+      "rank": 74,
+      "market_cap": 218015179915,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10953,18 +10963,8 @@
       "name": "必和必拓(ADR)",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 74,
-      "market_cap": 211491216471,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "SCDL",
-      "name": "ETRACS 2x Leveraged US Dividend",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
       "rank": 75,
-      "market_cap": 211248635195,
+      "market_cap": 212277995268,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10974,7 +10974,17 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 76,
-      "market_cap": 204916007053,
+      "market_cap": 211085521244,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "SCDL",
+      "name": "ETRACS 2x Leveraged US Dividend",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
+      "rank": 77,
+      "market_cap": 209517367316,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -10983,38 +10993,8 @@
       "name": "安费诺",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 77,
-      "market_cap": 202484287303,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "AMGN",
-      "name": "安进",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
       "rank": 78,
-      "market_cap": 201931850717,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "ANET",
-      "name": "Arista Networks Inc",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 79,
-      "market_cap": 201459822854,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "MCD",
-      "name": "麦当劳",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 80,
-      "market_cap": 199389259211,
+      "market_cap": 205215407770,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -11023,18 +11003,8 @@
       "name": "CrowdStrike Holdings Inc-A",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 81,
-      "market_cap": 197521935134,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "PEP",
-      "name": "百事",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 82,
-      "market_cap": 197115326389,
+      "rank": 79,
+      "market_cap": 203020535246,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -11043,38 +11013,8 @@
       "name": "道明银行",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 83,
-      "market_cap": 197089684300,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "TMO",
-      "name": "赛默飞世尔科技",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 84,
-      "market_cap": 194521539640,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "TMUS",
-      "name": "T-Mobile US Inc",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 85,
-      "market_cap": 192112981362,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "SAP",
-      "name": "思爱普",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 86,
-      "market_cap": 189833425614,
+      "rank": 80,
+      "market_cap": 199303432640,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -11083,8 +11023,38 @@
       "name": "西部数据",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 87,
-      "market_cap": 185783668609,
+      "rank": 81,
+      "market_cap": 199040143367,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "MCD",
+      "name": "麦当劳",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
+      "rank": 82,
+      "market_cap": 198586387591,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "AMGN",
+      "name": "安进",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
+      "rank": 83,
+      "market_cap": 197770699925,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "TMUS",
+      "name": "T-Mobile US Inc",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
+      "rank": 84,
+      "market_cap": 196733995503,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -11093,18 +11063,18 @@
       "name": "高通",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 88,
-      "market_cap": 185767500000,
+      "rank": 85,
+      "market_cap": 196549920000,
       "source": "Eastmoney:us_market_cap"
     },
     {
       "market": "US",
-      "code": "NEE",
-      "name": "新纪元能源",
+      "code": "PEP",
+      "name": "百事",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 89,
-      "market_cap": 184242377326,
+      "rank": 86,
+      "market_cap": 195844231856,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -11113,8 +11083,18 @@
       "name": "希捷科技",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 90,
-      "market_cap": 183903650079,
+      "rank": 87,
+      "market_cap": 194689064594,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "TMO",
+      "name": "赛默飞世尔科技",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
+      "rank": 88,
+      "market_cap": 192351270284,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -11123,18 +11103,18 @@
       "name": "亚德诺",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 91,
-      "market_cap": 183709748006,
+      "rank": 89,
+      "market_cap": 189394053763,
       "source": "Eastmoney:us_market_cap"
     },
     {
       "market": "US",
-      "code": "KOF",
-      "name": "可口可乐凡萨瓶装",
+      "code": "SAP",
+      "name": "思爱普",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 92,
-      "market_cap": 180469894635,
+      "rank": 90,
+      "market_cap": 187381551614,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -11143,18 +11123,8 @@
       "name": "波音",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 93,
-      "market_cap": 178542594948,
-      "source": "Eastmoney:us_market_cap"
-    },
-    {
-      "market": "US",
-      "code": "VZ",
-      "name": "威瑞森通讯(Verizon)",
-      "asset_type": "stock",
-      "bucket": "US TOP100",
-      "rank": 94,
-      "market_cap": 177711787210,
+      "rank": 91,
+      "market_cap": 184888428713,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -11163,18 +11133,48 @@
       "name": "Applovin Corp-A",
       "asset_type": "stock",
       "bucket": "US TOP100",
-      "rank": 95,
-      "market_cap": 177060536400,
+      "rank": 92,
+      "market_cap": 182680812600,
       "source": "Eastmoney:us_market_cap"
     },
     {
       "market": "US",
-      "code": "DIS",
-      "name": "迪士尼",
+      "code": "NEE",
+      "name": "新纪元能源",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
+      "rank": 93,
+      "market_cap": 182365332504,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "KOF",
+      "name": "可口可乐凡萨瓶装",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
+      "rank": 94,
+      "market_cap": 181646360702,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "VZ",
+      "name": "威瑞森通讯(Verizon)",
+      "asset_type": "stock",
+      "bucket": "US TOP100",
+      "rank": 95,
+      "market_cap": 175665763344,
+      "source": "Eastmoney:us_market_cap"
+    },
+    {
+      "market": "US",
+      "code": "SCHW",
+      "name": "嘉信理财",
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 96,
-      "market_cap": 172782886688,
+      "market_cap": 174991814714,
       "source": "Eastmoney:us_market_cap"
     },
     {
@@ -11189,32 +11189,32 @@
     },
     {
       "market": "US",
-      "code": "TJX",
-      "name": "The TJX Companies Inc",
+      "code": "USML",
+      "name": "ETRACS 2x Leveraged MSCI US Min",
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 98,
-      "market_cap": 170411707840,
+      "market_cap": 172536451374,
       "source": "Eastmoney:us_market_cap"
     },
     {
       "market": "US",
-      "code": "GLW",
-      "name": "康宁",
+      "code": "DE",
+      "name": "迪尔",
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 99,
-      "market_cap": 169364917582,
+      "market_cap": 171475049857,
       "source": "Eastmoney:us_market_cap"
     },
     {
       "market": "US",
-      "code": "SCHW",
-      "name": "嘉信理财",
+      "code": "DIS",
+      "name": "迪士尼",
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 100,
-      "market_cap": 168696144179,
+      "market_cap": 169153577812,
       "source": "Eastmoney:us_market_cap"
     },
     {
