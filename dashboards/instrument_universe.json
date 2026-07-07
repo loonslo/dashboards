@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-07 12:05",
+  "updated_at": "2026-07-07 12:35",
   "sources": [
     "curated:mainstream_etf",
     "Eastmoney:A_mainboard_market_cap",
@@ -10954,7 +10954,7 @@
       "asset_type": "stock",
       "bucket": "US TOP100",
       "rank": 74,
-      "market_cap": 218015179915,
+      "market_cap": 217965919915,
       "source": "Eastmoney:us_market_cap"
     },
     {
