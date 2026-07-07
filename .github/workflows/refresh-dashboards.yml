@@ -1,0 +1,41 @@
+name: Refresh dashboards
+
+on:
+  workflow_dispatch:
+  schedule:
+    # GitHub cron uses UTC. These run at 11:10 and 15:35 Asia/Shanghai on weekdays.
+    - cron: "10 3 * * 1-5"
+    - cron: "35 7 * * 1-5"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-dashboards
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Refresh, commit, and push dashboards
+        run: bash scripts/server_refresh_and_push.sh
