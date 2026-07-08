@@ -1,5 +1,5 @@
 {
-  "asof": "2026-07-08 12:36",
+  "asof": "2026-07-08 13:06",
   "indices": [
     {
       "return_1m": -0.51,
@@ -39,6 +39,12 @@
       "signal_snapshot_delta": "由「未到-5%回撤档，维持基础节奏；PE历史分位高，不因回撤自动加速」变为当前"
     },
     {
+      "return_1m": 3.12,
+      "return_3m": 12.38,
+      "return_ytd": 13.97,
+      "return_1y": 44.21,
+      "performance_date": "2026-07-07",
+      "source_performance": "CSI:get-index-yield-item",
       "current": 8508.79,
       "high_52w": 9147.56,
       "drawdown_52w": -6.9829550175128485,
@@ -70,12 +76,6 @@
       "signal_snapshot_delta": "无变化"
     },
     {
-      "return_1m": -6.15,
-      "return_3m": -8.44,
-      "return_ytd": -8.01,
-      "return_1y": -12.85,
-      "performance_date": "2026-07-07",
-      "source_performance": "CSI:get-index-yield-item",
       "current": 10339.75,
       "high_52w": 11999.28,
       "drawdown_52w": -13.830246481455555,
@@ -84,6 +84,12 @@
       "pe_ttm": 7.23,
       "date": "2026-07-07",
       "source_price": "CSI:index-perf",
+      "return_1m": -6.15,
+      "return_3m": -8.44,
+      "return_ytd": -8.01,
+      "return_1y": -12.85,
+      "performance_date": "2026-07-07",
+      "source_performance": "CSI:get-index-yield-item",
       "pb": 0.7877,
       "dividend_yield": 5.220000000000001,
       "roe": 10.14,
@@ -158,9 +164,8 @@
     }
   ],
   "data_gaps": [
-    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpN07lddNnWjgHK2vJbk4iq2oRsK5woaCR-58P8En8j-QlUNMZzvWM\"'",
-    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpN07n5KYgzr7w0s0SLKLBG9mUQK5woaBsb15ByardB8Sa10Rq5ARE\"'",
-    "000905/performance: <urlopen error _ssl.c:983: The handshake operation timed out>"
+    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpN2rpV_VNZo45nbUO3DIAAAYmtK5woaDrxABrioiOP2tWsOYLRnwo\"'",
+    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpN2rwUcIBha8HczPrpl7wUPGjQK5woaOIJnLWSHGYn692_gYmK5Qs\"'"
   ],
   "watchlist": [
     {
