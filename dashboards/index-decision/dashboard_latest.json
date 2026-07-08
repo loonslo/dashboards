@@ -1,5 +1,5 @@
 {
-  "asof": "2026-07-08 13:06",
+  "asof": "2026-07-08 13:35",
   "indices": [
     {
       "return_1m": -0.51,
@@ -39,12 +39,6 @@
       "signal_snapshot_delta": "由「未到-5%回撤档，维持基础节奏；PE历史分位高，不因回撤自动加速」变为当前"
     },
     {
-      "return_1m": 3.12,
-      "return_3m": 12.38,
-      "return_ytd": 13.97,
-      "return_1y": 44.21,
-      "performance_date": "2026-07-07",
-      "source_performance": "CSI:get-index-yield-item",
       "current": 8508.79,
       "high_52w": 9147.56,
       "drawdown_52w": -6.9829550175128485,
@@ -53,6 +47,12 @@
       "pe_ttm": 30.09,
       "date": "2026-07-07",
       "source_price": "CSI:index-perf",
+      "return_1m": 3.12,
+      "return_3m": 12.38,
+      "return_ytd": 13.97,
+      "return_1y": 44.21,
+      "performance_date": "2026-07-07",
+      "source_performance": "CSI:get-index-yield-item",
       "pe_static": 31.36,
       "pb": 2.4,
       "dividend_yield": 1.22,
@@ -76,6 +76,12 @@
       "signal_snapshot_delta": "无变化"
     },
     {
+      "return_1m": -6.15,
+      "return_3m": -8.44,
+      "return_ytd": -8.01,
+      "return_1y": -12.85,
+      "performance_date": "2026-07-07",
+      "source_performance": "CSI:get-index-yield-item",
       "current": 10339.75,
       "high_52w": 11999.28,
       "drawdown_52w": -13.830246481455555,
@@ -84,12 +90,6 @@
       "pe_ttm": 7.23,
       "date": "2026-07-07",
       "source_price": "CSI:index-perf",
-      "return_1m": -6.15,
-      "return_3m": -8.44,
-      "return_ytd": -8.01,
-      "return_1y": -12.85,
-      "performance_date": "2026-07-07",
-      "source_performance": "CSI:get-index-yield-item",
       "pb": 0.7877,
       "dividend_yield": 5.220000000000001,
       "roe": 10.14,
@@ -164,8 +164,8 @@
     }
   ],
   "data_gaps": [
-    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpN2rpV_VNZo45nbUO3DIAAAYmtK5woaDrxABrioiOP2tWsOYLRnwo\"'",
-    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpN2rwUcIBha8HczPrpl7wUPGjQK5woaOIJnLWSHGYn692_gYmK5Qs\"'"
+    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpN4aVmLh391BGmprbtcsNeVW0kK5woaCX9Cr4UCSg5RPtMMcilK7w\"'",
+    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpN4aazPPXgS0OPVHB4mcgW_RptK5woaFxFg0wAIsIyu9w0haH47Dc\"'"
   ],
   "watchlist": [
     {
@@ -355,12 +355,12 @@
       "alert_drawdown_pct": -8,
       "alert_1d_abs_pct": 3,
       "alert_1m_pct": -5,
-      "current": 27.77,
+      "current": 27.86,
       "high_52w": 30.79,
-      "drawdown_52w": -9.80837934394284,
-      "change_1d_pct": 1.313,
-      "return_1y": -8.19834710743802,
-      "date": "2026-07-08T11:29:00.000+0800",
+      "drawdown_52w": -9.516076648262416,
+      "change_1d_pct": 1.642,
+      "return_1y": -7.900826446280995,
+      "date": "2026-07-08T13:20:00.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "正常观察",
@@ -370,7 +370,7 @@
           "name": "长江电力",
           "level": "watch",
           "notify": false,
-          "message": "52周回撤 -9.8% 触发阈值 -8.0%"
+          "message": "52周回撤 -9.5% 触发阈值 -8.0%"
         }
       ],
       "has_alert": true
@@ -407,12 +407,12 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -10,
-      "current": 475.4,
+      "current": 478.8,
       "high_52w": 683.0,
-      "drawdown_52w": -30.395314787701324,
-      "change_1d_pct": 3.08,
-      "return_1y": -5.204386839481556,
-      "date": "2026-07-08T11:59:57.000+0800",
+      "drawdown_52w": -29.897510980966324,
+      "change_1d_pct": 3.82,
+      "return_1y": -4.526420737786641,
+      "date": "2026-07-08T13:20:31.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -422,7 +422,7 @@
           "name": "腾讯控股",
           "level": "deep",
           "notify": false,
-          "message": "52周回撤 -30.4% 触发阈值 -15.0%"
+          "message": "52周回撤 -29.9% 触发阈值 -15.0%"
         }
       ],
       "has_alert": true
@@ -481,12 +481,12 @@
       "alert_drawdown_pct": -12,
       "alert_1d_abs_pct": 4,
       "alert_1m_pct": -8,
-      "current": 1187.99,
+      "current": 1195.01,
       "high_52w": 1568.0,
-      "drawdown_52w": -24.235331632653057,
-      "change_1d_pct": -0.068,
-      "return_1y": -15.721481271282622,
-      "date": "2026-07-08T11:29:00.000+0800",
+      "drawdown_52w": -23.787627551020407,
+      "change_1d_pct": 0.522,
+      "return_1y": -15.223467650397271,
+      "date": "2026-07-08T13:20:00.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -496,7 +496,7 @@
           "name": "贵州茅台",
           "level": "deep",
           "notify": false,
-          "message": "52周回撤 -24.2% 触发阈值 -12.0%"
+          "message": "52周回撤 -23.8% 触发阈值 -12.0%"
         }
       ],
       "has_alert": true
@@ -533,12 +533,12 @@
       "alert_drawdown_pct": -18,
       "alert_1d_abs_pct": 6,
       "alert_1m_pct": -12,
-      "current": 85.2,
+      "current": 85.45,
       "high_52w": 136.3,
-      "drawdown_52w": -37.49082905355833,
-      "change_1d_pct": 2.1,
-      "return_1y": -30.335241210138996,
-      "date": "2026-07-08T11:59:55.000+0800",
+      "drawdown_52w": -37.30741012472487,
+      "change_1d_pct": 2.4,
+      "return_1y": -30.130825838103025,
+      "date": "2026-07-08T13:20:30.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -548,7 +548,7 @@
           "name": "比亚迪股份",
           "level": "deep",
           "notify": false,
-          "message": "52周回撤 -37.5% 触发阈值 -18.0%"
+          "message": "52周回撤 -37.3% 触发阈值 -18.0%"
         }
       ],
       "has_alert": true
@@ -585,29 +585,29 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -10,
-      "current": 103.6,
+      "current": 106.9,
       "high_52w": 186.2,
-      "drawdown_52w": -44.360902255639104,
-      "change_1d_pct": 8.14,
-      "return_1y": -5.3016453382084165,
-      "date": "2026-07-08T11:59:59.000+0800",
+      "drawdown_52w": -42.58861439312567,
+      "change_1d_pct": 11.59,
+      "return_1y": -2.2851919561243106,
+      "date": "2026-07-08T13:20:30.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-      "signal": "深回撤观察；单日波动+8.1%",
+      "signal": "深回撤观察；单日波动+11.6%",
       "alerts": [
         {
           "ticker": "9988.HK",
           "name": "阿里巴巴-W",
           "level": "deep",
           "notify": false,
-          "message": "52周回撤 -44.4% 触发阈值 -15.0%"
+          "message": "52周回撤 -42.6% 触发阈值 -15.0%"
         },
         {
           "ticker": "9988.HK",
           "name": "阿里巴巴-W",
           "level": "move",
           "notify": false,
-          "message": "单日波动 +8.1% 超过阈值 5.0%"
+          "message": "单日波动 +11.6% 超过阈值 5.0%"
         }
       ],
       "has_alert": true
@@ -670,42 +670,42 @@
       "name": "长江电力",
       "level": "watch",
       "notify": false,
-      "message": "52周回撤 -9.8% 触发阈值 -8.0%"
+      "message": "52周回撤 -9.5% 触发阈值 -8.0%"
     },
     {
       "ticker": "0700.HK",
       "name": "腾讯控股",
       "level": "deep",
       "notify": false,
-      "message": "52周回撤 -30.4% 触发阈值 -15.0%"
+      "message": "52周回撤 -29.9% 触发阈值 -15.0%"
     },
     {
       "ticker": "600519.SH",
       "name": "贵州茅台",
       "level": "deep",
       "notify": false,
-      "message": "52周回撤 -24.2% 触发阈值 -12.0%"
+      "message": "52周回撤 -23.8% 触发阈值 -12.0%"
     },
     {
       "ticker": "1211.HK",
       "name": "比亚迪股份",
       "level": "deep",
       "notify": false,
-      "message": "52周回撤 -37.5% 触发阈值 -18.0%"
+      "message": "52周回撤 -37.3% 触发阈值 -18.0%"
     },
     {
       "ticker": "9988.HK",
       "name": "阿里巴巴-W",
       "level": "deep",
       "notify": false,
-      "message": "52周回撤 -44.4% 触发阈值 -15.0%"
+      "message": "52周回撤 -42.6% 触发阈值 -15.0%"
     },
     {
       "ticker": "9988.HK",
       "name": "阿里巴巴-W",
       "level": "move",
       "notify": false,
-      "message": "单日波动 +8.1% 超过阈值 5.0%"
+      "message": "单日波动 +11.6% 超过阈值 5.0%"
     },
     {
       "ticker": "META",
