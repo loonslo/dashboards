@@ -1,5 +1,5 @@
 {
-  "asof": "2026-07-08 14:05",
+  "asof": "2026-07-08 17:58",
   "indices": [
     {
       "return_1m": -0.51,
@@ -13,13 +13,13 @@
       "drawdown_52w": -5.371159120663005,
       "change_1d_pct": -1.0272614622056975,
       "drawdown_1d_delta": -0.9821751209947331,
-      "pe_ttm": 14.45,
+      "pe_ttm": 14.41,
       "date": "2026-07-07",
       "source_price": "CSI:index-perf",
-      "pe_static": 14.79,
-      "pb": 1.42,
-      "dividend_yield": 2.65,
-      "valuation_date": "20260707",
+      "pe_static": 14.74,
+      "pb": 1.41,
+      "dividend_yield": 2.66,
+      "valuation_date": "20260708",
       "source_valuation": "CSI:indexValuation",
       "roe": 10.11,
       "pe_percentile": 0.8552,
@@ -50,13 +50,13 @@
       "drawdown_52w": -6.9829550175128485,
       "change_1d_pct": -1.6453341933365784,
       "drawdown_1d_delta": -1.556043360196579,
-      "pe_ttm": 30.09,
+      "pe_ttm": 29.6,
       "date": "2026-07-07",
       "source_price": "CSI:index-perf",
-      "pe_static": 31.36,
-      "pb": 2.4,
-      "dividend_yield": 1.22,
-      "valuation_date": "20260707",
+      "pe_static": 30.86,
+      "pb": 2.37,
+      "dividend_yield": 1.24,
+      "valuation_date": "20260708",
       "source_valuation": "CSI:indexValuation",
       "roe": 6.7,
       "pe_percentile": 0.8908,
@@ -76,12 +76,6 @@
       "signal_snapshot_delta": null
     },
     {
-      "return_1m": -6.15,
-      "return_3m": -8.44,
-      "return_ytd": -8.01,
-      "return_1y": -12.85,
-      "performance_date": "2026-07-07",
-      "source_performance": "CSI:get-index-yield-item",
       "current": 10339.75,
       "high_52w": 11999.28,
       "drawdown_52w": -13.830246481455555,
@@ -90,6 +84,12 @@
       "pe_ttm": 7.23,
       "date": "2026-07-07",
       "source_price": "CSI:index-perf",
+      "return_1m": -6.15,
+      "return_3m": -8.44,
+      "return_ytd": -8.01,
+      "return_1y": -12.85,
+      "performance_date": "2026-07-07",
+      "source_performance": "CSI:get-index-yield-item",
       "pb": 0.7877,
       "dividend_yield": 5.220000000000001,
       "roe": 10.14,
@@ -384,15 +384,15 @@
       "alert_drawdown_pct": -8,
       "alert_1d_abs_pct": 3,
       "alert_1m_pct": -5,
-      "current": 27.809999465942383,
+      "current": 27.829999923706055,
       "high_52w": 31.190000534057617,
-      "drawdown_52w": -10.836809907792322,
-      "change_1d_pct": 1.4593200319482635,
-      "drawdown_1d_delta": 1.282461082658525,
-      "return_1m": 1.090509758504421,
-      "return_3m": 4.157298394326814,
-      "return_ytd": 1.942810725647548,
-      "return_1y": -9.058209498608694,
+      "drawdown_52w": -10.772685324845199,
+      "change_1d_pct": 1.5322877731923867,
+      "drawdown_1d_delta": 1.346585665605648,
+      "return_1m": 1.163212257949242,
+      "return_3m": 4.232206473698241,
+      "return_ytd": 2.0161261848127054,
+      "return_1y": -8.992805777831803,
       "date": "2026-07-08",
       "source_price": "Yahoo:query1.finance.yahoo.com",
       "signal": "回撤观察",
@@ -442,15 +442,15 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -10,
-      "current": 478.20001220703125,
+      "current": 478.79998779296875,
       "high_52w": 683.0,
-      "drawdown_52w": -29.985356924299968,
-      "change_1d_pct": 3.686036329150988,
-      "drawdown_1d_delta": 2.4890190336749534,
-      "return_1m": 5.516328183278918,
-      "return_3m": -3.705194053632155,
-      "return_ytd": -23.2423736425311,
-      "return_1y": -6.783623351455892,
+      "drawdown_52w": -29.897512768232982,
+      "change_1d_pct": 3.816126435408007,
+      "drawdown_1d_delta": 2.576863189741939,
+      "return_1m": 5.648714672638389,
+      "return_3m": -3.584377384569848,
+      "return_ytd": -23.1460693751254,
+      "return_1y": -6.6666690462049205,
       "date": "2026-07-08",
       "source_price": "Yahoo:query1.finance.yahoo.com",
       "signal": "深回撤观察",
@@ -460,7 +460,7 @@
           "name": "腾讯控股",
           "level": "deep",
           "notify": false,
-          "message": "52周回撤 -30.0% 触发阈值 -15.0%"
+          "message": "52周回撤 -29.9% 触发阈值 -15.0%"
         }
       ],
       "has_alert": true
@@ -525,15 +525,15 @@
       "alert_drawdown_pct": -12,
       "alert_1d_abs_pct": 4,
       "alert_1m_pct": -8,
-      "current": 1193.3599853515625,
+      "current": 1199.300048828125,
       "high_52w": 1568.0,
-      "drawdown_52w": -23.892858077068713,
-      "change_1d_pct": 0.38357472544963134,
-      "drawdown_1d_delta": 0.2908122782804625,
-      "return_1m": -5.5123593559534,
-      "return_3m": -18.263014701947778,
-      "return_ytd": -16.314166525135864,
-      "return_1y": -16.966321604832256,
+      "drawdown_52w": -23.514027498206314,
+      "change_1d_pct": 0.883243570720782,
+      "drawdown_1d_delta": 0.6696428571428612,
+      "return_1m": -5.042038086541201,
+      "return_3m": -17.856161039169514,
+      "return_ytd": -15.897612284142703,
+      "return_1y": -16.553013528129423,
       "date": "2026-07-08",
       "source_price": "Yahoo:query1.finance.yahoo.com",
       "signal": "深回撤观察",
@@ -543,7 +543,7 @@
           "name": "贵州茅台",
           "level": "deep",
           "notify": false,
-          "message": "52周回撤 -23.9% 触发阈值 -12.0%"
+          "message": "52周回撤 -23.5% 触发阈值 -12.0%"
         }
       ],
       "has_alert": true
@@ -583,15 +583,15 @@
       "alert_drawdown_pct": -18,
       "alert_1d_abs_pct": 6,
       "alert_1m_pct": -12,
-      "current": 85.44999694824219,
+      "current": 85.8499984741211,
       "high_52w": 136.3000030517578,
-      "drawdown_52w": -37.30741376741285,
-      "change_1d_pct": 2.3966447850686468,
-      "drawdown_1d_delta": 1.467351397813644,
-      "return_1m": -4.738015768776771,
-      "return_3m": -18.385864910307614,
-      "return_ytd": -13.468357520767405,
-      "return_1y": -32.02068494605709,
+      "drawdown_52w": -37.01394236834985,
+      "change_1d_pct": 2.8759755705772605,
+      "drawdown_1d_delta": 1.7608227968766386,
+      "return_1m": -4.292083171800531,
+      "return_3m": -18.003819506737408,
+      "return_ytd": -13.063292684434336,
+      "return_1y": -31.702465745110242,
       "date": "2026-07-08",
       "source_price": "Yahoo:query1.finance.yahoo.com",
       "signal": "深回撤观察",
@@ -601,7 +601,7 @@
           "name": "比亚迪股份",
           "level": "deep",
           "notify": false,
-          "message": "52周回撤 -37.3% 触发阈值 -18.0%"
+          "message": "52周回撤 -37.0% 触发阈值 -18.0%"
         }
       ],
       "has_alert": true
@@ -641,18 +641,18 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -10,
-      "current": 107.4000015258789,
+      "current": 107.5,
       "high_52w": 186.1999969482422,
-      "drawdown_52w": -42.32008416426947,
-      "change_1d_pct": 12.108557520456408,
-      "drawdown_1d_delta": 6.22985964782027,
-      "return_1m": -12.254901808010654,
-      "return_3m": -12.469434232192512,
-      "return_ytd": -27.91946206316852,
-      "return_1y": -4.278070902780429,
+      "drawdown_52w": -42.266379290069665,
+      "change_1d_pct": 12.212940057967469,
+      "drawdown_1d_delta": 6.283564522020072,
+      "return_1m": -12.173203709256997,
+      "return_3m": -12.387935881248568,
+      "return_ytd": -27.85234899328859,
+      "return_1y": -4.188945700604874,
       "date": "2026-07-08",
       "source_price": "Yahoo:query1.finance.yahoo.com",
-      "signal": "深回撤观察；单日波动+12.1%",
+      "signal": "深回撤观察；单日波动+12.2%",
       "alerts": [
         {
           "ticker": "9988.HK",
@@ -666,14 +666,14 @@
           "name": "阿里巴巴-W",
           "level": "move",
           "notify": false,
-          "message": "单日波动 +12.1% 超过阈值 5.0%"
+          "message": "单日波动 +12.2% 超过阈值 5.0%"
         },
         {
           "ticker": "9988.HK",
           "name": "阿里巴巴-W",
           "level": "trend",
           "notify": false,
-          "message": "近1月表现 -12.3% 低于阈值 -10.0%"
+          "message": "近1月表现 -12.2% 低于阈值 -10.0%"
         }
       ],
       "has_alert": true
@@ -746,21 +746,21 @@
       "name": "腾讯控股",
       "level": "deep",
       "notify": false,
-      "message": "52周回撤 -30.0% 触发阈值 -15.0%"
+      "message": "52周回撤 -29.9% 触发阈值 -15.0%"
     },
     {
       "ticker": "600519.SH",
       "name": "贵州茅台",
       "level": "deep",
       "notify": false,
-      "message": "52周回撤 -23.9% 触发阈值 -12.0%"
+      "message": "52周回撤 -23.5% 触发阈值 -12.0%"
     },
     {
       "ticker": "1211.HK",
       "name": "比亚迪股份",
       "level": "deep",
       "notify": false,
-      "message": "52周回撤 -37.3% 触发阈值 -18.0%"
+      "message": "52周回撤 -37.0% 触发阈值 -18.0%"
     },
     {
       "ticker": "9988.HK",
@@ -774,14 +774,14 @@
       "name": "阿里巴巴-W",
       "level": "move",
       "notify": false,
-      "message": "单日波动 +12.1% 超过阈值 5.0%"
+      "message": "单日波动 +12.2% 超过阈值 5.0%"
     },
     {
       "ticker": "9988.HK",
       "name": "阿里巴巴-W",
       "level": "trend",
       "notify": false,
-      "message": "近1月表现 -12.3% 低于阈值 -10.0%"
+      "message": "近1月表现 -12.2% 低于阈值 -10.0%"
     },
     {
       "ticker": "META",
