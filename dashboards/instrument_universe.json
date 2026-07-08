@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-08 11:35",
+  "updated_at": "2026-07-08 12:05",
   "sources": [
     "curated:mainstream_etf",
     "Eastmoney:A_mainboard_market_cap",
@@ -4009,22 +4009,22 @@
     },
     {
       "market": "A",
-      "code": "002517",
-      "name": "恺英网络",
-      "asset_type": "stock",
-      "bucket": "A股主板TOP1000",
-      "rank": 401,
-      "market_cap": 35336771090,
-      "source": "Eastmoney:mainboard_market_cap"
-    },
-    {
-      "market": "A",
       "code": "002487",
       "name": "大金重工",
       "asset_type": "stock",
       "bucket": "A股主板TOP1000",
+      "rank": 401,
+      "market_cap": 35390905299,
+      "source": "Eastmoney:mainboard_market_cap"
+    },
+    {
+      "market": "A",
+      "code": "002517",
+      "name": "恺英网络",
+      "asset_type": "stock",
+      "bucket": "A股主板TOP1000",
       "rank": 402,
-      "market_cap": 35279680761,
+      "market_cap": 35336771090,
       "source": "Eastmoney:mainboard_market_cap"
     },
     {

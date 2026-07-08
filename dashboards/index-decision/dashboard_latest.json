@@ -1,5 +1,5 @@
 {
-  "asof": "2026-07-08 11:35",
+  "asof": "2026-07-08 12:06",
   "indices": [
     {
       "return_1m": -0.51,
@@ -76,6 +76,12 @@
       "signal_snapshot_delta": "无变化"
     },
     {
+      "return_1m": -6.15,
+      "return_3m": -8.44,
+      "return_ytd": -8.01,
+      "return_1y": -12.85,
+      "performance_date": "2026-07-07",
+      "source_performance": "CSI:get-index-yield-item",
       "current": 10339.75,
       "high_52w": 11999.28,
       "drawdown_52w": -13.830246481455555,
@@ -84,12 +90,6 @@
       "pe_ttm": 7.23,
       "date": "2026-07-07",
       "source_price": "CSI:index-perf",
-      "return_1m": -6.15,
-      "return_3m": -8.44,
-      "return_ytd": -8.01,
-      "return_1y": -12.85,
-      "performance_date": "2026-07-07",
-      "source_performance": "CSI:get-index-yield-item",
       "pb": 0.7877,
       "dividend_yield": 5.220000000000001,
       "roe": 10.14,
@@ -115,7 +115,7 @@
       "high_52w": 7620.9,
       "drawdown_52w": -1.5359078324082343,
       "change_1d_pct": -0.446,
-      "date": "2026-07-07T16:53:11.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC",
       "pe_ttm": 25.37,
       "pe_forward": 21.74,
@@ -141,7 +141,7 @@
       "high_52w": 30762.199,
       "drawdown_52w": -5.166022103946477,
       "change_1d_pct": -1.767,
-      "date": "2026-07-07T17:15:59.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC",
       "pe_ttm": 35.22,
       "pe_forward": 26.97,
@@ -164,8 +164,8 @@
     }
   ],
   "data_gaps": [
-    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpNxZf1XdBcdOljEtC4SJEyAE2MK5woaFpMTF03BzRlnFkAQN1p6sw\"'",
-    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpNxZhY5FQtaFMnSl93SfTmzJlmK5woaPBxP7ewxHhhLF3lCfbnusc\"'"
+    "^GSPC/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpNzKRs4WrzqcUZgcyX_fSuzS9AK5woaNsV5ZcAd5zXWQO94GDVves\"'",
+    "^NDX/history: Yahoo/Stooq历史均失败: Invalid isoformat string: '(async()=>{const c=\"AAAAAGpNzKSiY76M-PZx5-cshbujHuMVK5woaNbcmlC60WRaEjkuU6rIGBY\"'"
   ],
   "watchlist": [
     {
@@ -183,7 +183,7 @@
       "drawdown_52w": -5.238763106925804,
       "change_1d_pct": -1.8525,
       "return_1y": 277.51702852277566,
-      "date": "2026-07-07T16:15:00.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "正常观察",
@@ -212,7 +212,7 @@
       "high_52w": 699.15,
       "drawdown_52w": -1.7263820353285997,
       "change_1d_pct": -0.5126,
-      "date": "2026-07-07T16:10:00.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "接近52周高位",
@@ -234,7 +234,7 @@
       "drawdown_52w": -29.995499144837535,
       "change_1d_pct": 0.543,
       "return_1y": -22.051158688156526,
-      "date": "2026-07-07T16:00:00.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -264,7 +264,7 @@
       "drawdown_52w": -16.74558214255516,
       "change_1d_pct": 0.7057,
       "return_1y": 23.591063135433664,
-      "date": "2026-07-07T16:00:00.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "回撤观察",
@@ -286,7 +286,7 @@
       "drawdown_52w": -2.4862145690239035,
       "change_1d_pct": -0.5093,
       "return_1y": -99.93071736396065,
-      "date": "2026-07-07T16:10:00.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "接近52周高位",
@@ -308,7 +308,7 @@
       "drawdown_52w": -25.094949494949503,
       "change_1d_pct": -0.8344,
       "return_1y": 34.7408968675049,
-      "date": "2026-07-07T16:00:00.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -338,7 +338,7 @@
       "drawdown_52w": -9.693110647181635,
       "change_1d_pct": -4.2542,
       "return_1y": 84.22913117546847,
-      "date": "2026-07-07T16:10:00.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "正常观察",
@@ -355,12 +355,12 @@
       "alert_drawdown_pct": -8,
       "alert_1d_abs_pct": 3,
       "alert_1m_pct": -5,
-      "current": 27.78,
+      "current": 27.77,
       "high_52w": 30.79,
-      "drawdown_52w": -9.775901266645004,
-      "change_1d_pct": 1.35,
-      "return_1y": -8.165289256198339,
-      "date": "2026-07-08T11:20:00.000+0800",
+      "drawdown_52w": -9.80837934394284,
+      "change_1d_pct": 1.313,
+      "return_1y": -8.19834710743802,
+      "date": "2026-07-08T11:29:00.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "正常观察",
@@ -390,7 +390,7 @@
       "drawdown_52w": -0.4672245467224556,
       "change_1d_pct": 2.4402,
       "return_1y": 38.77491492464753,
-      "date": "2026-07-07T16:10:00.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "接近52周高位",
@@ -407,12 +407,12 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -10,
-      "current": 475.4,
+      "current": 477.6,
       "high_52w": 683.0,
-      "drawdown_52w": -30.395314787701324,
-      "change_1d_pct": 3.08,
-      "return_1y": -5.204386839481556,
-      "date": "2026-07-08T11:20:54.000+0800",
+      "drawdown_52w": -30.07320644216691,
+      "change_1d_pct": 3.56,
+      "return_1y": -4.765702891326018,
+      "date": "2026-07-08T11:51:01.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -422,7 +422,7 @@
           "name": "腾讯控股",
           "level": "deep",
           "notify": false,
-          "message": "52周回撤 -30.4% 触发阈值 -15.0%"
+          "message": "52周回撤 -30.1% 触发阈值 -15.0%"
         }
       ],
       "has_alert": true
@@ -442,7 +442,7 @@
       "drawdown_52w": -10.175962409143203,
       "change_1d_pct": 0.1555,
       "return_1y": 104.4393694647134,
-      "date": "2026-07-07T16:00:00.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "回撤观察",
@@ -464,7 +464,7 @@
       "drawdown_52w": -11.735330836454427,
       "change_1d_pct": -6.5103,
       "return_1y": 274.2368211152201,
-      "date": "2026-07-07T16:00:00.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "回撤观察；单日波动-6.5%",
@@ -481,12 +481,12 @@
       "alert_drawdown_pct": -12,
       "alert_1d_abs_pct": 4,
       "alert_1m_pct": -8,
-      "current": 1186.2,
+      "current": 1187.99,
       "high_52w": 1568.0,
-      "drawdown_52w": -24.349489795918366,
-      "change_1d_pct": -0.219,
-      "return_1y": -15.848467650397268,
-      "date": "2026-07-08T11:20:00.000+0800",
+      "drawdown_52w": -24.235331632653057,
+      "change_1d_pct": -0.068,
+      "return_1y": -15.721481271282622,
+      "date": "2026-07-08T11:29:00.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -496,7 +496,7 @@
           "name": "贵州茅台",
           "level": "deep",
           "notify": false,
-          "message": "52周回撤 -24.3% 触发阈值 -12.0%"
+          "message": "52周回撤 -24.2% 触发阈值 -12.0%"
         }
       ],
       "has_alert": true
@@ -516,7 +516,7 @@
       "drawdown_52w": -1.111689143223027,
       "change_1d_pct": 2.9582,
       "return_1y": 58.2691790385182,
-      "date": "2026-07-07T16:10:00.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "接近52周高位",
@@ -533,12 +533,12 @@
       "alert_drawdown_pct": -18,
       "alert_1d_abs_pct": 6,
       "alert_1m_pct": -12,
-      "current": 85.2,
+      "current": 85.25,
       "high_52w": 136.3,
-      "drawdown_52w": -37.49082905355833,
-      "change_1d_pct": 2.1,
-      "return_1y": -30.335241210138996,
-      "date": "2026-07-08T11:20:53.000+0800",
+      "drawdown_52w": -37.45414526779164,
+      "change_1d_pct": 2.16,
+      "return_1y": -30.2943581357318,
+      "date": "2026-07-08T11:51:01.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -568,7 +568,7 @@
       "drawdown_52w": -1.9024276377217708,
       "change_1d_pct": 1.3139,
       "return_1y": 17.79957953749125,
-      "date": "2026-07-07T16:10:00.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "接近52周高位",
@@ -585,29 +585,29 @@
       "alert_drawdown_pct": -15,
       "alert_1d_abs_pct": 5,
       "alert_1m_pct": -10,
-      "current": 101.0,
+      "current": 103.7,
       "high_52w": 186.2,
-      "drawdown_52w": -45.75725026852846,
-      "change_1d_pct": 5.43,
-      "return_1y": -7.678244972577697,
-      "date": "2026-07-08T11:20:57.000+0800",
+      "drawdown_52w": -44.30719656283566,
+      "change_1d_pct": 8.25,
+      "return_1y": -5.210237659963434,
+      "date": "2026-07-08T11:51:00.000+0800",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
-      "signal": "深回撤观察；单日波动+5.4%",
+      "signal": "深回撤观察；单日波动+8.2%",
       "alerts": [
         {
           "ticker": "9988.HK",
           "name": "阿里巴巴-W",
           "level": "deep",
           "notify": false,
-          "message": "52周回撤 -45.8% 触发阈值 -15.0%"
+          "message": "52周回撤 -44.3% 触发阈值 -15.0%"
         },
         {
           "ticker": "9988.HK",
           "name": "阿里巴巴-W",
           "level": "move",
           "notify": false,
-          "message": "单日波动 +5.4% 超过阈值 5.0%"
+          "message": "单日波动 +8.2% 超过阈值 5.0%"
         }
       ],
       "has_alert": true
@@ -627,7 +627,7 @@
       "drawdown_52w": -22.690109890109888,
       "change_1d_pct": 2.5471,
       "return_1y": -14.385057231471043,
-      "date": "2026-07-07T16:00:00.000-0400",
+      "date": "2026-07-07",
       "source_price": "CNBC:quote-fallback",
       "history_error": "Yahoo/Stooq历史均失败: HTTP Error 429: Too Many Requests",
       "signal": "深回撤观察",
@@ -677,14 +677,14 @@
       "name": "腾讯控股",
       "level": "deep",
       "notify": false,
-      "message": "52周回撤 -30.4% 触发阈值 -15.0%"
+      "message": "52周回撤 -30.1% 触发阈值 -15.0%"
     },
     {
       "ticker": "600519.SH",
       "name": "贵州茅台",
       "level": "deep",
       "notify": false,
-      "message": "52周回撤 -24.3% 触发阈值 -12.0%"
+      "message": "52周回撤 -24.2% 触发阈值 -12.0%"
     },
     {
       "ticker": "1211.HK",
@@ -698,14 +698,14 @@
       "name": "阿里巴巴-W",
       "level": "deep",
       "notify": false,
-      "message": "52周回撤 -45.8% 触发阈值 -15.0%"
+      "message": "52周回撤 -44.3% 触发阈值 -15.0%"
     },
     {
       "ticker": "9988.HK",
       "name": "阿里巴巴-W",
       "level": "move",
       "notify": false,
-      "message": "单日波动 +5.4% 超过阈值 5.0%"
+      "message": "单日波动 +8.2% 超过阈值 5.0%"
     },
     {
       "ticker": "META",
