@@ -239,3 +239,47 @@ def fetch_historical_flow(code, limit=500):
             "super_large_net": to_float(parts[5]),
         })
     return rows
+
+
+def fetch_historical_klines(code, limit=500):
+    """Fetch historical daily klines from Eastmoney push2his endpoint.
+
+    Fallback when Tencent gtimg is rate-limited. Returns same format as
+    fetch_daily_klines: list of dicts with date/open/close/high/low/volume/amount/pct.
+    """
+    sid = secid_for(code)
+    query = urllib.parse.urlencode({
+        "secid": sid,
+        "fields1": "f1,f2,f3,f4,f5,f6",
+        "fields2": "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61",
+        "klt": "101",
+        "fqt": "1",
+        "end": "20500101",
+        "lmt": str(limit),
+    })
+    payload = get_json(
+        f"https://push2his.eastmoney.com/api/qt/stock/kline/get?{query}"
+    )
+    data = (payload.get("data") or {}).get("klines") or []
+    rows = []
+    previous_close = None
+    for item in data:
+        parts = item.split(",")
+        if len(parts) < 6:
+            continue
+        close = to_float(parts[2])
+        volume = to_float(parts[5])
+        amount = to_float(parts[6]) if len(parts) > 6 else None
+        rows.append({
+            "date": parts[0],
+            "open": to_float(parts[1]),
+            "close": close,
+            "high": to_float(parts[3]),
+            "low": to_float(parts[4]),
+            "volume": volume,
+            "amount": amount,
+            "pct": (close / previous_close - 1) * 100 if close is not None and previous_close else None,
+        })
+        if close:
+            previous_close = close
+    return rows

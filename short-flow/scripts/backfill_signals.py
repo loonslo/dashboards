@@ -16,22 +16,23 @@
 import argparse
 import datetime as dt
 import statistics
-import sys
 import time
 from collections import defaultdict
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from _bootstrap import default_config_path, default_db_path
 from short_flow.config import load_config
-from short_flow.data_sources.eastmoney import fetch_daily_klines, fetch_historical_flow
+from short_flow.data_sources.eastmoney import (
+    fetch_daily_klines, fetch_historical_flow, fetch_historical_klines,
+)
 from short_flow.db import connect, init_db, rows
 from short_flow.rules.entry_patterns import classify_entry_pattern
 from short_flow.rules.filters import hard_filter, score_direction
 from short_flow.rules.regime import classify_regime
 
 
-MAX_WORKERS = 6
 MIN_KLINES = 60  # need enough history for 20-day MA + forward returns
+DEFAULT_DELAY_KLINES = 0.15   # seconds between kline requests
+DEFAULT_DELAY_FLOW = 0.10     # seconds between flow requests
 
 
 def tracking_index(name):
@@ -120,62 +121,110 @@ def compute_etf_indicators(klines, flow_map):
     return results
 
 
-def fetch_etf_data(code, flow_limit=500):
-    """Fetch klines + flow for one ETF, return merged dataset."""
-    try:
-        klines = fetch_daily_klines(code, flow_limit + 30)
-    except Exception:
-        return None, None, None
+def fetch_etf_data(code, flow_limit=500, delay_kline=0.15, delay_flow=0.10,
+                    kline_source="auto"):
+    """Fetch klines + flow for one ETF sequentially, with pacing.
+
+    kline_source: "tencent" | "eastmoney" | "auto"
+      - "auto": try Tencent first, fall back to Eastmoney if blocked.
+    """
+    klines = None
+    kline_error = None
+    kline_src_used = None
+
+    # ── Klines ──
+    if kline_source in ("auto", "tencent"):
+        try:
+            klines = fetch_daily_klines(code, flow_limit + 30)
+            kline_src_used = "tencent"
+        except Exception as exc:
+            kline_error = exc
+        if delay_kline:
+            time.sleep(delay_kline)
+
+    if klines is None and kline_source in ("auto", "eastmoney"):
+        try:
+            klines = fetch_historical_klines(code, flow_limit + 30)
+            kline_src_used = "eastmoney"
+        except Exception:
+            pass
+        if delay_kline:
+            time.sleep(delay_kline)
+
     if not klines or len(klines) < MIN_KLINES:
         return None, None, None
 
+    # ── Flow ──
+    flow_rows = None
     try:
         flow_rows = fetch_historical_flow(code, flow_limit)
     except Exception:
+        pass
+    if delay_flow:
+        time.sleep(delay_flow)
+
+    if not flow_rows:
         return None, None, None
 
     flow_map = {r["date"]: r for r in flow_rows}
-    return klines, flow_map, compute_etf_indicators(klines, flow_map)
+    indicators = compute_etf_indicators(klines, flow_map)
+    return klines, flow_map, indicators
 
 
-def backfill(config, db_path, days=500):
-    """Main backfill routine."""
+def backfill(config, db_path, days=500, delay_kline=0.15, delay_flow=0.10,
+             kline_source="auto"):
+    """Main backfill routine. Processes ETFs sequentially to avoid rate limits."""
     init_db(db_path)
     cfg = load_config(config)
 
     with connect(db_path) as conn:
-        # ── Get ETF list ──
         etfs = rows(conn, """
             SELECT code, name, category FROM etf_master
             WHERE status='active' AND is_money=0 AND is_bond=0
             ORDER BY code
         """)
         print(f"ETFs to backfill: {len(etfs)}")
+        print(f"Kline source: {kline_source}, delays: kline={delay_kline}s flow={delay_flow}s")
 
-        # ── Step 1: Fetch all ETF data in parallel ──
-        all_indicators = {}  # code -> list of daily indicator dicts
-        all_klines = {}      # code -> klines list (for forward returns)
+        # ── Step 1: Sequential fetch ──
+        all_indicators = {}
+        all_klines = {}
         success = 0
         fail = 0
+        fail_tencent = 0
+        fail_eastmoney = 0
+        kline_via_eastmoney = 0
+        t0 = time.time()
 
-        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
-            futures = {pool.submit(fetch_etf_data, e["code"], days): e for e in etfs}
-            for future in as_completed(futures):
-                etf = futures[future]
-                code = etf["code"]
-                try:
-                    klines, flow_map, indicators = future.result()
-                    if indicators:
-                        all_indicators[code] = indicators
-                        all_klines[code] = klines
-                        success += 1
-                    else:
-                        fail += 1
-                except Exception:
+        for i, etf in enumerate(etfs):
+            code = etf["code"]
+            try:
+                klines, flow_map, indicators = fetch_etf_data(
+                    code, days, delay_kline=delay_kline, delay_flow=delay_flow,
+                    kline_source=kline_source,
+                )
+                if indicators:
+                    all_indicators[code] = indicators
+                    all_klines[code] = klines
+                    success += 1
+                    # Track which source was used
+                    if klines[0].get("_src") == "eastmoney":
+                        kline_via_eastmoney += 1
+                else:
                     fail += 1
-                if (success + fail) % 50 == 0:
-                    print(f"  fetched {success + fail}/{len(etfs)} (ok={success} fail={fail})")
-        print(f"Fetch complete: {success} ETFs with data, {fail} failed")
+            except Exception:
+                fail += 1
+
+            if (i + 1) % 100 == 0:
+                elapsed = time.time() - t0
+                rate = (i + 1) / elapsed
+                eta = (len(etfs) - i - 1) / rate / 60 if rate > 0 else 0
+                print(f"  {i+1}/{len(etfs)} (ok={success} fail={fail}) "
+                      f"[{elapsed:.0f}s, ETA {eta:.0f}m]")
+
+        elapsed = time.time() - t0
+        print(f"Fetch complete: {success}/{len(etfs)} OK, {fail} failed "
+              f"[{elapsed:.0f}s]" + (f", eastmoney fallback: {kline_via_eastmoney}" if kline_via_eastmoney else ""))
 
         if success == 0:
             print("No ETF data available, aborting.")
@@ -426,6 +475,13 @@ def main():
     parser.add_argument("--config", default=str(default_config_path()))
     parser.add_argument("--days", type=int, default=500,
                         help="Number of calendar days to backfill (default 500)")
+    parser.add_argument("--delay-kline", type=float, default=DEFAULT_DELAY_KLINES,
+                        help=f"Seconds between kline requests (default {DEFAULT_DELAY_KLINES})")
+    parser.add_argument("--delay-flow", type=float, default=DEFAULT_DELAY_FLOW,
+                        help=f"Seconds between flow requests (default {DEFAULT_DELAY_FLOW})")
+    parser.add_argument("--kline-source", default="auto",
+                        choices=["auto", "tencent", "eastmoney"],
+                        help="Kline data source (auto=try Tencent first, fallback to Eastmoney)")
     parser.add_argument("--summary-only", action="store_true",
                         help="Only print summary from existing backfill data")
     args = parser.parse_args()
@@ -438,7 +494,9 @@ def main():
 
     print(f"Backfilling ~{args.days} days of historical signals...")
     t0 = time.time()
-    backfill(args.config, args.db, days=args.days)
+    backfill(args.config, args.db, days=args.days,
+             delay_kline=args.delay_kline, delay_flow=args.delay_flow,
+             kline_source=args.kline_source)
     elapsed = time.time() - t0
     print(f"\nDone in {elapsed:.0f}s ({elapsed/60:.1f}m)")
 
