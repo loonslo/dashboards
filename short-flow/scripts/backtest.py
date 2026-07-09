@@ -216,6 +216,11 @@ def compute_summary(conn):
     # v0.2: score quintile breakdown — quantitatively answers whether
     # score_direction (which heavily weights daily return) is a
     # trend-following factor or just a chasing bias.
+    # Uses 5d returns as the primary horizon (matches max_hold_days=20);
+    # 1d is reference-only because A-share daily-chasing + next-day reversal
+    # is a known pattern that can give opposite signals.
+    MIN_QUINTILE_SAMPLES = 30
+    FIXED_DIFF_THRESHOLD = 0.5  # 5d return difference in pct points
     by_score_quintile = {}
     if len(all_results) >= 20:
         sorted_by_score = sorted(all_results, key=lambda r: r["score"] or 0)
@@ -226,13 +231,16 @@ def compute_summary(conn):
             group = sorted_by_score[start:end]
             if not group:
                 continue
+            rets_5d = [r["return_5d"] for r in group if r["return_5d"] is not None]
+            rets_1d = [r["return_1d_close"] for r in group if r["return_1d_close"] is not None]
             score_range = f"{group[0]['score']:.0f}-{group[-1]['score']:.0f}"
             by_score_quintile[f"Q{q+1}"] = {
                 "score_range": score_range,
                 "count": len(group),
-                "avg_return_5d": round(mean([r["return_5d"] for r in group]), 2) if any(r["return_5d"] is not None for r in group) else None,
-                "win_rate_5d": round(win_rate([r["hit_5d"] for r in group]), 3) if any(r["hit_5d"] is not None for r in group) else None,
-                "avg_return_1d": round(mean([r["return_1d_close"] for r in group]), 2) if any(r["return_1d_close"] is not None for r in group) else None,
+                "avg_return_5d": round(mean(rets_5d), 2) if rets_5d else None,
+                "std_return_5d": round(statistics.stdev(rets_5d), 2) if len(rets_5d) >= 2 else None,
+                "win_rate_5d": round(win_rate([r["hit_5d"] for r in group]), 3),
+                "avg_return_1d": round(mean(rets_1d), 2) if rets_1d else None,
             }
 
     return {
@@ -240,7 +248,6 @@ def compute_summary(conn):
         "overall": overall,
         "by_regime": regime_summaries,
         "by_score_quintile": by_score_quintile,
-        "recent": recent,
         "recent": recent,
     }
 
@@ -284,26 +291,43 @@ def main():
     quintiles = summary.get("by_score_quintile", {})
     if quintiles:
         print()
-        print("--- score 分位数分层 (Q1=最低分, Q5=最高分) ---")
+        print("--- score 分位数分层 (Q1=最低分, Q5=最高分, 以5日收益为准) ---")
         for q in sorted(quintiles.keys()):
             qt = quintiles[q]
+            std_str = f" ±{qt['std_return_5d']:.1f}%" if qt.get("std_return_5d") is not None else ""
             print(f"  {q} [{qt['score_range']}]: n={qt['count']} "
-                  f"5d_avg={qt['avg_return_5d']:+.2f}% 5d_win={qt['win_rate_5d']:.1%} "
-                  f"1d_avg={qt['avg_return_1d']:+.2f}%")
-        # 每天最多3个candidate，五分位样本积累很慢。每格至少30个再看
-        # 结论，否则一两只涨停ETF就能翻转Q5均值。
-        MIN_QUINTILE_SAMPLES = 30
-        q1_n = quintiles.get("Q1", {}).get("count", 0)
-        q5_n = quintiles.get("Q5", {}).get("count", 0)
-        q1_5d = quintiles.get("Q1", {}).get("avg_return_5d")
-        q5_5d = quintiles.get("Q5", {}).get("avg_return_5d")
-        if q1_5d is not None and q5_5d is not None:
-            if q1_n < MIN_QUINTILE_SAMPLES or q5_n < MIN_QUINTILE_SAMPLES:
-                print(f"  ⏳ 样本不足 (Q1={q1_n}, Q5={q5_n}，各需≥{MIN_QUINTILE_SAMPLES})，暂不判断追涨偏差")
-            elif q5_5d < q1_5d:
-                print(f"  ⚠ 高分组5日回报低于低分组 ({q5_5d:+.2f}% vs {q1_5d:+.2f}%) — score 不是趋势跟随因子，是追涨偏差")
+                  f"5d={qt['avg_return_5d']:+.2f}%{std_str} "
+                  f"5d_win={qt['win_rate_5d']:.1%} "
+                  f"(1d_ref={qt['avg_return_1d']:+.2f}%)")
+        # 显著性检验：|Q5-Q1| > 2×pooled SE (p≈0.05)。
+        # 以 5 日收益为准——1d 只做参考（A 股当日追涨次日反转是常态）。
+        MIN_N = 30
+        FIXED_PCT = 0.5
+        q1 = quintiles.get("Q1", {})
+        q5 = quintiles.get("Q5", {})
+        n1, n5 = q1.get("count", 0), q5.get("count", 0)
+        a1, a5 = q1.get("avg_return_5d"), q5.get("avg_return_5d")
+        s1, s5 = q1.get("std_return_5d"), q5.get("std_return_5d")
+        if a1 is not None and a5 is not None:
+            diff = a5 - a1
+            if n1 < MIN_N or n5 < MIN_N:
+                print(f"  ⏳ 样本不足 (Q1={n1}, Q5={n5}，各需≥{MIN_N})，暂不判断")
+            elif s1 is not None and s5 is not None:
+                # Pooled standard error
+                se = (s1**2 / n1 + s5**2 / n5) ** 0.5
+                if abs(diff) > 2 * se:
+                    tag = "⚠ 追涨偏差(显著)" if diff < 0 else "✓ 趋势跟随(显著)"
+                    print(f"  {tag}: Q5-Q1={diff:+.2f}%, |diff|={abs(diff):.2f} > 2×SE={2*se:.2f}")
+                elif abs(diff) >= FIXED_PCT:
+                    tag = "⚠ 追涨偏差(弱)" if diff < 0 else "✓ 趋势跟随(弱)"
+                    print(f"  {tag}: Q5-Q1={diff:+.2f}%, |diff|={abs(diff):.2f} < 2×SE={2*se:.2f} 但 ≥{FIXED_PCT}pct 固定门槛")
+                else:
+                    print(f"  — inconclusive: Q5-Q1={diff:+.2f}%, |diff|={abs(diff):.2f} < 2×SE={2*se:.2f} 且 <{FIXED_PCT}pct")
+            elif abs(diff) >= FIXED_PCT:
+                tag = "⚠ 追涨偏差(固定门槛)" if diff < 0 else "✓ 趋势跟随(固定门槛)"
+                print(f"  {tag}: Q5-Q1={diff:+.2f}% ≥{FIXED_PCT}pct (SE不可用)")
             else:
-                print(f"  ✓ 高分组跑赢低分组 ({q5_5d:+.2f}% vs {q1_5d:+.2f}%)")
+                print(f"  — inconclusive: Q5-Q1={diff:+.2f}% <{FIXED_PCT}pct (SE不可用)")
 
     return summary
 

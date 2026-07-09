@@ -92,6 +92,13 @@ def compute_backtest_summary(conn):
         vals = [v for v in values if v is not None]
         return sum(vals) / len(vals) if vals else None
 
+    def _std(values):
+        vals = [v for v in values if v is not None]
+        if len(vals) < 2:
+            return None
+        m = sum(vals) / len(vals)
+        return (sum((v - m) ** 2 for v in vals) / (len(vals) - 1)) ** 0.5
+
     def _win_rate(hits):
         valid = [h for h in hits if h is not None]
         return sum(valid) / len(valid) if valid else None
@@ -122,9 +129,11 @@ def compute_backtest_summary(conn):
 
     # v0.2: score quintile breakdown — quantifies whether score_direction
     # is a trend-following factor or just a daily-chasing bias.
-    # 每天最多3个candidate，五分位每个格样本积累很慢。每格至少30个再看
-    # 结论，否则一两只涨停ETF就能翻转Q5均值。
-    MIN_QUINTILE_SAMPLES = 30
+    # Uses 5d returns as primary horizon; 1d is reference-only (A-share
+    # daily-chasing + next-day reversal can give opposite signals).
+    # Significance: |Q5-Q1| > 2×pooled SE (p≈0.05), fallback ≥0.5 pct fixed.
+    MIN_N = 30
+    FIXED_PCT = 0.5
     by_score_quintile = {}
     quintile_conclusion = None
     if len(bt_rows) >= 20:
@@ -136,22 +145,37 @@ def compute_backtest_summary(conn):
             group = sorted_by_score[start:end]
             if not group:
                 continue
+            rets_5d = [r["return_5d"] for r in group if r["return_5d"] is not None]
+            rets_1d = [r["return_1d_close"] for r in group if r["return_1d_close"] is not None]
             score_range = f"{group[0]['score']:.0f}-{group[-1]['score']:.0f}"
             by_score_quintile[f"Q{q+1}"] = {
                 "score_range": score_range,
                 "count": len(group),
-                "avg_return_5d": round(_mean([r["return_5d"] for r in group]), 2),
+                "avg_return_5d": round(_mean(rets_5d), 2) if rets_5d else None,
+                "std_return_5d": round(_std(rets_5d), 2) if len(rets_5d) >= 2 else None,
                 "win_rate_5d": round(_win_rate([r["hit_5d"] for r in group]), 3),
-                "avg_return_1d": round(_mean([r["return_1d_close"] for r in group]), 2),
+                "avg_return_1d": round(_mean(rets_1d), 2) if rets_1d else None,
             }
         q1 = by_score_quintile.get("Q1", {})
         q5 = by_score_quintile.get("Q5", {})
-        if q1.get("count", 0) >= MIN_QUINTILE_SAMPLES and q5.get("count", 0) >= MIN_QUINTILE_SAMPLES:
-            if q5.get("avg_return_5d") is not None and q1.get("avg_return_5d") is not None:
-                quintile_conclusion = (
-                    "chasing_bias" if q5["avg_return_5d"] < q1["avg_return_5d"]
-                    else "trend_following"
-                )
+        n1, n5 = q1.get("count", 0), q5.get("count", 0)
+        a1, a5 = q1.get("avg_return_5d"), q5.get("avg_return_5d")
+        s1, s5 = q1.get("std_return_5d"), q5.get("std_return_5d")
+        if a1 is not None and a5 is not None:
+            if n1 < MIN_N or n5 < MIN_N:
+                quintile_conclusion = "insufficient_samples"
+            elif s1 is not None and s5 is not None:
+                se = (s1**2 / n1 + s5**2 / n5) ** 0.5
+                if abs(a5 - a1) > 2 * se:
+                    quintile_conclusion = "chasing_bias" if a5 < a1 else "trend_following"
+                elif abs(a5 - a1) >= FIXED_PCT:
+                    quintile_conclusion = "weak_chasing_bias" if a5 < a1 else "weak_trend_following"
+                else:
+                    quintile_conclusion = "inconclusive"
+            elif abs(a5 - a1) >= FIXED_PCT:
+                quintile_conclusion = "chasing_bias_fixed" if a5 < a1 else "trend_following_fixed"
+            else:
+                quintile_conclusion = "inconclusive"
 
     recent_dates = sorted(set(r["signal_date"] for r in bt_rows), reverse=True)[:20]
     recent = [
@@ -171,7 +195,7 @@ def compute_backtest_summary(conn):
         "by_regime": regime_summaries,
         "by_score_quintile": by_score_quintile,
         "quintile_conclusion": quintile_conclusion,
-        "min_quintile_samples": MIN_QUINTILE_SAMPLES,
+        "min_quintile_samples": MIN_N,
         "recent": recent,
     }
 
