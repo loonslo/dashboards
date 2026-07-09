@@ -417,7 +417,7 @@
         </nav>
       </div>
       <div class="summary" aria-label="摘要">
-        <div class="summary-card"><b id="marketCount">-</b><span>市场/板块</span></div>
+        <div class="summary-card"><b id="marketCount">-</b><span>扫描ETF</span></div>
         <div class="summary-card"><b id="focusCount">-</b><span>可观察</span></div>
         <div class="summary-card"><b id="waitCount">-</b><span>待观察/待排除</span></div>
       </div>
@@ -483,7 +483,7 @@
 
     <section id="watch-section">
       <div class="section-head">
-        <h2>观察池信号</h2>
+        <h2>全池候选信号</h2>
         <span id="watchHint" class="hint">筛选后 - 个</span>
       </div>
       <div id="watchSignals" class="grid"></div>
@@ -491,7 +491,7 @@
 
     <section id="market-section">
       <div class="section-head">
-        <h2>市场/板块资金流</h2>
+        <h2>手工置顶/板块</h2>
         <span id="marketHint" class="hint">完整明细</span>
       </div>
       <div id="marketFlow" class="grid"></div>
@@ -632,6 +632,13 @@
           rows.push(...(data.items || []));
         }
       } catch { /* local candidate list is optional */ }
+      try {
+        const res = await fetch("a_share_etf_universe.json", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          rows.push(...(data.items || []));
+        }
+      } catch { /* full ETF universe is optional */ }
       rows.push(...allRows());
       for (const bucket of ["focus_watch", "wait", "exclude", "exit_queue"]) {
         rows.push(...(state.etf?.[bucket] || []));
@@ -776,13 +783,15 @@
         status,
         rows.filter(row => row.status === status).length
       ]));
-      document.getElementById("marketCount").textContent = state.data?.market_flow?.length ?? 0;
+      const scope = state.data?.scan_scope || {};
+      document.getElementById("marketCount").textContent = scope.scanned_count ?? state.data?.market_flow?.length ?? 0;
       document.getElementById("focusCount").textContent = counts["Focus watch"] ?? 0;
       document.getElementById("waitCount").textContent = (counts["Wait for strength"] ?? 0) + (counts["Exclude for now"] ?? 0);
       const source = state.data?.source_status || {};
       const rel = DashFmt.relativeTime(state.data?.asof);
       const badge = rel.text ? ` <span class="freshness ${rel.level === "fresh" ? "" : safe(rel.level)}">${safe(rel.text)}</span>` : "";
-      document.getElementById("meta").innerHTML = `生成时间：${safe(state.data?.asof || "暂无")}${badge} · 交易日：${safe(state.data?.trade_date || "暂无")} · 接口 实时/延迟/不可用：${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0} · 不自动交易`;
+      const scanText = scope.universe_count ? ` · ETF池：${scope.universe_count} / 扫描：${scope.scanned_count || 0}` : "";
+      document.getElementById("meta").innerHTML = `生成时间：${safe(state.data?.asof || "暂无")}${badge} · 交易日：${safe(state.data?.trade_date || "暂无")}${scanText} · 接口 实时/延迟/不可用：${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0} · 不自动交易`;
     }
 
     function renderChips() {
@@ -881,15 +890,19 @@
       const statuses = selectedStatuses();
       const targetStatuses = statuses.length ? statuses : ["Focus watch"];
       const mainRows = [
-        ...(state.data?.watch_signals || []).map(row => ({ ...row, _section: "main", _source: "观察池" })),
-        ...(state.data?.market_flow || []).map(row => ({ ...row, _section: "main", _source: "市场/板块" }))
+        ...(state.data?.watch_signals || []).map(row => ({
+          ...row,
+          _section: "main",
+          _source: String(row.source_pool || "").includes("watchlist") ? "手工置顶" : "全池候选"
+        })),
+        ...(state.data?.market_flow || []).map(row => ({ ...row, _section: "main", _source: "手工置顶" }))
       ];
       return [...mainRows, ...etfRowsForAttention()]
         .filter(row => targetStatuses.includes(row.status))
         .filter(row => filterMatches(row, row._section || "main") && textMatches(row))
         .sort((a, b) => {
-          const sourceRank = (a._source === "观察池" ? 0 : a._source === "ETF训练仓" ? 1 : 2) -
-            (b._source === "观察池" ? 0 : b._source === "ETF训练仓" ? 1 : 2);
+          const sourceRank = (a._source === "手工置顶" ? 0 : a._source === "全池候选" ? 1 : a._source === "ETF训练仓" ? 2 : 3) -
+            (b._source === "手工置顶" ? 0 : b._source === "全池候选" ? 1 : b._source === "ETF训练仓" ? 2 : 3);
           return sourceRank || (b.score ?? 0) - (a.score ?? 0) || (b.main_net_pct ?? 0) - (a.main_net_pct ?? 0);
         });
     }
@@ -931,9 +944,8 @@
     }
 
     function renderRanks() {
-      const ranked = filtered(allRows(), "main");
-      const inflow = [...ranked].sort((a, b) => (b.main_net ?? -1e30) - (a.main_net ?? -1e30)).slice(0, 6);
-      const outflow = [...ranked].sort((a, b) => (a.main_net ?? 1e30) - (b.main_net ?? 1e30)).slice(0, 6);
+      const inflow = filtered(state.data?.ranked_inflow || allRows(), "main").slice(0, 6);
+      const outflow = filtered(state.data?.ranked_outflow || allRows(), "main").slice(0, 6);
       document.getElementById("inflowRows").innerHTML = inflow.length ? inflow.map(rankRow).join("") : '<tr><td colspan="5">没有匹配的流入排名</td></tr>';
       document.getElementById("outflowRows").innerHTML = outflow.length ? outflow.map(rankRow).join("") : '<tr><td colspan="5">没有匹配的流出排名</td></tr>';
     }

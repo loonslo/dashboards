@@ -34,6 +34,7 @@
     alert: "提醒",
     warning: "预警",
     info: "观察",
+    cost: "成本",
     data: "数据"
   }[level] || level || "提醒");
 

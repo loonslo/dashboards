@@ -291,6 +291,8 @@
     const dataIssueMessage = count => count > 1
       ? `${count} 个标的行情暂未更新，先不要据此做买卖判断。`
       : "行情数据暂未更新，先不要据此做买卖判断。";
+    const sigma = value => value === null || value === undefined || Number.isNaN(Number(value)) ? "暂无" : `${Number(value).toFixed(2)}σ`;
+    const costCls = row => row.cost_buy_signal ? "pos" : row.cost_condition_extreme ? "neg" : "flat";
 
     async function loadData() {
       state.data = await DashboardApi.fetchLatest("index-decision", "dashboard_latest.json");
@@ -412,7 +414,9 @@
         change_1d_pct: null,
         drawdown_52w: null,
         return_1m: null,
-        return_3m: null
+        return_3m: null,
+        cost_dev_factor: null,
+        cost_buy_signal: false
       }));
       return [...backendRows, ...localRows];
     }
@@ -424,6 +428,7 @@
       const group = row.group || row.kind || "指数";
       const peLine = isIndex ? `${fmt(row.pe_ttm)} / ${pct(row.dividend_yield, 2)}` : `${pct(row.return_1m)} / ${pct(row.return_3m)}`;
       const peLabel = isIndex ? "PE/股息" : "1月/3月";
+      const costMetric = !isIndex ? `<div class="metric"><span>成本Z</span><b class="${costCls(row)}">${sigma(row.cost_dev_factor)}</b></div>` : "";
       return `
         <article class="card">
           <div class="top">
@@ -440,6 +445,7 @@
             <div class="metric"><span>较前日</span><b class="${cls(row.change_1d_pct)}">${pct(row.change_1d_pct)}</b></div>
             <div class="metric"><span>距高点</span><b class="${cls(row.drawdown_52w)}">${pct(row.drawdown_52w)}</b></div>
             <div class="metric"><span>${peLabel}</span><b>${peLine}</b></div>
+            ${costMetric}
           </div>
           <div class="signal">${safe(row.signal || "正常观察")}</div>
           ${row.reason ? `<div class="reason">${safe(row.reason)}</div>` : ""}
@@ -484,6 +490,7 @@
       const modes = [
         ["all", "全部"],
         ["alert", "有提醒"],
+        ["cost", "成本信号"],
         ["core", "核心"],
         ["US", "美股"],
         ["HK", "港股"],
@@ -572,13 +579,15 @@
       const query = document.getElementById("search").value.trim().toLowerCase();
       const markets = state.mode.filter(m => m === "US" || m === "HK" || m === "CN");
       const needAlert = state.mode.includes("alert");
+      const needCost = state.mode.includes("cost");
       const needCore = state.mode.includes("core");
       return watchRows().filter(row => {
         const text = `${row.ticker} ${row.name} ${row.group} ${row.market}`.toLowerCase();
         const marketOk = !markets.length || markets.includes(row.market);
         const alertOk = !needAlert || (row.alerts || []).some(isActionAlert);
+        const costOk = !needCost || row.cost_buy_signal;
         const coreOk = !needCore || row.priority === "core";
-        return marketOk && alertOk && coreOk && (!query || text.includes(query)) && (!state.group || row.group === state.group);
+        return marketOk && alertOk && costOk && coreOk && (!query || text.includes(query)) && (!state.group || row.group === state.group);
       });
     }
 

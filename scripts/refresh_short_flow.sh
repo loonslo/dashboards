@@ -15,12 +15,26 @@ if [ -z "$PYTHON_BIN" ]; then
     PYTHON_BIN="python3"
   fi
 fi
+export SHORT_FLOW_MAX_WORKERS="${SHORT_FLOW_MAX_WORKERS:-8}"
 "$PYTHON_BIN" scripts/short_flow_dashboard.py \
   --watchlist "$DASHBOARD_DIR/watchlist_v1.json" \
+  --etf-universe "$DASHBOARD_DIR/a_share_etf_universe.json" \
   --dashboard-json "$TMP_JSON" \
   --previous-json "$DASHBOARD_DIR/dashboard_latest.json"
 
-"$PYTHON_BIN" short-flow/scripts/daily_job.py --session 0940
+if [ -z "${SHORT_FLOW_SESSION:-}" ]; then
+  HHMM="$(date +%H%M)"
+  if [ "$HHMM" -ge 1500 ]; then
+    SHORT_FLOW_SESSION="1520"
+  elif [ "$HHMM" -ge 1430 ]; then
+    SHORT_FLOW_SESSION="1430"
+  elif [ "$HHMM" -ge 1130 ]; then
+    SHORT_FLOW_SESSION="1130"
+  else
+    SHORT_FLOW_SESSION="0940"
+  fi
+fi
+"$PYTHON_BIN" short-flow/scripts/daily_job.py --session "$SHORT_FLOW_SESSION"
 
 "$PYTHON_BIN" - "$TMP_JSON" <<'PY'
 import json

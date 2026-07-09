@@ -122,7 +122,11 @@ def compute_backtest_summary(conn):
 
     # v0.2: score quintile breakdown — quantifies whether score_direction
     # is a trend-following factor or just a daily-chasing bias.
+    # 每天最多3个candidate，五分位每个格样本积累很慢。每格至少30个再看
+    # 结论，否则一两只涨停ETF就能翻转Q5均值。
+    MIN_QUINTILE_SAMPLES = 30
     by_score_quintile = {}
+    quintile_conclusion = None
     if len(bt_rows) >= 20:
         sorted_by_score = sorted(bt_rows, key=lambda r: r["score"] or 0)
         n = len(sorted_by_score)
@@ -140,6 +144,14 @@ def compute_backtest_summary(conn):
                 "win_rate_5d": round(_win_rate([r["hit_5d"] for r in group]), 3),
                 "avg_return_1d": round(_mean([r["return_1d_close"] for r in group]), 2),
             }
+        q1 = by_score_quintile.get("Q1", {})
+        q5 = by_score_quintile.get("Q5", {})
+        if q1.get("count", 0) >= MIN_QUINTILE_SAMPLES and q5.get("count", 0) >= MIN_QUINTILE_SAMPLES:
+            if q5.get("avg_return_5d") is not None and q1.get("avg_return_5d") is not None:
+                quintile_conclusion = (
+                    "chasing_bias" if q5["avg_return_5d"] < q1["avg_return_5d"]
+                    else "trend_following"
+                )
 
     recent_dates = sorted(set(r["signal_date"] for r in bt_rows), reverse=True)[:20]
     recent = [
@@ -158,6 +170,8 @@ def compute_backtest_summary(conn):
         "overall": _stats(bt_rows),
         "by_regime": regime_summaries,
         "by_score_quintile": by_score_quintile,
+        "quintile_conclusion": quintile_conclusion,
+        "min_quintile_samples": MIN_QUINTILE_SAMPLES,
         "recent": recent,
     }
 

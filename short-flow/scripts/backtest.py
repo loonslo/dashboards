@@ -290,12 +290,18 @@ def main():
             print(f"  {q} [{qt['score_range']}]: n={qt['count']} "
                   f"5d_avg={qt['avg_return_5d']:+.2f}% 5d_win={qt['win_rate_5d']:.1%} "
                   f"1d_avg={qt['avg_return_1d']:+.2f}%")
-        # Highlight if high-score underperforms
+        # 每天最多3个candidate，五分位样本积累很慢。每格至少30个再看
+        # 结论，否则一两只涨停ETF就能翻转Q5均值。
+        MIN_QUINTILE_SAMPLES = 30
+        q1_n = quintiles.get("Q1", {}).get("count", 0)
+        q5_n = quintiles.get("Q5", {}).get("count", 0)
         q1_5d = quintiles.get("Q1", {}).get("avg_return_5d")
         q5_5d = quintiles.get("Q5", {}).get("avg_return_5d")
         if q1_5d is not None and q5_5d is not None:
-            if q5_5d < q1_5d:
-                print(f"  ⚠ 高分组成交回报低于低分组 ({q5_5d:+.2f}% vs {q1_5d:+.2f}%) — score 不是趋势跟随因子，是追涨偏差")
+            if q1_n < MIN_QUINTILE_SAMPLES or q5_n < MIN_QUINTILE_SAMPLES:
+                print(f"  ⏳ 样本不足 (Q1={q1_n}, Q5={q5_n}，各需≥{MIN_QUINTILE_SAMPLES})，暂不判断追涨偏差")
+            elif q5_5d < q1_5d:
+                print(f"  ⚠ 高分组5日回报低于低分组 ({q5_5d:+.2f}% vs {q1_5d:+.2f}%) — score 不是趋势跟随因子，是追涨偏差")
             else:
                 print(f"  ✓ 高分组跑赢低分组 ({q5_5d:+.2f}% vs {q1_5d:+.2f}%)")
 

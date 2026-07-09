@@ -19,9 +19,23 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 HERE = os.path.dirname(os.path.abspath(__file__))
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
 TIMEOUT = 12
-MAX_WORKERS = int(os.environ.get("SHORT_FLOW_MAX_WORKERS", "1"))
+MAX_WORKERS = int(os.environ.get("SHORT_FLOW_MAX_WORKERS", "8"))
 DEFAULT_WATCHLIST = os.path.join(os.path.dirname(HERE), "dashboards", "short-flow", "watchlist_v1.json")
 DEFAULT_OUTPUT = os.path.join(os.path.dirname(HERE), "dashboards", "short-flow", "dashboard_latest.json")
+DEFAULT_ETF_UNIVERSE = os.path.join(os.path.dirname(HERE), "dashboards", "short-flow", "a_share_etf_universe.json")
+DEFAULT_SCAN_LIMIT = int(os.environ.get("SHORT_FLOW_SCAN_LIMIT", "0"))
+DEFAULT_OUTPUT_LIMIT = int(os.environ.get("SHORT_FLOW_OUTPUT_LIMIT", "120"))
+ETF_CATEGORIES = {
+    "CORE": "宽基ETF",
+    "GROWTH": "成长宽基",
+    "THEME": "主题ETF",
+    "SECTOR": "行业ETF",
+    "DEFENSE": "防守/红利",
+    "CROSS": "跨境ETF",
+    "COMMODITY": "商品ETF",
+    "BOND": "债券ETF",
+    "MONEY": "货币ETF",
+}
 
 
 def to_float(value):
@@ -107,6 +121,132 @@ def tencent_symbol_for(code):
     return f"{prefix}{code}"
 
 
+def classify_etf(code, name):
+    name = name or ""
+    if any(token in name for token in ("货币", "现金", "添利", "快线", "日利", "保证金")):
+        return "MONEY"
+    if any(token in name for token in ("债", "国开", "可转债")):
+        return "BOND"
+    if any(token in name for token in ("黄金", "有色", "豆粕", "能源化工")):
+        return "COMMODITY"
+    if any(token in name for token in ("纳指", "标普", "恒生", "港股", "日经")):
+        return "CROSS"
+    if any(token in name for token in ("红利", "低波")):
+        return "DEFENSE"
+    if any(token in name for token in ("半导体", "芯片", "AI", "人工智能", "机器人")):
+        return "THEME"
+    if any(token in name for token in ("证券", "医药", "通信", "军工", "新能源", "传媒", "银行", "券商", "消费", "酒")):
+        return "SECTOR"
+    if any(token in name for token in ("创业板", "科创", "双创")):
+        return "GROWTH"
+    if any(token in name for token in ("上证50", "沪深300", "中证500", "中证1000", "A500", "宽基")):
+        return "CORE"
+    return "SECTOR"
+
+
+def fetch_all_a_share_etfs(max_pages=40, page_size=100):
+    items = []
+    seen = set()
+    total = None
+    fields = "f12,f14,f2,f3,f5,f6,f20"
+    fs = "b:MK0021,b:MK0022,b:MK0023,b:MK0024"
+    for page in range(1, max_pages + 1):
+        query = urllib.parse.urlencode({
+            "pn": page,
+            "pz": page_size,
+            "po": 1,
+            "np": 1,
+            "fltt": 2,
+            "invt": 2,
+            "fid": "f6",
+            "fs": fs,
+            "fields": fields,
+        }, safe=",:")
+        payload = None
+        last_error = None
+        for host in ("push2.eastmoney.com", "push2delay.eastmoney.com"):
+            try:
+                payload = get_json(f"https://{host}/api/qt/clist/get?{query}")
+                break
+            except Exception as exc:
+                last_error = exc
+        if payload is None:
+            if items:
+                break
+            raise last_error
+        data = payload.get("data") or {}
+        if total is None:
+            total = data.get("total")
+        diff = data.get("diff") or []
+        if not diff:
+            break
+        for row in diff:
+            code = str(row.get("f12") or "").strip()
+            name = str(row.get("f14") or "").strip()
+            if not code or not name or code in seen:
+                continue
+            seen.add(code)
+            category = classify_etf(code, name)
+            items.append({
+                "code": code,
+                "name": name,
+                "market": "SH" if code.startswith(("5", "6")) else "SZ",
+                "category": category,
+                "group": ETF_CATEGORIES.get(category, "ETF"),
+                "role": "scan",
+                "priority": "normal",
+                "source_pool": "Eastmoney:all_a_share_etf",
+                "last_price": to_float(row.get("f2")),
+                "pct": to_float(row.get("f3")),
+                "volume": to_float(row.get("f5")),
+                "amount": to_float(row.get("f6")),
+                "market_cap": to_float(row.get("f20")),
+            })
+        if total and len(items) >= int(total):
+            break
+        time.sleep(0.2)
+    return items
+
+
+def read_json(path, default):
+    try:
+        with open(path, encoding="utf-8") as handle:
+            return json.load(handle)
+    except Exception:
+        return default
+
+
+def write_etf_universe(path, items, errors=None):
+    data = {
+        "updated_at": dt.datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "source": "Eastmoney:all_a_share_etf",
+        "errors": errors or [],
+        "items": items,
+    }
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as handle:
+        json.dump(data, handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
+
+
+def load_etf_universe(path, refresh=True):
+    errors = []
+    if refresh:
+        try:
+            items = fetch_all_a_share_etfs()
+            if items:
+                write_etf_universe(path, items)
+                return items, errors
+        except Exception as exc:
+            errors.append(f"全量ETF池刷新失败，尝试使用本地缓存: {exc}")
+    payload = read_json(path, {})
+    items = payload.get("items") if isinstance(payload, dict) else None
+    if items:
+        return items, errors
+    errors.append("全量ETF池为空，回退到手工观察池")
+    return [], errors
+
+
 def load_watchlist(path):
     with open(path, encoding="utf-8") as handle:
         payload = json.load(handle)
@@ -120,6 +260,86 @@ def load_watchlist(path):
         seen.add(code)
         rows.append(item)
     return rows
+
+
+def merge_scan_items(universe_items, watch_items, scan_limit=0):
+    watch_by_code = {str(item.get("code") or "").strip(): item for item in watch_items if item.get("code")}
+    merged = {}
+    for item in universe_items:
+        code = str(item.get("code") or "").strip()
+        if not code:
+            continue
+        category = item.get("category") or classify_etf(code, item.get("name"))
+        row = {
+            "code": code,
+            "name": item.get("name") or code,
+            "group": item.get("group") or ETF_CATEGORIES.get(category, "ETF"),
+            "role": "scan",
+            "priority": "normal",
+            "category": category,
+            "source_pool": item.get("source_pool") or "all_a_share_etf",
+        }
+        override = watch_by_code.get(code)
+        if override:
+            row.update({key: value for key, value in override.items() if value is not None})
+            row["source_pool"] = "watchlist+all_a_share_etf"
+        merged[code] = row
+    for code, item in watch_by_code.items():
+        if code not in merged:
+            category = classify_etf(code, item.get("name"))
+            row = {
+                "code": code,
+                "name": item.get("name") or code,
+                "group": item.get("group") or ETF_CATEGORIES.get(category, "ETF"),
+                "role": item.get("role") or "watch",
+                "priority": item.get("priority") or "normal",
+                "category": category,
+                "source_pool": "watchlist_only",
+            }
+            row.update(item)
+            merged[code] = row
+    priority_order = {"core": 0, "high": 1, "normal": 2}
+    rows = sorted(
+        merged.values(),
+        key=lambda row: (
+            priority_order.get(row.get("priority"), 9),
+            0 if row.get("role") in ("market", "watch") else 1,
+            row.get("group") or "",
+            row.get("code") or "",
+        ),
+    )
+    if scan_limit and scan_limit > 0:
+        pinned = [row for row in rows if row.get("role") in ("market", "watch")]
+        pinned_codes = {row.get("code") for row in pinned}
+        rest = [row for row in rows if row.get("code") not in pinned_codes]
+        rows = pinned + rest[:max(0, scan_limit - len(pinned))]
+    return rows
+
+
+def candidate_score(row):
+    score = 0.0
+    status = row.get("status")
+    if status == "Focus watch":
+        score += 100
+    elif status == "Wait for strength":
+        score += 25
+    score += max(-20, min(20, row.get("main_net_pct") or 0)) * 1.5
+    score += max(-20, min(20, row.get("return_5d_pct") or 0)) * 0.4
+    score += max(-30, min(30, row.get("return_20d_pct") or 0)) * 0.15
+    amount_ratio = row.get("amount_ratio_20")
+    if amount_ratio is not None:
+        score += min(amount_ratio, 3) * 8
+    if row.get("role") in ("market", "watch"):
+        score += 12
+    if row.get("priority") == "core":
+        score += 8
+    elif row.get("priority") == "high":
+        score += 4
+    if row.get("category") in ("MONEY", "BOND"):
+        score -= 35
+    if row.get("source_price") == "unavailable":
+        score -= 80
+    return score
 
 
 def parse_kline(row):
@@ -400,6 +620,8 @@ def collect_one(item, flow_map=None):
         "group": item.get("group") or "未分组",
         "role": item.get("role") or "watch",
         "priority": item.get("priority") or "normal",
+        "category": item.get("category"),
+        "source_pool": item.get("source_pool"),
         "plan_note": item.get("plan_note"),
         "key_level": item.get("key_level"),
         "trade_date": latest["date"],
@@ -447,6 +669,7 @@ def collect_one(item, flow_map=None):
     row["reason"] = reason
     row["next_trigger"] = trigger_text(row)
     row["failure"] = failure_text(row)
+    row["score"] = candidate_score(row)
     return row
 
 def fallback_row(item, error):
@@ -460,6 +683,8 @@ def fallback_row(item, error):
         "group": item.get("group") or "未分组",
         "role": role,
         "priority": item.get("priority") or "normal",
+        "category": item.get("category"),
+        "source_pool": item.get("source_pool"),
         "plan_note": item.get("plan_note"),
         "key_level": item.get("key_level"),
         "trade_date": "N/A",
@@ -492,6 +717,7 @@ def fallback_row(item, error):
         "failure": "数据不可用时不生成买入结论；重新刷新后再评估。",
         "source_price": "unavailable",
         "source_flow": "unavailable",
+        "score": -80,
     }
 
 def row_is_live(row):
@@ -569,15 +795,17 @@ def apply_previous_snapshot(data, previous):
         data[section] = merged
 
     all_rows = data.get("market_flow", []) + data.get("watch_signals", [])
-    data["ranked_inflow"] = sorted(
-        all_rows,
-        key=lambda row: row.get("main_net") if row.get("main_net") is not None else -10**30,
-        reverse=True,
-    )[:8]
-    data["ranked_outflow"] = sorted(
-        all_rows,
-        key=lambda row: row.get("main_net") if row.get("main_net") is not None else 10**30,
-    )[:8]
+    if not data.get("ranked_inflow"):
+        data["ranked_inflow"] = sorted(
+            all_rows,
+            key=lambda row: row.get("main_net") if row.get("main_net") is not None else -10**30,
+            reverse=True,
+        )[:8]
+    if not data.get("ranked_outflow"):
+        data["ranked_outflow"] = sorted(
+            all_rows,
+            key=lambda row: row.get("main_net") if row.get("main_net") is not None else 10**30,
+        )[:8]
     watch_rows = data.get("watch_signals", [])
     data["status_counts"] = {
         name: sum(1 for row in watch_rows if row.get("status") == name)
@@ -597,8 +825,34 @@ def apply_previous_snapshot(data, previous):
         "policy": "价格live优先；价格接口失败沿用上次有效行；资金流接口失败时可沿用上次资金流。",
     }
     return data
-def collect_dashboard(watchlist_path):
-    items = load_watchlist(watchlist_path)
+def select_watch_rows(rows, output_limit):
+    pinned = [row for row in rows if row.get("role") == "watch"]
+    focus = [row for row in rows if row.get("status") == "Focus watch" and row.get("role") != "market"]
+    wait = [
+        row for row in rows
+        if row.get("status") == "Wait for strength"
+        and row.get("role") not in ("market", "watch")
+        and (
+            (row.get("main_net") is not None and row.get("main_net") > 0)
+            or (row.get("main_net_pct") is not None and row.get("main_net_pct") > 0)
+            or (row.get("score") or 0) >= 30
+        )
+    ]
+    selected = {}
+    for group in (pinned, focus, sorted(wait, key=lambda row: row.get("score") or -10**9, reverse=True)):
+        for row in group:
+            code = row.get("code")
+            if code and code not in selected:
+                selected[code] = row
+            if len(selected) >= output_limit:
+                return list(selected.values())
+    return list(selected.values())
+
+
+def collect_dashboard(watchlist_path, universe_path=DEFAULT_ETF_UNIVERSE, scan_limit=DEFAULT_SCAN_LIMIT, output_limit=DEFAULT_OUTPUT_LIMIT, refresh_universe=True):
+    watch_items = load_watchlist(watchlist_path)
+    universe_items, universe_gaps = load_etf_universe(universe_path, refresh=refresh_universe)
+    items = merge_scan_items(universe_items, watch_items, scan_limit=scan_limit) if universe_items else merge_scan_items([], watch_items, scan_limit=scan_limit)
     flow_map = {}
     flow_batch_error = None
     try:
@@ -619,19 +873,36 @@ def collect_dashboard(watchlist_path):
 
     if flow_batch_error:
         gaps.append(f"资金流批量接口: {flow_batch_error}")
+    gaps.extend(universe_gaps)
     priority_order = {"core": 0, "high": 1, "normal": 2}
-    rows.sort(key=lambda row: (priority_order.get(row.get("priority"), 9), row.get("group") or "", row.get("code") or ""))
+    rows.sort(key=lambda row: (
+        0 if row.get("role") == "market" else 1,
+        priority_order.get(row.get("priority"), 9),
+        -(row.get("score") or -10**9),
+        row.get("group") or "",
+        row.get("code") or "",
+    ))
     market_rows = [row for row in rows if row.get("role") == "market"]
-    watch_rows = [row for row in rows if row.get("role") != "market"]
-    ranked_inflow = sorted(rows, key=lambda row: row.get("main_net") if row.get("main_net") is not None else -10**30, reverse=True)[:8]
-    ranked_outflow = sorted(rows, key=lambda row: row.get("main_net") if row.get("main_net") is not None else 10**30)[:8]
+    watch_rows = select_watch_rows(rows, output_limit)
+    ranked_inflow = sorted(rows, key=lambda row: row.get("main_net") if row.get("main_net") is not None else -10**30, reverse=True)[:12]
+    ranked_outflow = sorted(rows, key=lambda row: row.get("main_net") if row.get("main_net") is not None else 10**30)[:12]
     status_counts = {name: sum(1 for row in watch_rows if row.get("status") == name) for name in ("Focus watch", "Wait for strength", "Exclude for now")}
     dates = sorted({row.get("trade_date") for row in rows if row.get("trade_date")})
     return {
         "asof": dt.datetime.now().strftime("%Y-%m-%d %H:%M"),
         "trade_date": dates[-1] if dates else "N/A",
-        "purpose": "A股短线资金跟随：只做资金流和观察池信号，不预测、不自动交易。",
-        "layers": ["市场/板块资金流", "观察池信号"],
+        "purpose": "A股短线资金跟随：盘后从全量A股ETF池筛下一交易日观察候选，不预测、不自动交易。",
+        "layers": ["全量A股ETF扫描", "手工置顶观察", "资金流排名"],
+        "scan_scope": {
+            "mode": "all_a_share_etf",
+            "universe_path": os.path.relpath(universe_path, os.path.dirname(HERE)),
+            "universe_count": len(universe_items),
+            "watchlist_count": len(watch_items),
+            "scanned_count": len(items),
+            "result_count": len(watch_rows),
+            "output_limit": output_limit,
+            "scan_limit": scan_limit,
+        },
         "market_flow": market_rows,
         "watch_signals": watch_rows,
         "ranked_inflow": ranked_inflow,
@@ -692,6 +963,10 @@ def selftest():
 def main():
     parser = argparse.ArgumentParser(description="生成short-flow A股短线资金跟随看板数据")
     parser.add_argument("--watchlist", default=DEFAULT_WATCHLIST, help="观察池JSON")
+    parser.add_argument("--etf-universe", default=DEFAULT_ETF_UNIVERSE, help="全量A股ETF池JSON")
+    parser.add_argument("--scan-limit", type=int, default=DEFAULT_SCAN_LIMIT, help="扫描ETF数量上限，0表示扫描全量")
+    parser.add_argument("--output-limit", type=int, default=DEFAULT_OUTPUT_LIMIT, help="输出候选数量上限")
+    parser.add_argument("--no-refresh-universe", action="store_true", help="不刷新全量ETF池，只使用本地缓存")
     parser.add_argument("--dashboard-json", default=DEFAULT_OUTPUT, help="输出看板JSON")
     parser.add_argument("--previous-json", default=None, help="读取上一版有效快照，用于接口失败时沿用旧数据")
     parser.add_argument("--json", action="store_true", help="同时打印JSON")
@@ -699,7 +974,13 @@ def main():
     args = parser.parse_args()
     if args.selftest:
         return 0 if selftest() else 1
-    data = collect_dashboard(args.watchlist)
+    data = collect_dashboard(
+        args.watchlist,
+        universe_path=args.etf_universe,
+        scan_limit=args.scan_limit,
+        output_limit=args.output_limit,
+        refresh_universe=not args.no_refresh_universe,
+    )
     previous_path = args.previous_json or args.dashboard_json
     data = apply_previous_snapshot(data, load_previous_snapshot(previous_path))
     write_json(data, args.dashboard_json)

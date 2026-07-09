@@ -137,3 +137,19 @@ Eastmoney API → etf_master → etf_snapshot → etf_indicator
 - **CSIndex** (`csindex.com.cn`) — Chinese index data (CSI 300, etc.)
 - **Stooq/CNBC/WSJ** — US index data (S&P 500, NDX)
 - API calls retry 3× then fall back to `curl` before raising
+
+## Memory (productivity system)
+
+### Me
+ajar，股票交易员。A股ETF + 美股（NDX/SPX/半导体/头部公司）+ 数字币量化。做看板辅助个人决策。不预测市场，少左侧，主做右侧交易。
+
+### Terms
+| 术语 | 含义 |
+|------|------|
+| 右侧交易 | 趋势确认后跟随，不预测 |
+| 0850/0940/1130/1430/1520 | short-flow 盘中场次 |
+| 数据更新频率 | A股按场次、美股按美东收盘、数字币 7×24 |
+
+### Preferences
+- 中文交流；第一性原则；客观优缺点；直接不废话
+- 详细记忆见 memory/ 目录（glossary、people、projects、context）
