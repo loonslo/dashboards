@@ -6,7 +6,7 @@ import pathlib
 from _bootstrap import REPO_ROOT, default_config_path, default_db_path
 from short_flow.config import load_config
 from short_flow.db import connect, init_db, rows
-from short_flow.rules.exit_rules import build_exit_queue
+from short_flow.rules.exit_rules import build_exit_queue, check_position_stops
 from short_flow.rules.regime import permission_for
 from short_flow.reports.markdown import decision_markdown
 from short_flow.reports.json_report import write_json
@@ -120,6 +120,27 @@ def compute_backtest_summary(conn):
 
     regime_summaries = {reg: _stats(items) for reg, items in by_regime.items()}
 
+    # v0.2: score quintile breakdown — quantifies whether score_direction
+    # is a trend-following factor or just a daily-chasing bias.
+    by_score_quintile = {}
+    if len(bt_rows) >= 20:
+        sorted_by_score = sorted(bt_rows, key=lambda r: r["score"] or 0)
+        n = len(sorted_by_score)
+        for q in range(5):
+            start = q * n // 5
+            end = (q + 1) * n // 5
+            group = sorted_by_score[start:end]
+            if not group:
+                continue
+            score_range = f"{group[0]['score']:.0f}-{group[-1]['score']:.0f}"
+            by_score_quintile[f"Q{q+1}"] = {
+                "score_range": score_range,
+                "count": len(group),
+                "avg_return_5d": round(_mean([r["return_5d"] for r in group]), 2),
+                "win_rate_5d": round(_win_rate([r["hit_5d"] for r in group]), 3),
+                "avg_return_1d": round(_mean([r["return_1d_close"] for r in group]), 2),
+            }
+
     recent_dates = sorted(set(r["signal_date"] for r in bt_rows), reverse=True)[:20]
     recent = [
         {
@@ -136,6 +157,7 @@ def compute_backtest_summary(conn):
         "total_signals": len(bt_rows),
         "overall": _stats(bt_rows),
         "by_regime": regime_summaries,
+        "by_score_quintile": by_score_quintile,
         "recent": recent,
     }
 
@@ -197,6 +219,24 @@ def build_report(conn, config, session):
     exclude = [normalize(item) for item in signal_items(conn, trade_date, "exclude", 12)]
     open_trades = rows(conn, "SELECT * FROM trade_log WHERE exit_date IS NULL ORDER BY entry_date")
     exit_queue = build_exit_queue(regime_row["regime"], open_trades, config)
+
+    # v0.2: check individual position stop conditions for open trades
+    position_stops = []
+    if open_trades:
+        open_codes = [t["code"] for t in open_trades]
+        placeholders = ",".join("?" for _ in open_codes)
+        ind_rows = rows(conn,
+            f"SELECT * FROM etf_indicator WHERE trade_date=? AND code IN ({placeholders})",
+            [trade_date] + open_codes)
+        snap_rows = rows(conn,
+            f"""SELECT s.* FROM etf_snapshot s
+                JOIN (SELECT code, MAX(id) AS id FROM etf_snapshot
+                      WHERE trade_date=? GROUP BY code) latest ON latest.id=s.id
+                WHERE s.code IN ({placeholders})""",
+            [trade_date] + open_codes)
+        indicators = {r["code"]: r for r in ind_rows}
+        snapshots = {r["code"]: r for r in snap_rows}
+        position_stops = check_position_stops(open_trades, indicators, snapshots, config, trade_date=trade_date)
     guardrails = {
         "train_capital": config["capital"]["train_capital"],
         "first_entry_ratio": config["capital"]["first_entry_ratio"],
@@ -218,6 +258,7 @@ def build_report(conn, config, session):
         "wait": wait,
         "exclude": exclude,
         "exit_queue": exit_queue,
+        "position_stops": position_stops,
         "backtest": compute_backtest_summary(conn),
         "decision_reviews": compute_review_summary(conn),
         "risk_notes": ["不自动下单", "不追高开", "首笔不超过计划仓位1/3", "TREND_DOWN只做有序退出"],

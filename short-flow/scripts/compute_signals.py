@@ -51,9 +51,9 @@ def main():
             master = record
             snapshot = record
             indicator = record
-            rule, reason = hard_filter(master, snapshot, indicator, config)
-            score = score_direction(snapshot, indicator)
             pattern = classify_entry_pattern(indicator)
+            rule, reason = hard_filter(master, snapshot, indicator, config, entry_pattern=pattern)
+            score = score_direction(snapshot, indicator)
             if rule == "candidate":
                 trigger = "09:40后站稳VWAP/MA5且主力资金保持为正"
                 failure = "资金转负或跌破MA5；跌破MA10退出观察"

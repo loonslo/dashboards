@@ -27,10 +27,13 @@ filters:
   min_main_inflow_pct: 3
   require_main_inflow_positive: true
 entry_params:
-  version: "v0.1_assumption_not_backtested"
+  version: "v0.2_backtest_in_progress"
   breakout_threshold_pct: 0.3
   volume_surge_ratio: 1.3
   pullback_ma_tolerance_pct: 0.5
+exit_params:
+  max_hold_days: 20
+  trailing_stop_pct: 5.0
 schedule:
   premarket: "08:50"
   morning_confirm: "09:40"

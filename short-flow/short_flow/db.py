@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS market_regime (
   trade_date TEXT PRIMARY KEY,
   above_ma20_ratio REAL,
   ma20_slope_positive_ratio REAL,
-  inflow_5d_ratio REAL,
+  inflow_positive_ratio REAL,
   regime TEXT
 );
 
@@ -204,6 +204,9 @@ MIGRATIONS = [
     )
     """,
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_review_run_code ON decision_review(analysis_run_id, code)",
+    # v0.2: rename inflow_5d_ratio → inflow_positive_ratio (it was always
+    # single-day inflow>0 proportion, not a 5-day metric)
+    "ALTER TABLE market_regime RENAME COLUMN inflow_5d_ratio TO inflow_positive_ratio",
 ]
 
 
@@ -220,7 +223,10 @@ def init_db(db_path):
     with connect(db_path) as conn:
         conn.executescript(SCHEMA)
         for migration in MIGRATIONS:
-            conn.execute(migration)
+            try:
+                conn.execute(migration)
+            except Exception:
+                pass  # migration already applied or not applicable
         conn.commit()
 
 

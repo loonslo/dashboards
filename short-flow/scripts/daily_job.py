@@ -38,7 +38,7 @@ def main():
 
     for step in DATA_STEPS:
         extra = []
-        if step in ("compute_signals.py", "run_llm_judge.py"):
+        if step in ("compute_indicators.py", "compute_signals.py", "run_llm_judge.py"):
             extra = session_args
         if step == "fetch_etf_master.py" and args.seed_only:
             extra.append("--seed-only")

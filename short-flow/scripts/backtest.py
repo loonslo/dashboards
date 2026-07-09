@@ -213,10 +213,34 @@ def compute_summary(conn):
         if r["signal_date"] in recent_dates
     ][:30]
 
+    # v0.2: score quintile breakdown — quantitatively answers whether
+    # score_direction (which heavily weights daily return) is a
+    # trend-following factor or just a chasing bias.
+    by_score_quintile = {}
+    if len(all_results) >= 20:
+        sorted_by_score = sorted(all_results, key=lambda r: r["score"] or 0)
+        n = len(sorted_by_score)
+        for q in range(5):
+            start = q * n // 5
+            end = (q + 1) * n // 5
+            group = sorted_by_score[start:end]
+            if not group:
+                continue
+            score_range = f"{group[0]['score']:.0f}-{group[-1]['score']:.0f}"
+            by_score_quintile[f"Q{q+1}"] = {
+                "score_range": score_range,
+                "count": len(group),
+                "avg_return_5d": round(mean([r["return_5d"] for r in group]), 2) if any(r["return_5d"] is not None for r in group) else None,
+                "win_rate_5d": round(win_rate([r["hit_5d"] for r in group]), 3) if any(r["hit_5d"] is not None for r in group) else None,
+                "avg_return_1d": round(mean([r["return_1d_close"] for r in group]), 2) if any(r["return_1d_close"] is not None for r in group) else None,
+            }
+
     return {
         "total_signals": len(all_results),
         "overall": overall,
         "by_regime": regime_summaries,
+        "by_score_quintile": by_score_quintile,
+        "recent": recent,
         "recent": recent,
     }
 
@@ -256,6 +280,24 @@ def main():
     for reg, stats in summary.get("by_regime", {}).items():
         if stats:
             print(f"  {reg}: 信号{stats['count']}个, 5日胜率{stats['win_rate_5d']:.1%}, 5日均收益{stats['avg_return_5d']:+.2f}%")
+
+    quintiles = summary.get("by_score_quintile", {})
+    if quintiles:
+        print()
+        print("--- score 分位数分层 (Q1=最低分, Q5=最高分) ---")
+        for q in sorted(quintiles.keys()):
+            qt = quintiles[q]
+            print(f"  {q} [{qt['score_range']}]: n={qt['count']} "
+                  f"5d_avg={qt['avg_return_5d']:+.2f}% 5d_win={qt['win_rate_5d']:.1%} "
+                  f"1d_avg={qt['avg_return_1d']:+.2f}%")
+        # Highlight if high-score underperforms
+        q1_5d = quintiles.get("Q1", {}).get("avg_return_5d")
+        q5_5d = quintiles.get("Q5", {}).get("avg_return_5d")
+        if q1_5d is not None and q5_5d is not None:
+            if q5_5d < q1_5d:
+                print(f"  ⚠ 高分组成交回报低于低分组 ({q5_5d:+.2f}% vs {q1_5d:+.2f}%) — score 不是趋势跟随因子，是追涨偏差")
+            else:
+                print(f"  ✓ 高分组跑赢低分组 ({q5_5d:+.2f}% vs {q1_5d:+.2f}%)")
 
     return summary
 

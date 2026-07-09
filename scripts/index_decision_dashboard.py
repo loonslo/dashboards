@@ -6,6 +6,7 @@ import argparse
 import datetime as dt
 import html
 import json
+import math
 import os
 import re
 import sys
@@ -31,9 +32,29 @@ WATCHLIST_CACHE_FIELDS = (
     "return_3m",
     "return_ytd",
     "return_1y",
+    "cost_dev_factor",
+    "cost_vwap_20",
+    "cost_std_20",
+    "cost_volume_change_pct",
+    "cost_buy_signal",
+    "cost_condition_extreme",
+    "cost_condition_rebound",
+    "cost_condition_volume",
     "date",
     "source_price",
 )
+COST_DEVIATION_WINDOW = 20
+COST_DEVIATION_THRESHOLD = -2.0
+# v0.2: σ uses a longer anchor window (60-120 days) to avoid σ inflation
+# during high-volatility crashes. When σ is computed from the same 20-day
+# window as VWAP, a sharp selloff inflates σ and shrinks z-score, making
+# the signal go blind at the worst moment. VWAP stays at 20-day (短周期
+# 捕捉近期筹码成本), σ anchors to a longer lookback (长周期锚定正常波动).
+COST_SIGMA_ANCHOR_DAYS = 90
+# Volume confirmation: compare to 20-day average, not just prev day.
+# Previous: latest_volume > prev_volume (any increase counts).
+# Now: latest_volume > 1.2 × avg_20d_volume (genuine expansion).
+COST_VOLUME_SURGE_RATIO = 1.2
 CSI_INDICES = {
     "000300": {"name": "沪深300", "kind": "cn_broad", "product": "-"},
     "000905": {"name": "中证500", "kind": "cn_broad", "product": "-"},
@@ -117,6 +138,83 @@ def period_return(closes, periods):
     return (closes[-1] / closes[-periods - 1] - 1.0) * 100.0
 
 
+def row_volume(row):
+    return row[3] if len(row) > 3 else None
+
+
+def sample_std(values):
+    clean = [value for value in values if value is not None]
+    if len(clean) < 2:
+        return None
+    mean = sum(clean) / len(clean)
+    variance = sum((value - mean) ** 2 for value in clean) / (len(clean) - 1)
+    return math.sqrt(variance)
+
+
+def cost_deviation_strategy(rows, window=COST_DEVIATION_WINDOW, z_threshold=COST_DEVIATION_THRESHOLD,
+                           sigma_anchor=COST_SIGMA_ANCHOR_DAYS, vol_ratio=COST_VOLUME_SURGE_RATIO):
+    """Compute cost-deviation signal with anchored σ and volume confirmation.
+
+    VWAP: 20-day (captures recent positioning cost).
+    σ: anchored to `sigma_anchor` days (default 90) — avoids σ inflation
+       during crashes that would otherwise shrink z-score and blind the signal.
+    Volume: requires latest > vol_ratio × 20-day avg (default 1.2×) —
+            not just any day-over-day increase.
+    """
+    if len(rows) < max(window, sigma_anchor) + 1:
+        return {}
+
+    # VWAP from recent window
+    sample = rows[-window:]
+    closes = [row[1] for row in sample]
+    volumes = [row_volume(row) for row in sample]
+    if any(c is None for c in closes) or any(v is None for v in volumes):
+        return {}
+    volume_sum = sum(volumes)
+    if volume_sum <= 0:
+        return {}
+    vwap = sum(close * volume for close, volume in zip(closes, volumes)) / volume_sum
+
+    # σ anchored to longer lookback (avoids crisis σ-inflation)
+    anchor_rows = rows[-sigma_anchor:]
+    anchor_closes = [row[1] for row in anchor_rows]
+    std = sample_std(anchor_closes)
+    if std in (None, 0):
+        return {}
+
+    latest = rows[-1]
+    prev = rows[-2]
+    latest_close = latest[1]
+    prev_close = prev[1]
+    latest_volume = row_volume(latest)
+    prev_volume = row_volume(prev)
+
+    # 20-day average volume for surge comparison
+    avg_vol_20 = sum(volumes) / len(volumes) if volumes else None
+
+    factor = (latest_close - vwap) / std
+    rebound = prev_close is not None and latest_close > prev_close
+    volume_expanded = (
+        latest_volume is not None
+        and avg_vol_20 not in (None, 0)
+        and latest_volume > avg_vol_20 * vol_ratio
+    )
+    return {
+        "cost_dev_factor": factor,
+        "cost_vwap_20": vwap,
+        "cost_std_20": std,
+        "cost_sigma_anchor_days": sigma_anchor,
+        "cost_volume_change_pct": (
+            None if avg_vol_20 in (None, 0)
+            else (latest_volume / avg_vol_20 - 1.0) * 100.0
+        ),
+        "cost_buy_signal": factor < z_threshold and rebound and volume_expanded,
+        "cost_condition_extreme": factor < z_threshold,
+        "cost_condition_rebound": rebound,
+        "cost_condition_volume": volume_expanded,
+    }
+
+
 def one_day_change(rows):
     if len(rows) < 2 or rows[-2][1] in (None, 0):
         return None
@@ -142,7 +240,7 @@ def build_history_result(rows, source):
     latest_date = rows[-1][0]
     current_year = latest_date.year
     ytd_base = next((row[1] for row in rows if row[0].year == current_year), None)
-    return {
+    result = {
         "current": current,
         "high_52w": high_52w,
         "drawdown_52w": drawdown(current, high_52w),
@@ -155,6 +253,8 @@ def build_history_result(rows, source):
         "date": latest_date.isoformat(),
         "source_price": source,
     }
+    result.update(cost_deviation_strategy(rows))
+    return result
 
 
 def drawdown_band(dd):
@@ -196,9 +296,10 @@ def fetch_csi_history(code, start_date, end_date):
     for row in rows:
         close = to_float(row.get("close"))
         high = to_float(row.get("high")) or close
+        volume = to_float(row.get("volume"))
         date_text = normalize_date(row.get("tradeDate"))
         if close is not None:
-            parsed_rows.append((dt.date.fromisoformat(date_text), close, high))
+            parsed_rows.append((dt.date.fromisoformat(date_text), close, high, volume))
     return {
         "current": to_float(latest.get("close")),
         "high_52w": high_52w,
@@ -272,10 +373,16 @@ def fetch_yahoo_history(ticker):
             timestamps = result.get("timestamp") or []
             quote = result["indicators"]["quote"][0]
             rows = []
-            for stamp, close, high in zip(timestamps, quote.get("close") or [], quote.get("high") or []):
+            closes = quote.get("close") or []
+            highs = quote.get("high") or []
+            volumes = quote.get("volume") or []
+            for idx, stamp in enumerate(timestamps):
+                close = closes[idx] if idx < len(closes) else None
+                high = highs[idx] if idx < len(highs) else None
+                volume = volumes[idx] if idx < len(volumes) else None
                 if close is not None:
                     day = dt.datetime.fromtimestamp(stamp, dt.UTC).date()
-                    rows.append((day, float(close), float(high) if high is not None else float(close)))
+                    rows.append((day, float(close), float(high) if high is not None else float(close), to_float(volume)))
             return build_history_result(rows, f"Yahoo:{host}")
         except Exception as exc:
             last_error = exc
@@ -331,8 +438,9 @@ def fetch_stooq_history(ticker, yahoo_error=None):
                 day = dt.date.fromisoformat(parts[0])
                 high = to_float(parts[2])
                 close = to_float(parts[4])
+                volume = to_float(parts[5]) if len(parts) > 5 else None
                 if close is not None:
-                    rows.append((day, close, high if high is not None else close))
+                    rows.append((day, close, high if high is not None else close, volume))
             label = f"Stooq:{symbol}"
             if symbol.endswith(".us"):
                 label += "代理"
@@ -657,6 +765,7 @@ def broad_signal(row, kind):
 def watchlist_signal(row):
     dd = row.get("drawdown_52w")
     change = row.get("change_1d_pct")
+    cost_factor = row.get("cost_dev_factor")
     notes = []
     if dd is None:
         notes.append("数据不足")
@@ -670,6 +779,10 @@ def watchlist_signal(row):
         notes.append("正常观察")
     if change is not None and abs(change) >= 5:
         notes.append(f"单日波动{signed_pct(change, 1)}")
+    if row.get("cost_buy_signal"):
+        notes.append(f"成本偏离反转{signed_num(cost_factor, 2)}σ")
+    elif cost_factor is not None and row.get("cost_condition_extreme"):
+        notes.append(f"成本极端偏离{signed_num(cost_factor, 2)}σ，等放量收涨")
     return "；".join(notes)
 
 
@@ -717,6 +830,20 @@ def build_watchlist_alerts(row):
             "level": "trend",
             "notify": False,
             "message": f"近1月表现 {ret_1m:.1f}% 低于阈值 {ret_1m_limit:.1f}%",
+        })
+    if row.get("cost_buy_signal"):
+        factor = row.get("cost_dev_factor")
+        vwap = row.get("cost_vwap_20")
+        volume_change = row.get("cost_volume_change_pct")
+        alerts.append({
+            "ticker": ticker,
+            "name": name,
+            "level": "cost",
+            "notify": priority in ("core", "high"),
+            "message": (
+                f"筹码成本偏离反转：20日VWAP {num(vwap, 2)}，"
+                f"偏离 {signed_num(factor, 2)}σ，成交量较前日 {signed_pct(volume_change, 1)}"
+            ),
         })
     return alerts
 

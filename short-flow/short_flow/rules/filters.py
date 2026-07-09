@@ -1,7 +1,12 @@
 THEME_TRAIN_CATEGORIES = {"THEME", "SECTOR", "DEFENSE"}
 
+# v0.2: entry patterns that bypass the above_ma5 check — these patterns
+# are defined by being below MA5 (e.g. pullback to MA20), so requiring
+# above_ma5 would make them dead code.
+PULLBACK_PATTERNS = {"A_PULLBACK_WATCH"}
 
-def hard_filter(master, snapshot, indicator, config):
+
+def hard_filter(master, snapshot, indicator, config, entry_pattern=None):
     filters = config["filters"]
     category = master.get("category")
     allowed = {
@@ -25,6 +30,15 @@ def hard_filter(master, snapshot, indicator, config):
         return "wait", "主力流入强度不足"
     if indicator.get("above_ma10") == 0:
         return "exclude", "跌破MA10"
+    # 回踩模式：above_ma20=1 且 above_ma5=0 是其定义特征，
+    # 跳过 above_ma5 检查，否则回踩标的永远过不了硬过滤。
+    # v0.2: 额外要求 ma20 斜率向上——横盘阴跌中回踩 MA20 是死猫反弹，不是买点。
+    if entry_pattern in PULLBACK_PATTERNS:
+        if indicator.get("above_ma20") == 0:
+            return "exclude", "回踩模式要求站上MA20"
+        if indicator.get("ma20_slope_positive") == 0:
+            return "wait", "回踩模式要求MA20斜率向上"
+        return "candidate", f"通过硬过滤（回踩模式）"
     if indicator.get("above_ma5") == 0:
         return "wait", "未站回MA5"
     return "candidate", "通过硬过滤"
