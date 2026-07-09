@@ -156,6 +156,39 @@ CREATE TABLE IF NOT EXISTS decision_review (
 CREATE INDEX IF NOT EXISTS idx_review_trade_date ON decision_review(trade_date);
 CREATE INDEX IF NOT EXISTS idx_review_code ON decision_review(code);
 CREATE INDEX IF NOT EXISTS idx_review_label ON decision_review(review_label);
+CREATE TABLE IF NOT EXISTS backfill_result (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  signal_date TEXT,
+  code TEXT,
+  name TEXT,
+  regime TEXT,
+  score REAL,
+  rule_result TEXT,
+  reason TEXT,
+  pct REAL,
+  amount REAL,
+  main_inflow REAL,
+  main_inflow_pct REAL,
+  amount_ratio_20 REAL,
+  close_price REAL,
+  next_open REAL,
+  next_close REAL,
+  return_1d_open REAL,
+  return_1d_close REAL,
+  return_5d REAL,
+  return_10d REAL,
+  return_20d REAL,
+  hit_1d INTEGER,
+  hit_5d INTEGER,
+  hit_10d INTEGER,
+  hit_20d INTEGER,
+  source TEXT DEFAULT 'backfill',
+  computed_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_bf_signal_date ON backfill_result(signal_date);
+CREATE INDEX IF NOT EXISTS idx_bf_regime ON backfill_result(regime);
+CREATE INDEX IF NOT EXISTS idx_bf_code ON backfill_result(code);
+
 CREATE TABLE IF NOT EXISTS trade_log (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   entry_date TEXT,

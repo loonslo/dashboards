@@ -205,3 +205,37 @@ def fetch_daily_klines(code, limit=90):
     return rows
 
 
+def fetch_historical_flow(code, limit=500):
+    """Fetch historical daily money flow from Eastmoney push2his endpoint.
+
+    Returns list of dicts with keys: date, main_net, small_net, medium_net,
+    large_net, super_large_net. main_net = super_large + large (主力).
+    Unlike the real-time snapshot endpoint which may have different
+    classification, this is the historical daily-aggregated flow.
+    """
+    sid = secid_for(code)
+    query = urllib.parse.urlencode({
+        "secid": sid,
+        "fields1": "f1,f2,f3,f7",
+        "fields2": "f51,f52,f53,f54,f55,f56",
+        "lmt": str(limit),
+        "klt": "101",
+    })
+    payload = get_json(
+        f"https://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get?{query}"
+    )
+    data = (payload.get("data") or {}).get("klines") or []
+    rows = []
+    for item in data:
+        parts = item.split(",")
+        if len(parts) < 6:
+            continue
+        rows.append({
+            "date": parts[0],
+            "main_net": to_float(parts[1]),
+            "small_net": to_float(parts[2]),
+            "medium_net": to_float(parts[3]),
+            "large_net": to_float(parts[4]),
+            "super_large_net": to_float(parts[5]),
+        })
+    return rows
