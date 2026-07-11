@@ -37,6 +37,11 @@ DEFAULT_CONFIG = {
         "max_hold_days": 20,
         "trailing_stop_pct": 5.0,
     },
+    "shortlist": {
+        "max_size": 15,
+        "benchmark_codes": "510300,510500,159915",
+        "crash_override_pct": -2.0,
+    },
     "schedule": {
         "premarket": "08:50",
         "morning_confirm": "09:40",

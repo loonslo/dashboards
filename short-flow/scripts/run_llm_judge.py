@@ -23,7 +23,13 @@ def main():
         trade_date = conn.execute("SELECT MAX(trade_date) AS d FROM signal_result").fetchone()["d"]
         if not trade_date:
             raise SystemExit("No signals; run compute_signals.py first")
-        signals = rows(conn, "SELECT * FROM signal_result WHERE trade_date=? ORDER BY score DESC", (trade_date,))
+        signals = rows(
+            conn,
+            "SELECT * FROM signal_result WHERE trade_date=? AND session_name=? ORDER BY score DESC",
+            (trade_date, args.session),
+        )
+        if not signals:
+            raise SystemExit(f"No signals for session {args.session}; run compute_signals.py first")
         regime = conn.execute("SELECT * FROM market_regime WHERE trade_date=?", (trade_date,)).fetchone()
         candidates = [row for row in signals if row["rule_result"] == "candidate"][:3]
         waits = [row for row in signals if row["rule_result"] == "wait"][:5]

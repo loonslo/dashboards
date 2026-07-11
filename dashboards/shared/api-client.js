@@ -30,7 +30,10 @@
     const base = await apiBase();
     const candidates = [];
     if (base) candidates.push(`${base}/api/latest/${dashboard}`);
-    candidates.push(`/api/latest/${dashboard}`);
+    const localApi = ["127.0.0.1", "localhost", "::1"].includes(window.location.hostname);
+    if (!base && (localApi || window.DASHBOARD_SAME_ORIGIN_API === true)) {
+      candidates.push(`/api/latest/${dashboard}`);
+    }
     for (const url of candidates) {
       try {
         return await fetchJson(url);
@@ -44,10 +47,16 @@
   async function api(path, options = {}) {
     const base = await apiBase();
     const url = base ? `${base}${path}` : path;
+    const token = localStorage.getItem("dashboard_api_token") || "";
+    const headers = {
+      "Content-Type": "application/json",
+      ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+      ...(options.headers || {})
+    };
     const res = await fetch(url, {
       cache: "no-store",
-      headers: { "Content-Type": "application/json" },
-      ...options
+      ...options,
+      headers
     });
     const text = await res.text();
     const data = text ? JSON.parse(text) : {};

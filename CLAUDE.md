@@ -24,8 +24,13 @@ python3 -m http.server 8000
 # Run all dashboard refreshes
 ./scripts/refresh_all.sh
 
-# Server-side pull → refresh → commit → push (used by cron)
+# GitHub Actions refresh/persist/commit entrypoint (historical filename)
 ./scripts/server_refresh_and_push.sh
+
+# Validate and synchronize durable state
+python scripts/validate_dashboards.py
+python -m unittest discover -s tests -v
+powershell -File scripts/sync_local.ps1 -RestoreState
 
 # Run ETF training pipeline directly (e.g. 0940 session, seed-only to skip API)
 cd short-flow && python scripts/daily_job.py --session 0940
@@ -64,11 +69,14 @@ python3 -m json.tool dashboards/short-flow/etf_pool_latest.json
 │   ├── refresh_index_decision.sh
 │   ├── refresh_short_flow.sh          # Runs short_flow_dashboard.py + daily_job.py
 │   ├── refresh_all.sh
-│   └── server_refresh_and_push.sh     # Cron workflow
+│   ├── server_refresh_and_push.sh     # GitHub Actions refresh/persist/push entrypoint
+│   ├── short_flow_state.py            # SQLite ↔ durable SQL state
+│   └── validate_dashboards.py         # Publication quality gate
 └── short-flow/                        # ETF training pipeline (Python package)
     ├── config.yaml                    # Trading parameters (capital, filters, regime rules)
     ├── requirements.txt               # Empty — stdlib only in v0.1
-    ├── data/short_flow.db             # SQLite database (gitignored)
+    ├── data/short_flow.db             # Runtime SQLite database (gitignored)
+    ├── state/short_flow.sql           # Durable private state restored by Actions
     ├── scripts/
     │   ├── daily_job.py               # Pipeline orchestrator (steps in order)
     │   ├── _bootstrap.py              # Path setup (adds short-flow/ to sys.path)
@@ -126,6 +134,7 @@ Eastmoney API → etf_master → etf_snapshot → etf_indicator
 
 - **No external dependencies** in v0.1 — Python standard library only (urllib, sqlite3, json). LangGraph/OpenAI deferred to v0.2.
 - **Dashboard is read-only** — the frontend never connects to SQLite or calculates signals. It reads exported JSON only.
+- **GitHub Actions is the only scheduled writer** — each run restores SQLite from `short-flow/state/short_flow.sql`, refreshes, validates, exports state, and commits outputs. A permanent server is optional.
 - **Config-driven trading rules** — `config.yaml` controls capital allocation, regime thresholds, filters, entry params, and schedule. `short_flow/config.py` provides defaults with YAML override via deep merge.
 - **Data staleness awareness** — frontend displays `live/stale/unavailable` status per row.
 - **Coding style**: 2-space indent in HTML/CSS/JSON, 4-space in Python. snake_case for Python, kebab-case for directories.
