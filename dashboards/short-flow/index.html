@@ -412,7 +412,7 @@
         <nav class="switcher" aria-label="看板切换">
           <a href="../index-decision/">投资观察</a>
           <a class="current" href="./" aria-current="page">A股短线</a>
-          <a href="../admin/">管理台</a>
+          <a href="../admin/">可选管理台</a>
           <a href="../../">全部</a>
         </nav>
       </div>
@@ -1176,8 +1176,26 @@
     // --- Trade Journal ---
     const JOURNAL_KEY = "short_flow_trade_journal_v1";
 
+    function newJournalId() {
+      if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+      return `trade-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
     function loadJournal() {
-      try { return JSON.parse(localStorage.getItem(JOURNAL_KEY) || "[]"); } catch { return []; }
+      try {
+        const entries = JSON.parse(localStorage.getItem(JOURNAL_KEY) || "[]");
+        let changed = false;
+        entries.forEach(entry => {
+          if (!entry.id) {
+            entry.id = newJournalId();
+            changed = true;
+          }
+        });
+        if (changed) localStorage.setItem(JOURNAL_KEY, JSON.stringify(entries));
+        return entries;
+      } catch {
+        return [];
+      }
     }
 
     function saveJournal(entries) {
@@ -1221,7 +1239,7 @@
       });
 
       document.getElementById("journalList").innerHTML = sorted.length
-        ? sorted.map((e, i) => {
+        ? sorted.map(e => {
             const isOpen = e.exit_price == null;
             const pnl = e.pnl != null ? e.pnl : (e.exit_price && e.entry_price ? (e.exit_price - e.entry_price) * (e.shares || 100) : null);
             const pnlPct = e.pnl_pct != null ? e.pnl_pct : (e.exit_price && e.entry_price ? ((e.exit_price / e.entry_price - 1) * 100) : null);
@@ -1239,27 +1257,27 @@
                 </div>
               </div>
               <div class="reason">${safe(e.reason || "无备注")}</div>
-              ${isOpen ? `<button data-idx="${i}" class="closeTradeBtn" style="margin-top:8px;width:100%">平仓</button>` : ""}
-              <button data-idx="${i}" class="delTradeBtn" style="margin-top:4px;width:100%;font-size:12px;color:var(--muted)">删除</button>
+              ${isOpen ? `<button data-id="${safe(e.id)}" class="closeTradeBtn" style="margin-top:8px;width:100%">平仓</button>` : ""}
+              <button data-id="${safe(e.id)}" class="delTradeBtn" style="margin-top:4px;width:100%;font-size:12px;color:var(--muted)">删除</button>
             </article>`;
           }).join("")
         : '<div class="empty">暂无交易记录。<br>每笔模拟交易帮助你验证策略有效性。</div>';
 
       // Attach event listeners
       document.querySelectorAll(".closeTradeBtn").forEach(btn => {
-        btn.addEventListener("click", () => closeTrade(parseInt(btn.dataset.idx)));
+        btn.addEventListener("click", () => closeTrade(btn.dataset.id));
       });
       document.querySelectorAll(".delTradeBtn").forEach(btn => {
-        btn.addEventListener("click", () => deleteTrade(parseInt(btn.dataset.idx)));
+        btn.addEventListener("click", () => deleteTrade(btn.dataset.id));
       });
     }
 
-    let closingIdx = null;
-    function closeTrade(idx) {
+    let closingId = null;
+    function closeTrade(id) {
       const entries = loadJournal();
-      const e = entries[idx];
+      const e = entries.find(entry => entry.id === id);
       if (!e) return;
-      closingIdx = idx;
+      closingId = id;
       document.getElementById("jCloseTitle").textContent = `平仓 ${e.code} ${e.name || ""} · 开仓价 ${fmt(e.entry_price, 3)} · ${e.shares || 100} 股`;
       document.getElementById("jExitPrice").value = "";
       document.getElementById("jExitDate").value = new Date().toISOString().slice(0, 10);
@@ -1268,9 +1286,10 @@
       document.getElementById("jExitPrice").focus();
     }
     function confirmCloseTrade() {
-      if (closingIdx === null) return;
+      if (closingId === null) return;
       const entries = loadJournal();
-      const e = entries[closingIdx];
+      const index = entries.findIndex(entry => entry.id === closingId);
+      const e = entries[index];
       if (!e) return;
       const price = parseFloat(document.getElementById("jExitPrice").value);
       if (isNaN(price)) return;
@@ -1280,18 +1299,17 @@
       e.shares = e.shares || 100;
       e.pnl = (price - e.entry_price) * e.shares;
       e.pnl_pct = (price / e.entry_price - 1) * 100;
-      entries[closingIdx] = e;
+      entries[index] = e;
       saveJournal(entries);
-      closingIdx = null;
+      closingId = null;
       document.getElementById("journalClosePanel").style.display = "none";
       renderJournal();
     }
 
-    function deleteTrade(idx) {
+    function deleteTrade(id) {
       if (!confirm("删除这笔交易记录？")) return;
       const entries = loadJournal();
-      entries.splice(idx, 1);
-      saveJournal(entries);
+      saveJournal(entries.filter(entry => entry.id !== id));
       renderJournal();
     }
 
@@ -1315,6 +1333,7 @@
     });
     document.getElementById("saveJournalAdd").addEventListener("click", () => {
       const entry = {
+        id: newJournalId(),
         code: (candidateByInput(document.getElementById("jCode").value)?.code || document.getElementById("jCode").value).trim(),
         name: (document.getElementById("jName").value.trim() || candidateByInput(document.getElementById("jCode").value)?.name || ""),
         entry_date: document.getElementById("jEntryDate").value || new Date().toISOString().slice(0, 10),
@@ -1343,7 +1362,7 @@
       }
     });
     document.getElementById("cancelCloseTrade").addEventListener("click", () => {
-      closingIdx = null;
+      closingId = null;
       document.getElementById("journalClosePanel").style.display = "none";
     });
     document.getElementById("confirmCloseTrade").addEventListener("click", confirmCloseTrade);

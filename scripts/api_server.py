@@ -3,10 +3,12 @@
 """Local API server for dashboard data, watchlists, and refresh workflows."""
 
 import datetime as dt
+import hmac
 import importlib
 import json
 import os
 import pathlib
+import re
 import sqlite3
 import subprocess
 import sys
@@ -20,6 +22,14 @@ DATA_DIR = ROOT / "server_data"
 DB_PATH = pathlib.Path(os.environ.get("DASHBOARD_API_DB", DATA_DIR / "dashboard_api.db"))
 HOST = os.environ.get("DASHBOARD_API_HOST", "127.0.0.1")
 PORT = int(os.environ.get("DASHBOARD_API_PORT", "8787"))
+API_TOKEN = os.environ.get("DASHBOARD_API_TOKEN", "").strip()
+ALLOWED_ORIGINS = {
+    value.strip().rstrip("/")
+    for value in os.environ.get("DASHBOARD_API_ALLOWED_ORIGINS", "").split(",")
+    if value.strip()
+}
+MAX_BODY_BYTES = int(os.environ.get("DASHBOARD_API_MAX_BODY_BYTES", str(64 * 1024)))
+LOOPBACK_HOSTS = {"127.0.0.1", "localhost", "::1"}
 
 DASHBOARDS = {
     "index-decision": {
@@ -264,9 +274,17 @@ def update_history(cfg, payload):
     history = cfg.get("history")
     if not history:
         return
+    # Key history by date AND session (when present) so twice-daily short-flow
+    # refreshes (e.g. 0940 intraday vs 1520 post-close) don't overwrite each
+    # other. The index lists every archived file in chronological order.
     today = dt.date.today().isoformat()
-    write_json(history / f"{today}.json", payload)
-    dates = sorted(path.stem for path in history.glob("*.json") if path.name != "index.json")
+    session = str(payload.get("session") or "").strip()
+    suffix = f"-{session}" if session else ""
+    target = history / f"{today}{suffix}.json"
+    write_json(target, payload)
+    dates = sorted(
+        path.stem for path in history.glob("*.json") if path.name != "index.json"
+    )
     write_json(history / "index.json", dates)
 
 
@@ -350,9 +368,14 @@ def delete_watchlist_item(conn, dashboard, key):
 
 
 def read_body(handler):
-    length = int(handler.headers.get("Content-Length") or 0)
+    try:
+        length = int(handler.headers.get("Content-Length") or 0)
+    except ValueError as exc:
+        raise ValueError("invalid Content-Length") from exc
     if length <= 0:
         return {}
+    if length > MAX_BODY_BYTES:
+        raise ValueError(f"request body exceeds {MAX_BODY_BYTES} bytes")
     raw = handler.rfile.read(length).decode("utf-8")
     return json.loads(raw or "{}")
 
@@ -366,14 +389,43 @@ class ApiHandler(SimpleHTTPRequestHandler):
     def log_message(self, fmt, *args):
         sys.stderr.write("[%s] %s\n" % (now_text(), fmt % args))
 
+    def cors_origin(self):
+        origin = (self.headers.get("Origin") or "").rstrip("/")
+        if not origin:
+            return None
+        if origin in ALLOWED_ORIGINS:
+            return origin
+        if not ALLOWED_ORIGINS and HOST in LOOPBACK_HOSTS:
+            return origin
+        return None
+
+    def send_cors_headers(self):
+        origin = self.cors_origin()
+        if origin:
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Vary", "Origin")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-API-Token")
+
+    def write_authorized(self):
+        if not API_TOKEN:
+            return HOST in LOOPBACK_HOSTS
+        bearer = self.headers.get("Authorization") or ""
+        supplied = bearer[7:].strip() if bearer.startswith("Bearer ") else self.headers.get("X-API-Token", "").strip()
+        return bool(supplied) and hmac.compare_digest(supplied, API_TOKEN)
+
+    def require_write_auth(self):
+        if self.write_authorized():
+            return True
+        self.send_error_json(401, "authentication required")
+        return False
+
     def send_json(self, payload, status=200):
         body = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Cache-Control", "no-store")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_cors_headers()
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
@@ -383,9 +435,7 @@ class ApiHandler(SimpleHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Cache-Control", "no-store")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_cors_headers()
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
 
@@ -393,10 +443,10 @@ class ApiHandler(SimpleHTTPRequestHandler):
         self.send_json({"error": message}, status=status)
 
     def do_OPTIONS(self):
+        if self.headers.get("Origin") and not self.cors_origin():
+            return self.send_error_json(403, "origin not allowed")
         self.send_response(204)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_cors_headers()
         self.end_headers()
 
     def route_parts(self):
@@ -411,7 +461,7 @@ class ApiHandler(SimpleHTTPRequestHandler):
         try:
             with connect() as conn:
                 if parts == ["api", "health"]:
-                    return self.send_json({"ok": True, "db": str(DB_PATH), "time": now_text()})
+                    return self.send_json({"ok": True, "time": now_text()})
                 if parts == ["api", "dashboards"]:
                     rows = []
                     for key, cfg in DASHBOARDS.items():
@@ -431,6 +481,15 @@ class ApiHandler(SimpleHTTPRequestHandler):
                     return self.send_json(latest_payload(conn, dashboard))
                 if parts == ["api", "config", "short-flow"]:
                     return self.send_json(load_short_flow_config())
+                if len(parts) == 5 and parts[:3] == ["api", "report", "short-flow"]:
+                    trade_date, session = parts[3], parts[4]
+                    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", trade_date) or not re.fullmatch(r"\d{4}", session):
+                        return self.send_error_json(400, "invalid report path")
+                    report_path = ROOT / "dashboards" / "short-flow" / "reports" / trade_date / f"{session}.json"
+                    report = load_json(report_path)
+                    if report is None:
+                        return self.send_error_json(404, "report not found")
+                    return self.send_json(report)
             return self.send_error_json(404, "not found")
         except Exception as exc:
             return self.send_error_json(500, str(exc))
@@ -458,6 +517,8 @@ class ApiHandler(SimpleHTTPRequestHandler):
         parsed, parts = self.route_parts()
         if not parts or parts[0] != "api":
             return self.send_error_json(404, "not found")
+        if not self.require_write_auth():
+            return
         try:
             payload = read_body(self)
             with connect() as conn:
@@ -469,6 +530,8 @@ class ApiHandler(SimpleHTTPRequestHandler):
                 if parts == ["api", "config", "short-flow"]:
                     return self.send_json(save_short_flow_config(payload))
             return self.send_error_json(404, "not found")
+        except ValueError as exc:
+            return self.send_error_json(400, str(exc))
         except KeyError as exc:
             return self.send_error_json(404, str(exc))
         except Exception as exc:
@@ -478,6 +541,8 @@ class ApiHandler(SimpleHTTPRequestHandler):
         parsed, parts = self.route_parts()
         if len(parts) != 4 or parts[:2] != ["api", "watchlists"]:
             return self.send_error_json(404, "not found")
+        if not self.require_write_auth():
+            return
         try:
             with connect() as conn:
                 return self.send_json(delete_watchlist_item(conn, parts[2], parts[3]))
@@ -487,6 +552,10 @@ class ApiHandler(SimpleHTTPRequestHandler):
 
 def main():
     sys.path.insert(0, str(ROOT))
+    if HOST not in LOOPBACK_HOSTS and not API_TOKEN:
+        raise SystemExit("DASHBOARD_API_TOKEN is required when API listens on a non-loopback host")
+    if HOST not in LOOPBACK_HOSTS and not ALLOWED_ORIGINS:
+        raise SystemExit("DASHBOARD_API_ALLOWED_ORIGINS is required when API listens on a non-loopback host")
     init_db()
     server = ThreadingHTTPServer((HOST, PORT), ApiHandler)
     print(f"Dashboard API listening on http://{HOST}:{PORT}/")

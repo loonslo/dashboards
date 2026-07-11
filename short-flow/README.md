@@ -6,6 +6,7 @@ This directory contains the v0.1 backend scaffold for the ETF training-position 
 
 - Python computes facts, indicators, market regime, and hard-rule signals.
 - SQLite stores ETF master data, snapshots, indicators, regimes, signals, analysis runs, alerts, and trade logs.
+- GitHub Actions restores SQLite from `state/short_flow.sql` before each scheduled run and exports it afterward.
 - The dashboard reads exported JSON/Markdown only; it does not connect to SQLite or calculate signals.
 - v0.1 does not call an LLM. `run_llm_judge.py` is a rule-only placeholder for the v0.2 LangGraph layer.
 - No broker connection and no automatic orders.
@@ -59,11 +60,12 @@ Record a manual review after a signal has had time to play out:
 python short-flow/scripts/review_decision.py --code 510300 --label good --note "资金确认后延续，规则有效"
 ```
 
-The production refresh path should omit `--seed-only`; the ETF master script tries the data source first and falls back to the local seed list if needed.
+The production refresh path should omit `--seed-only`; the ETF master script tries the data source first and falls back to the local seed list if needed. To keep the scheduled runner bounded, the training universe contains configured categories (`features.allowed_train_categories`), optional themes, and every hand-maintained watchlist item. The separate public money-flow dashboard still scans the full ETF universe.
 
 ## Outputs
 
 - Local database: `short-flow/data/short_flow.db` (ignored by Git)
+- Durable private state: `short-flow/state/short_flow.sql` (tracked, excluded from Vercel)
 - Dashboard JSON: `dashboards/short-flow/etf_pool_latest.json`
 - Session report JSON/Markdown: `dashboards/short-flow/reports/YYYY-MM-DD/`
 - Report index: `dashboards/short-flow/reports_index.json`

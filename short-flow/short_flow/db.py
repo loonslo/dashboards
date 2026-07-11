@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS signal_result (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   ts TEXT,
   trade_date TEXT,
+  session_name TEXT NOT NULL DEFAULT 'legacy',
   code TEXT,
   name TEXT,
   group_name TEXT,
@@ -214,6 +215,17 @@ CREATE TABLE IF NOT EXISTS trade_log (
 """
 
 MIGRATIONS = [
+    "ALTER TABLE signal_result ADD COLUMN session_name TEXT NOT NULL DEFAULT 'legacy'",
+    "UPDATE signal_result SET session_name='legacy' WHERE session_name IS NULL OR session_name=''",
+    """
+    DELETE FROM signal_result
+    WHERE id NOT IN (
+      SELECT MAX(id)
+      FROM signal_result
+      GROUP BY trade_date, session_name, code
+    )
+    """,
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_signal_date_session_code ON signal_result(trade_date, session_name, code)",
     """
     DELETE FROM backtest_result
     WHERE id NOT IN (
@@ -253,7 +265,8 @@ def connect(db_path):
 
 
 def init_db(db_path):
-    with connect(db_path) as conn:
+    conn = connect(db_path)
+    try:
         conn.executescript(SCHEMA)
         for migration in MIGRATIONS:
             try:
@@ -261,6 +274,8 @@ def init_db(db_path):
             except Exception:
                 pass  # migration already applied or not applicable
         conn.commit()
+    finally:
+        conn.close()
 
 
 def rows(conn, query, params=()):

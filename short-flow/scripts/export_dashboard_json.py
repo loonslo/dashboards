@@ -26,7 +26,7 @@ def latest_trade_date(conn):
     return row["d"] if row and row["d"] else None
 
 
-def signal_items(conn, trade_date, rule_result, limit):
+def signal_items(conn, trade_date, session, rule_result, limit):
     return rows(
         conn,
         """
@@ -40,11 +40,11 @@ def signal_items(conn, trade_date, rule_result, limit):
           ) latest ON latest.id=s1.id
         ) s ON s.code=sr.code AND s.trade_date=sr.trade_date
         LEFT JOIN etf_indicator i ON i.code=sr.code AND i.trade_date=sr.trade_date
-        WHERE sr.trade_date=? AND sr.rule_result=?
+        WHERE sr.trade_date=? AND sr.session_name=? AND sr.rule_result=?
         ORDER BY sr.score DESC
         LIMIT ?
         """,
-        (trade_date, rule_result, limit),
+        (trade_date, session, rule_result, limit),
     )
 
 
@@ -252,9 +252,9 @@ def build_report(conn, config, session):
     regime = conn.execute("SELECT * FROM market_regime WHERE trade_date=?", (trade_date,)).fetchone()
     regime_row = dict(regime) if regime else {"trade_date": trade_date, "regime": "RANGE"}
     permission = permission_for(regime_row["regime"], config)
-    focus = [normalize(item) for item in signal_items(conn, trade_date, "candidate", 3)]
-    wait = [normalize(item) for item in signal_items(conn, trade_date, "wait", 8)]
-    exclude = [normalize(item) for item in signal_items(conn, trade_date, "exclude", 12)]
+    focus = [normalize(item) for item in signal_items(conn, trade_date, session, "candidate", 3)]
+    wait = [normalize(item) for item in signal_items(conn, trade_date, session, "wait", 8)]
+    exclude = [normalize(item) for item in signal_items(conn, trade_date, session, "exclude", 12)]
     open_trades = rows(conn, "SELECT * FROM trade_log WHERE exit_date IS NULL ORDER BY entry_date")
     exit_queue = build_exit_queue(regime_row["regime"], open_trades, config)
 

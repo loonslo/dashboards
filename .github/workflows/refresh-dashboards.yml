@@ -2,8 +2,19 @@ name: Refresh dashboards
 
 on:
   workflow_dispatch:
+    inputs:
+      session:
+        description: short-flow session to publish
+        required: true
+        default: "0940"
+        type: choice
+        options:
+          - "0940"
+          - "1130"
+          - "1430"
+          - "1520"
   schedule:
-    # GitHub cron uses UTC. These run at 11:10 and 15:35 Asia/Shanghai on weekdays.
+    # GitHub cron uses UTC: 11:10 and 15:35 Asia/Shanghai on weekdays.
     - cron: "10 3 * * 1-5"
     - cron: "35 7 * * 1-5"
 
@@ -11,7 +22,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: refresh-dashboards
+  group: refresh-dashboards-main
   cancel-in-progress: false
 
 jobs:
@@ -32,10 +43,30 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Compile Python
+        run: python -m compileall -q scripts short-flow
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Validate committed snapshots
+        run: python scripts/validate_dashboards.py
+
       - name: Configure Git author
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Refresh, commit, and push dashboards
-        run: bash scripts/server_refresh_and_push.sh
+      - name: Refresh, persist state, and push
+        env:
+          MANUAL_SESSION: ${{ inputs.session }}
+          EVENT_SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          if [ "$EVENT_SCHEDULE" = "35 7 * * 1-5" ]; then
+            export SHORT_FLOW_SESSION=1520
+          elif [ -n "$MANUAL_SESSION" ]; then
+            export SHORT_FLOW_SESSION="$MANUAL_SESSION"
+          else
+            export SHORT_FLOW_SESSION=0940
+          fi
+          bash scripts/server_refresh_and_push.sh

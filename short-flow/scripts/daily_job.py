@@ -36,9 +36,11 @@ def main():
 
     session_args = ["--session", args.session]
 
+    # 两段漏斗：盘中场次(0850/0940/1130/1430)各步骤只处理 T-1 短名单∪持仓∪基准，
+    # regime 复用前一交易日并做崩盘检查；1520 盘后场次全市场扫描、产出次日短名单。
     for step in DATA_STEPS:
         extra = []
-        if step in ("compute_indicators.py", "compute_signals.py", "run_llm_judge.py"):
+        if step in ("fetch_snapshot.py", "compute_indicators.py", "compute_regime.py", "compute_signals.py", "run_llm_judge.py"):
             extra = session_args
         if step == "fetch_etf_master.py" and args.seed_only:
             extra.append("--seed-only")

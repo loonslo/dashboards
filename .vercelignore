@@ -1,0 +1,7 @@
+short-flow/state/
+short-flow/data/
+server_data/
+scripts/
+tests/
+memory/
+*.md

@@ -6,6 +6,7 @@ from short_flow.config import load_config
 from short_flow.db import connect, init_db, rows
 from short_flow.rules.entry_patterns import classify_entry_pattern
 from short_flow.rules.filters import hard_filter, score_direction
+from short_flow.shortlist import is_intraday, load_shortlist
 
 
 def latest_trade_date(conn):
@@ -26,7 +27,10 @@ def main():
         trade_date = latest_trade_date(conn)
         if not trade_date:
             raise SystemExit("No indicators; run compute_indicators.py first")
-        conn.execute("DELETE FROM signal_result WHERE trade_date=? AND ts LIKE ?", (trade_date, f"{ts[:10]}%"))
+        conn.execute(
+            "DELETE FROM signal_result WHERE trade_date=? AND session_name=?",
+            (trade_date, args.session),
+        )
         records = rows(
             conn,
             """
@@ -46,6 +50,12 @@ def main():
             """,
             (trade_date, trade_date),
         )
+        # 两段漏斗：盘中只对 T-1 短名单出信号（持仓/基准有快照但不重新选股）
+        if is_intraday(args.session):
+            max_size = config.get("shortlist", {}).get("max_size", 15)
+            shortlist = set(load_shortlist(conn, trade_date, max_size))
+            if shortlist:
+                records = [r for r in records if r["code"] in shortlist]
         count = 0
         for record in records:
             master = record
@@ -66,11 +76,11 @@ def main():
             conn.execute(
                 """
                 INSERT INTO signal_result (
-                  ts, trade_date, code, name, group_name, score, rule_result,
+                  ts, trade_date, session_name, code, name, group_name, score, rule_result,
                   reason, entry_trigger, failure_condition
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (ts, trade_date, record["code"], record["name"], record["category"], score, rule, f"{reason}；{pattern}", trigger, failure),
+                (ts, trade_date, args.session, record["code"], record["name"], record["category"], score, rule, f"{reason}；{pattern}", trigger, failure),
             )
             count += 1
         conn.commit()

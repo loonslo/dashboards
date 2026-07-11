@@ -2,7 +2,8 @@ import argparse
 import datetime as dt
 import json
 
-from _bootstrap import REPO_ROOT, default_db_path
+from _bootstrap import REPO_ROOT, default_config_path, default_db_path
+from short_flow.config import load_config
 from short_flow.data_sources.eastmoney import classify_etf, fetch_etf_list
 from short_flow.db import connect, init_db
 
@@ -30,6 +31,22 @@ def seed_from_watchlist():
             "is_money": 1 if category == "MONEY" else 0,
         })
     return items
+
+
+def select_training_items(api_items, seed_items, config):
+    configured = config.get("features", {}).get("allowed_train_categories", "CORE,GROWTH")
+    allowed = {value.strip().upper() for value in str(configured).split(",") if value.strip()}
+    if config.get("features", {}).get("theme_enabled", False):
+        allowed.add("THEME")
+    selected = {
+        item["code"]: item
+        for item in api_items
+        if item.get("category") in allowed
+    }
+    # The hand-maintained watchlist is always included, even when a category is
+    # not generally trainable, because it also contains market/regime anchors.
+    selected.update({item["code"]: item for item in seed_items})
+    return list(selected.values())
 
 
 def upsert_master(db_path, items):
@@ -67,17 +84,22 @@ def upsert_master(db_path, items):
 def main():
     parser = argparse.ArgumentParser(description="Fetch or seed ETF master table")
     parser.add_argument("--db", default=str(default_db_path()))
+    parser.add_argument("--config", default=str(default_config_path()))
     parser.add_argument("--seed-only", action="store_true")
     args = parser.parse_args()
     init_db(args.db)
+    config = load_config(args.config)
+    seed_items = seed_from_watchlist()
     items = []
     if not args.seed_only:
         try:
             items = fetch_etf_list()
         except Exception as exc:
             print(f"ETF master API failed, using seed watchlist: {exc}")
-    if not items:
-        items = seed_from_watchlist()
+    if items:
+        items = select_training_items(items, seed_items, config)
+    else:
+        items = seed_items
     upsert_master(args.db, items)
     print(f"upserted etf_master rows: {len(items)}")
 

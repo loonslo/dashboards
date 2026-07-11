@@ -12,6 +12,16 @@ from _bootstrap import default_db_path
 from short_flow.data_sources.eastmoney import fetch_daily_klines
 from short_flow.db import connect, init_db, rows
 
+# Real exchange trade dates are needed to judge holding horizons correctly.
+# Using wall-clock calendar days (e.g. 14 natural days ≈ 10 trading days)
+# is inaccurate across weekends/holidays and silently drops signals whose
+# forward window spans a holiday. We therefore derive the horizon from the
+# actual k-line trade-date sequence.
+BACKTEST_HORIZON_DAYS = 10
+# A signal is only backtestable once at least this many *trading* days have
+# elapsed, so the 10d forward return is observable.
+MIN_TRADING_DAYS_BEFORE_BACKTEST = BACKTEST_HORIZON_DAYS
+
 
 def mean(values):
     values = [v for v in values if v is not None]
@@ -25,23 +35,74 @@ def win_rate(hits):
     return sum(valid) / len(valid) if valid else None
 
 
-def signal_dates_to_backtest(conn):
-    """Return distinct trade_dates from signal_result that haven't been backtested yet.
+def trading_days_since(conn, trade_date):
+    """Count exchange trading days from trade_date up to today (exclusive).
 
-    Only backtest dates at least 10 days in the past so forward returns are available.
+    Derived from the persisted etf_indicator / signal_result trade dates so it
+    stays correct across weekends and holidays. Falls back to the calendar-day
+    gap when no trade-date history is available.
     """
-    cutoff = (dt.date.today() - dt.timedelta(days=14)).isoformat()
-    dates = rows(conn, """
+    rows_dates = rows(conn, """
+        SELECT DISTINCT trade_date FROM (
+          SELECT trade_date FROM etf_indicator
+          UNION
+          SELECT trade_date FROM signal_result
+        ) WHERE trade_date > ?
+        ORDER BY trade_date
+    """, (trade_date,))
+    if rows_dates:
+        return len(rows_dates)
+    # Fallback: trading days ≈ calendar days excluding weekends.
+    try:
+        start = dt.date.fromisoformat(trade_date)
+    except (TypeError, ValueError):
+        return 0
+    days = 0
+    cursor = start + dt.timedelta(days=1)
+    today = dt.date.today()
+    while cursor <= today:
+        if cursor.weekday() < 5:
+            days += 1
+        cursor += dt.timedelta(days=1)
+    return days
+
+
+def signal_dates_to_backtest(conn):
+    """Return distinct trade_dates from signal_result that haven't been fully backtested yet.
+
+    A date is eligible only once at least BACKTEST_HORIZON_DAYS *trading* days
+    have passed (so the 10d forward return is observable). Partial backtest
+    rows (missing 5d/10d) are re-enqueued so they get incrementally completed.
+    """
+    candidate_dates = rows(conn, """
         SELECT DISTINCT sr.trade_date
         FROM signal_result sr
         WHERE sr.rule_result = 'candidate'
-          AND sr.trade_date <= ?
-          AND sr.trade_date NOT IN (
-            SELECT DISTINCT signal_date FROM backtest_result
-          )
         ORDER BY sr.trade_date
-    """, (cutoff,))
-    return [r["trade_date"] for r in dates]
+    """)
+    eligible = []
+    for row in candidate_dates:
+        trade_date = row["trade_date"]
+        if trading_days_since(conn, trade_date) < MIN_TRADING_DAYS_BEFORE_BACKTEST:
+            continue
+        # Skip only if EVERY candidate signal for that date already has a
+        # complete 10d result. Otherwise keep it for incremental completion.
+        incomplete = rows(conn, """
+            SELECT 1
+            FROM signal_result candidate
+            WHERE candidate.trade_date=?
+              AND candidate.rule_result='candidate'
+              AND NOT EXISTS (
+                SELECT 1 FROM backtest_result bt
+                WHERE bt.signal_date=candidate.trade_date
+                  AND bt.code=candidate.code
+                  AND bt.hit_10d IS NOT NULL
+              )
+            LIMIT 1
+        """, (trade_date,))
+        if incomplete:
+            eligible.append(trade_date)
+    return eligible
 
 
 def regime_for_date(conn, trade_date):
@@ -117,10 +178,27 @@ def forward_returns(code, signal_date, horizons=(1, 5, 10)):
 
 
 def backtest_date(conn, trade_date):
-    """Run backtest for all Focus watch signals on a single date."""
+    """Run backtest for all Focus watch signals on a single date.
+
+    Supports incremental completion: if a backtest_result row already exists
+    but is missing its 5d/10d returns (because the forward window was not yet
+    complete on a previous run), the row is updated in place instead of being
+    blindly overwritten or skipped.
+    """
     signals = rows(conn, """
-        SELECT * FROM signal_result
-        WHERE trade_date=? AND rule_result='candidate'
+        SELECT sr.* FROM signal_result sr
+        WHERE sr.trade_date=? AND sr.rule_result='candidate'
+          AND sr.id=(
+            SELECT chosen.id FROM signal_result chosen
+            WHERE chosen.trade_date=sr.trade_date
+              AND chosen.code=sr.code
+              AND chosen.rule_result='candidate'
+            ORDER BY CASE chosen.session_name
+              WHEN '1520' THEN 0 WHEN '1430' THEN 1 WHEN '1130' THEN 2
+              WHEN '0940' THEN 3 WHEN '0850' THEN 4 ELSE 5 END,
+              chosen.id DESC
+            LIMIT 1
+          )
         ORDER BY score DESC
     """, (trade_date,))
 
@@ -136,24 +214,47 @@ def backtest_date(conn, trade_date):
         if not fwd or fwd.get("close_price") is None:
             continue
 
-        conn.execute("""
-            INSERT OR REPLACE INTO backtest_result (
-              signal_date, code, name, regime, score, rule_result, reason,
-              close_price, next_open, next_close,
-              return_1d_open, return_1d_close, return_5d, return_10d,
-              hit_1d, hit_5d, hit_10d, computed_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            trade_date, sig["code"], sig["name"], regime,
-            sig["score"], sig["rule_result"], sig["reason"],
-            fwd["close_price"],
-            fwd.get("next_open"), fwd.get("next_close"),
-            fwd.get("return_1d_open"), fwd.get("return_1d_close"),
-            fwd.get("return_5d"), fwd.get("return_10d"),
-            fwd.get("hit_1d"), fwd.get("hit_5d"), fwd.get("hit_10d"),
-            now,
-        ))
-        count += 1
+        # Look for an existing (possibly partial) row to complete.
+        existing = conn.execute(
+            "SELECT id, hit_10d FROM backtest_result WHERE signal_date=? AND code=?",
+            (trade_date, sig["code"]),
+        ).fetchone()
+
+        if existing is None:
+            conn.execute("""
+                INSERT INTO backtest_result (
+                  signal_date, code, name, regime, score, rule_result, reason,
+                  close_price, next_open, next_close,
+                  return_1d_open, return_1d_close, return_5d, return_10d,
+                  hit_1d, hit_5d, hit_10d, computed_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                trade_date, sig["code"], sig["name"], regime,
+                sig["score"], sig["rule_result"], sig["reason"],
+                fwd["close_price"],
+                fwd.get("next_open"), fwd.get("next_close"),
+                fwd.get("return_1d_open"), fwd.get("return_1d_close"),
+                fwd.get("return_5d"), fwd.get("return_10d"),
+                fwd.get("hit_1d"), fwd.get("hit_5d"), fwd.get("hit_10d"),
+                now,
+            ))
+            count += 1
+        elif existing["hit_10d"] is None and (
+            fwd.get("return_5d") is not None or fwd.get("return_10d") is not None
+        ):
+            # Partial row: fill in whatever forward returns are now available.
+            conn.execute("""
+                UPDATE backtest_result SET
+                  regime=?, score=?, rule_result=?, reason=?,
+                  return_5d=?, return_10d=?, hit_5d=?, hit_10d=?, computed_at=?
+                WHERE id=?
+            """, (
+                regime, sig["score"], sig["rule_result"], sig["reason"],
+                fwd.get("return_5d"), fwd.get("return_10d"),
+                fwd.get("hit_5d"), fwd.get("hit_10d"),
+                now, existing["id"],
+            ))
+            count += 1
 
     return count
 
