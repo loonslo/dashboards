@@ -49,10 +49,12 @@ def select_training_items(api_items, seed_items, config):
     return list(selected.values())
 
 
-def upsert_master(db_path, items):
+def upsert_master(db_path, items, deactivate_missing=True):
     now = dt.datetime.now().isoformat(timespec="seconds")
-    with connect(db_path) as conn:
-        conn.execute("UPDATE etf_master SET status='inactive'")
+    conn = connect(db_path)
+    try:
+        if deactivate_missing:
+            conn.execute("UPDATE etf_master SET status='inactive'")
         for item in items:
             conn.execute(
                 """
@@ -79,6 +81,8 @@ def upsert_master(db_path, items):
                 ),
             )
         conn.commit()
+    finally:
+        conn.close()
 
 
 def main():
@@ -90,17 +94,19 @@ def main():
     init_db(args.db)
     config = load_config(args.config)
     seed_items = seed_from_watchlist()
-    items = []
+    api_items = []
+    api_ok = False
     if not args.seed_only:
         try:
-            items = fetch_etf_list()
+            api_items = fetch_etf_list()
+            api_ok = True
         except Exception as exc:
-            print(f"ETF master API failed, using seed watchlist: {exc}")
-    if items:
-        items = select_training_items(items, seed_items, config)
+            print(f"ETF master API failed; preserving existing active rows and refreshing seeds: {exc}")
+    if api_ok:
+        items = select_training_items(api_items, seed_items, config)
     else:
         items = seed_items
-    upsert_master(args.db, items)
+    upsert_master(args.db, items, deactivate_missing=args.seed_only or api_ok)
     print(f"upserted etf_master rows: {len(items)}")
 
 

@@ -19,6 +19,7 @@ import export_dashboard_json
 import scripts.short_flow_state as short_flow_state
 import scripts.validate_dashboards as validate_dashboards
 from short_flow.db import connect, init_db
+from short_flow.data_sources import eastmoney
 
 
 class TradeDateTests(unittest.TestCase):
@@ -45,6 +46,21 @@ class TradeDateTests(unittest.TestCase):
 
 
 class TrainingUniverseTests(unittest.TestCase):
+    @staticmethod
+    def _master_item(code, name="ETF", category="CORE"):
+        return {
+            "code": code,
+            "name": name,
+            "market": "SH" if code.startswith("5") else "SZ",
+            "category": category,
+            "sub_category": "",
+            "is_broad": 1 if category in ("CORE", "GROWTH") else 0,
+            "is_theme": 1 if category == "THEME" else 0,
+            "is_qdii": 0,
+            "is_bond": 0,
+            "is_money": 0,
+        }
+
     def test_configured_categories_plus_manual_watchlist(self):
         api_items = [
             {"code": "510300", "category": "CORE"},
@@ -62,6 +78,82 @@ class TrainingUniverseTests(unittest.TestCase):
         by_code = {item["code"]: item for item in selected}
         self.assertEqual(set(by_code), {"510300", "512000"})
         self.assertEqual(by_code["512000"]["name"], "手工观察")
+
+    def test_api_fallback_host_is_used(self):
+        response = {
+            "data": {
+                "total": 1,
+                "diff": [{"f12": "510300", "f14": "沪深300ETF"}],
+            }
+        }
+
+        def fake_get_json(url):
+            if "push2.eastmoney.com" in url:
+                raise ValueError("primary returned invalid JSON")
+            return response
+
+        with mock.patch.object(eastmoney, "get_json", side_effect=fake_get_json):
+            items = eastmoney.fetch_etf_list(max_pages=1)
+        self.assertEqual([item["code"] for item in items], ["510300"])
+
+    def test_incomplete_api_snapshot_is_rejected(self):
+        response = {
+            "data": {
+                "total": 2,
+                "diff": [{"f12": "510300", "f14": "沪深300ETF"}],
+            }
+        }
+        with mock.patch.object(eastmoney, "get_json", return_value=response):
+            with self.assertRaises(RuntimeError):
+                eastmoney.fetch_etf_list(max_pages=1)
+
+    def test_transient_api_failure_preserves_existing_active_rows(self):
+        with tempfile.TemporaryDirectory() as temp:
+            db_path = pathlib.Path(temp) / "master.db"
+            init_db(db_path)
+            existing = self._master_item("510300", "沪深300ETF")
+            seed = self._master_item("159915", "创业板ETF", "GROWTH")
+            fetch_etf_master.upsert_master(db_path, [existing])
+            fetch_etf_master.upsert_master(
+                db_path,
+                [seed],
+                deactivate_missing=False,
+            )
+            conn = connect(db_path)
+            try:
+                active = {
+                    row["code"]
+                    for row in conn.execute(
+                        "SELECT code FROM etf_master WHERE status='active'"
+                    )
+                }
+            finally:
+                conn.close()
+            self.assertEqual(active, {"510300", "159915"})
+
+
+class EastmoneyTransportTests(unittest.TestCase):
+    def test_curl_fallback_decodes_utf8_json(self):
+        payload = '{"data":{"name":"沪深300ETF"}}'.encode("utf-8")
+        completed = mock.Mock(stdout=payload)
+        with mock.patch.object(
+            eastmoney.urllib.request,
+            "urlopen",
+            side_effect=OSError("primary unavailable"),
+        ), mock.patch.object(
+            eastmoney.time,
+            "sleep",
+        ), mock.patch.object(
+            eastmoney.shutil,
+            "which",
+            return_value="curl",
+        ), mock.patch.object(
+            eastmoney.subprocess,
+            "run",
+            return_value=completed,
+        ):
+            result = eastmoney.get_json("https://example.com/data", timeout=1)
+        self.assertEqual(result["data"]["name"], "沪深300ETF")
 
 
 class SessionPersistenceTests(unittest.TestCase):

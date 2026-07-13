@@ -7,6 +7,7 @@ import urllib.request
 
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+ETF_LIST_HOSTS = ("push2.eastmoney.com", "push2delay.eastmoney.com")
 
 
 def secid_for(code):
@@ -45,8 +46,8 @@ def get_json(url, timeout=14):
             command.extend(["-e", headers["Referer"]])
         command.append(url)
         try:
-            completed = subprocess.run(command, capture_output=True, text=True, timeout=timeout + 10, check=True)
-            return json.loads(completed.stdout)
+            completed = subprocess.run(command, capture_output=True, timeout=timeout + 10, check=True)
+            return json.loads(completed.stdout.decode("utf-8"))
         except Exception as exc:
             last_error = exc
     raise last_error
@@ -84,6 +85,23 @@ def classify_etf(code, name):
     return "SECTOR"
 
 
+def _fetch_etf_page(query, require_rows):
+    last_error = None
+    for host in ETF_LIST_HOSTS:
+        try:
+            payload = get_json(f"https://{host}/api/qt/clist/get?{query}")
+            data = payload.get("data") if isinstance(payload, dict) else None
+            if not isinstance(data, dict):
+                raise ValueError(f"invalid ETF list response from {host}")
+            diff = data.get("diff") or []
+            if require_rows and not diff:
+                raise ValueError(f"empty ETF list response from {host}")
+            return data
+        except Exception as exc:
+            last_error = exc
+    raise RuntimeError("all ETF list endpoints failed") from last_error
+
+
 def fetch_etf_list(max_pages=30, page_size=100):
     # Eastmoney caps clist pages in practice, so fetch page-by-page instead of
     # relying on a large pz. Callers still fall back to the local seed list if
@@ -105,8 +123,8 @@ def fetch_etf_list(max_pages=30, page_size=100):
             "fs": fs,
             "fields": fields,
         }, safe=",:")
-        payload = get_json(f"https://push2.eastmoney.com/api/qt/clist/get?{query}")
-        data = payload.get("data") or {}
+        expect_rows = page == 1 or (total is not None and len(items) < int(total))
+        data = _fetch_etf_page(query, require_rows=expect_rows)
         if total is None:
             total = data.get("total")
         diff = data.get("diff") or []
@@ -134,6 +152,10 @@ def fetch_etf_list(max_pages=30, page_size=100):
         if total and len(items) >= int(total):
             break
         time.sleep(0.2)
+    if not items:
+        raise RuntimeError("ETF list endpoints returned no rows")
+    if total is not None and len(items) < int(total):
+        raise RuntimeError(f"incomplete ETF list: received {len(items)} of {int(total)} rows")
     return items
 
 def fetch_quotes(codes):
