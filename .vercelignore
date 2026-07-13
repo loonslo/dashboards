@@ -1,7 +1,8 @@
-short-flow/state/
-short-flow/data/
-server_data/
-scripts/
-tests/
-memory/
+/.github/
+/.gitattributes
+/short-flow/
+/server_data/
+/scripts/
+/tests/
+/memory/
 *.md
