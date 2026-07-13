@@ -75,21 +75,14 @@ Useful API endpoints:
 - `POST /api/refresh/short-flow`
 - `POST /api/refresh/etf-pool`
 
-The dashboard pages prefer the API when it is available and fall back to the
-checked-in `dashboard_latest.json` files when served as static pages.
+Production dashboard pages always read the checked-in JSON snapshots deployed
+with the same Git commit. This prevents an old browser `dashboard_api_base`
+setting from silently replacing GitHub/Vercel data with a stale server response.
 
-When the pages are served from Vercel but the API runs on your own server, set
-`dashboards/api_config.json`:
-
-```json
-{
-  "apiBase": "https://your-api.example.com"
-}
-```
-
-Browser `localStorage` key `dashboard_api_base` takes precedence over
-`api_config.json`, which is useful for testing a new server address before
-committing it.
+Localhost development still prefers the API when it is available and falls back
+to the checked-in `dashboard_latest.json` files. The browser `localStorage` key
+`dashboard_api_base` can be used to test a local API address. A deliberately
+API-backed deployment must set `window.DASHBOARD_SAME_ORIGIN_API = true`.
 
 For a public API listener, both a management token and an explicit browser-origin
 allowlist are required:

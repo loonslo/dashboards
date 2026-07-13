@@ -184,6 +184,13 @@ class DashboardScopeTests(unittest.TestCase):
         cn_items = [item for item in payload["items"] if item["market"] == "CN"]
         self.assertEqual([item["ticker"] for item in cn_items], ["512890.SH"])
 
+    def test_production_snapshots_cannot_be_replaced_by_stale_browser_api(self):
+        api_client = (ROOT / "dashboards" / "shared" / "api-client.js").read_text(encoding="utf-8")
+        production_guard = api_client.index("if (!runtimeApiEnabled)")
+        browser_api_lookup = api_client.index("const base = await apiBase();", production_guard)
+        self.assertLess(production_guard, browser_api_lookup)
+        self.assertIn("return fetchJson(fallback);", api_client[production_guard:browser_api_lookup])
+
 
 class SessionPersistenceTests(unittest.TestCase):
     def setUp(self):

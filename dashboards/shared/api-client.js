@@ -27,10 +27,15 @@
   }
 
   async function fetchLatest(dashboard, fallback) {
+    const localApi = ["127.0.0.1", "localhost", "::1"].includes(window.location.hostname);
+    const runtimeApiEnabled = localApi || window.DASHBOARD_SAME_ORIGIN_API === true;
+    if (!runtimeApiEnabled) {
+      return fetchJson(fallback);
+    }
+
     const base = await apiBase();
     const candidates = [];
     if (base) candidates.push(`${base}/api/latest/${dashboard}`);
-    const localApi = ["127.0.0.1", "localhost", "::1"].includes(window.location.hostname);
     if (!base && (localApi || window.DASHBOARD_SAME_ORIGIN_API === true)) {
       candidates.push(`/api/latest/${dashboard}`);
     }
