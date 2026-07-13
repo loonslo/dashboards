@@ -48,16 +48,15 @@ Optional local/API-server mode:
 python scripts/api_server.py
 ```
 
-Then open `http://127.0.0.1:8787/` or the management page at
-`http://127.0.0.1:8787/dashboards/admin/`.
+Then open `http://127.0.0.1:8787/`.
 
 The API server uses local SQLite at `server_data/dashboard_api.db` and seeds its
-watchlists from the existing `watchlist_v1.json` files on first run. Watchlist
-changes made through the admin page are saved to SQLite and exported back to the
-JSON files so the static Vercel pages still have a snapshot fallback.
+watchlists from the existing `watchlist_v1.json` files on first run. Changes made
+through the API are saved to SQLite and exported back to the JSON files so the
+static Vercel pages still have a snapshot fallback.
 
 The API server is not required for scheduled refreshes or Vercel. Keep it only if
-you need browser-based watchlist/config editing or an always-on private API.
+you need direct API integration or an always-on private API.
 
 Useful API endpoints:
 
@@ -88,9 +87,8 @@ When the pages are served from Vercel but the API runs on your own server, set
 }
 ```
 
-The admin page also has an API address field that saves the value to browser
-`localStorage` as `dashboard_api_base`. Browser `localStorage` takes precedence
-over `api_config.json`, which is useful for testing a new server address before
+Browser `localStorage` key `dashboard_api_base` takes precedence over
+`api_config.json`, which is useful for testing a new server address before
 committing it.
 
 For a public API listener, both a management token and an explicit browser-origin
@@ -104,8 +102,7 @@ python scripts/api_server.py
 ```
 
 Read endpoints remain public. Watchlist, strategy-configuration, and refresh
-requests require the token. Enter it on the admin page; it is stored only in the
-current browser's `localStorage` and is never written to the repository.
+requests require the token in the `X-Dashboard-Token` request header.
 
 LangGraph learning path:
 

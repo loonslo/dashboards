@@ -559,7 +559,6 @@ def main():
     init_db()
     server = ThreadingHTTPServer((HOST, PORT), ApiHandler)
     print(f"Dashboard API listening on http://{HOST}:{PORT}/")
-    print(f"Admin page: http://{HOST}:{PORT}/dashboards/admin/")
     server.serve_forever()
 
 

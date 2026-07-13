@@ -1,5 +1,5 @@
 (function () {
-  // 共享格式化与词表：两个看板 + 管理台共用同一套，避免逻辑与术语漂移。
+  // 共享格式化与词表：两个看板共用同一套，避免逻辑与术语漂移。
   const safe = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
   const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : Number(v).toFixed(d);
   const pct = (v, d = 1) => v === null || v === undefined || Number.isNaN(Number(v)) ? "暂无" : `${Number(v).toFixed(d)}%`;

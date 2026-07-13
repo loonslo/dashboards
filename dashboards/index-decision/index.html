@@ -11,13 +11,7 @@
       scroll-margin-top: 188px;
       margin: 18px 0 22px;
     }
-    .head-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* 概览：三张一眼看懂的状态卡 */
+    /* 概览：只保留会改变配置动作的状态卡 */
     .pulse-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -79,78 +73,10 @@
     }
     .signal { border-left: 3px solid #9db8e8; border-radius: 6px; }
 
-    /* 短线资金摘要条 + 状态标签 + 跳转 */
-    .mini-strip {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    .mini {
-      min-width: 0;
-      min-height: 58px;
-      padding: 9px 11px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--panel);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .mini span {
-      display: block;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.25;
-      overflow-wrap: anywhere;
-    }
-    .mini b {
-      display: block;
-      margin-top: 3px;
-      font-family: var(--mono);
-      font-size: 15px;
-      font-weight: 700;
-      line-height: 1.2;
-    }
-    .flow-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      margin-top: 12px;
-      color: var(--blue);
-      font-size: 13px;
-      font-weight: 650;
-      text-decoration: none;
-    }
-    .flow-link:hover { text-decoration: underline; }
-
     .gap-box div + div { margin-top: 4px; }
 
-    .add-panel {
-      position: fixed;
-      left: 10px;
-      right: 10px;
-      bottom: calc(66px + env(safe-area-inset-bottom));
-      z-index: 7;
-      display: none;
-      padding: 14px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--panel);
-      box-shadow: 0 18px 48px rgba(28, 39, 49, 0.22);
-    }
-    .add-panel.open { display: block; }
-    .add-panel h2 { margin-bottom: 12px; }
-    .form-grid { display: grid; gap: 8px; }
-    .form-grid input { width: 100%; }
-    .form-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 10px;
-    }
     @media (min-width: 640px) {
-      .pulse-grid { grid-template-columns: repeat(3, 1fr); }
+      .pulse-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (min-width: 820px) {
       .wrap { padding-left: 20px; padding-right: 20px; }
@@ -182,8 +108,7 @@
         <div id="meta" class="meta">等待数据</div>
         <nav class="switcher" aria-label="看板切换">
           <a class="current" href="./" aria-current="page">投资观察</a>
-          <a href="../short-flow/">A股短线</a>
-          <a href="../admin/">可选管理台</a>
+          <a href="../short-flow/">A股资金</a>
           <a href="../../">全部</a>
         </nav>
       </div>
@@ -193,7 +118,7 @@
         <div class="summary-card"><b id="alertCount">-</b><span>重点提醒</span></div>
       </div>
       <div class="toolbar">
-        <input id="search" type="search" list="instrumentOptions" placeholder="搜代码、名称、分组">
+        <input id="search" type="search" placeholder="搜 VOO、QQQ、龙头或分组">
         <button id="reload" type="button">刷新</button>
       </div>
       <nav id="modeChips" class="chips" aria-label="快速筛选"></nav>
@@ -204,8 +129,8 @@
   <main class="wrap">
     <section id="overview-section">
       <div class="section-head">
-        <h2>持仓概览</h2>
-        <span class="hint">一屏看清节奏</span>
+        <h2>配置纪律</h2>
+        <span class="hint">先判断是否需要行动</span>
       </div>
       <div id="overview" class="pulse-grid"></div>
     </section>
@@ -221,20 +146,9 @@
     <section id="watchlist-section">
       <div class="section-head">
         <h2>观察池</h2>
-        <div class="head-actions">
-          <span id="watchHint" class="hint">筛选后 - 个</span>
-          <button id="openAdd" class="btn-sm" type="button">+ 添加</button>
-        </div>
+        <span id="watchHint" class="hint">筛选后 - 个</span>
       </div>
       <div id="watchlist" class="card-list"></div>
-    </section>
-
-    <section id="short-flow-section">
-      <div class="section-head">
-        <h2>A股短线资金</h2>
-        <span class="hint">资金流与观察条件</span>
-      </div>
-      <div id="shortFlow"></div>
     </section>
 
     <section id="indices-section">
@@ -258,31 +172,14 @@
     <a href="#overview-section" class="active">概览</a>
     <a href="#alerts-section">提醒</a>
     <a href="#watchlist-section">观察</a>
-    <a href="#short-flow-section">资金</a>
     <a href="#indices-section">指数</a>
     <a href="#gaps-section">缺口</a>
   </nav>
 
-  <div id="addPanel" class="add-panel" role="dialog" aria-label="添加观察标的">
-    <h2>添加观察标的</h2>
-    <div class="form-grid">
-      <input id="addTicker" list="instrumentOptions" placeholder="代码，例如 MSFT / 0700.HK / 600900.SH">
-      <input id="addName" list="instrumentNameOptions" placeholder="名称，例如 微软">
-      <input id="addGroup" placeholder="分组，例如 临时观察">
-      <input id="addReason" placeholder="观察理由">
-    </div>
-    <div class="form-actions">
-      <button id="closeAdd" type="button">取消</button>
-      <button id="saveAdd" class="primary" type="button">保存</button>
-    </div>
-  </div>
-  <datalist id="instrumentOptions"></datalist>
-  <datalist id="instrumentNameOptions"></datalist>
-
   <script>
-    const LOCAL_KEY = "finance_dashboard_local_watchlist_v1";
-    const state = { data: null, shortFlow: null, mode: [], group: "", localItems: [], candidates: [] };
-    const { safe, fmt, pct, cls, money, decisionLabel, dataStatusLabel, dataStatusClass, alertLevelLabel } = DashFmt;
+    const state = { data: null, mode: [], group: "" };
+    const ACTIONABLE_TICKERS = new Set(["VOO", "VT", "QQQ", "512890", "512890.SH"]);
+    const { safe, fmt, pct, cls, alertLevelLabel } = DashFmt;
     const isDataIssue = row => {
       const message = row?.message || "";
       return row?.level === "data" || /Yahoo|Stooq|HTTP Error|Too Many Requests|Invalid isoformat|CNBC|WSJ|CSI|Danjuan/i.test(message);
@@ -293,132 +190,16 @@
       : "行情数据暂未更新，先不要据此做买卖判断。";
     const sigma = value => value === null || value === undefined || Number.isNaN(Number(value)) ? "暂无" : `${Number(value).toFixed(2)}σ`;
     const costCls = row => row.cost_buy_signal ? "pos" : row.cost_condition_extreme ? "neg" : "flat";
+    const rowTicker = row => String(row?.ticker || row?.code || "").trim().toUpperCase();
+    const isActionableTicker = row => ACTIONABLE_TICKERS.has(rowTicker(row));
 
     async function loadData() {
       state.data = await DashboardApi.fetchLatest("index-decision", "dashboard_latest.json");
-      try {
-        state.shortFlow = await DashboardApi.fetchLatest("short-flow", "../short-flow/dashboard_latest.json");
-      } catch {
-        state.shortFlow = null;
-      }
-      state.localItems = loadLocalItems();
-      await loadCandidateList();
       render();
     }
 
-    function aShareTicker(code) {
-      const raw = String(code || "").trim();
-      if (!/^\d{6}$/.test(raw)) return raw;
-      if (/^[569]/.test(raw)) return `${raw}.SH`;
-      if (/^[0123]/.test(raw)) return `${raw}.SZ`;
-      if (/^[48]/.test(raw)) return `${raw}.BJ`;
-      return raw;
-    }
-
-    function displayTicker(row) {
-      const code = String(row.ticker || row.code || "").trim();
-      if (row.market === "A" || row.market === "CN") return aShareTicker(code);
-      return code.toUpperCase();
-    }
-
-    async function loadCandidateList() {
-      const rows = [];
-      try {
-        const res = await fetch("../instrument_universe.json", { cache: "no-store" });
-        if (res.ok) {
-          const data = await res.json();
-          rows.push(...(data.items || []));
-        }
-      } catch { /* maintained universe is optional */ }
-      rows.push(
-        ...(state.data?.watchlist || []),
-        ...(state.data?.indices || []),
-        ...state.localItems,
-        ...(state.shortFlow?.market_flow || []),
-        ...(state.shortFlow?.watch_signals || [])
-      );
-      const seen = new Set();
-      state.candidates = rows
-        .map(row => {
-          const code = String(row.ticker || row.code || "").trim();
-          const market = row.market === "A" ? "CN" : String(row.market || "").trim();
-          const ticker = displayTicker({ ...row, market });
-          return {
-            code,
-            ticker,
-            market,
-            name: String(row.display_name || row.name || "").trim(),
-            group: String(row.group || row.category || row.bucket || row.kind || "").trim()
-          };
-        })
-        .filter(row => row.ticker && !seen.has(row.ticker) && seen.add(row.ticker))
-        .sort((a, b) => {
-          const rankA = a.market === "CN" ? 0 : a.market === "US" ? 1 : 2;
-          const rankB = b.market === "CN" ? 0 : b.market === "US" ? 1 : 2;
-          return rankA - rankB || a.ticker.localeCompare(b.ticker);
-        });
-      renderCandidateOptions();
-    }
-
-    function renderCandidateOptions() {
-      const codeOptions = state.candidates.map(row =>
-        `<option value="${safe(row.ticker)}" label="${safe([row.name, row.group, row.market].filter(Boolean).join(" · "))}"></option>`
-      ).join("");
-      const nameOptions = state.candidates.map(row =>
-        `<option value="${safe(row.name || row.ticker)}" label="${safe([row.ticker, row.group, row.market].filter(Boolean).join(" · "))}"></option>`
-      ).join("");
-      document.getElementById("instrumentOptions").innerHTML = codeOptions;
-      document.getElementById("instrumentNameOptions").innerHTML = nameOptions;
-    }
-
-    function candidateByInput(value) {
-      const query = String(value || "").trim().toLowerCase();
-      if (!query) return null;
-      return state.candidates.find(row =>
-        row.ticker.toLowerCase() === query ||
-        row.code.toLowerCase() === query ||
-        row.name.toLowerCase() === query
-      ) || null;
-    }
-
-    function applyAddCandidate(value) {
-      const candidate = candidateByInput(value);
-      if (!candidate) return;
-      document.getElementById("addTicker").value = candidate.ticker;
-      document.getElementById("addName").value = candidate.name || candidate.ticker;
-      document.getElementById("addGroup").value = candidate.group || document.getElementById("addGroup").value.trim() || "本机新增";
-    }
-
-    function loadLocalItems() {
-      try {
-        const rows = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
-        return Array.isArray(rows) ? rows : [];
-      } catch {
-        return [];
-      }
-    }
-
-    function saveLocalItems(rows) {
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(rows));
-      state.localItems = rows;
-    }
-
     function watchRows() {
-      const backendRows = state.data?.watchlist || [];
-      const localRows = state.localItems.map(row => ({
-        ...row,
-        signal: "本机新增：待接入后端抓数",
-        has_alert: true,
-        alerts: [{ ticker: row.ticker, name: row.name, level: "local", notify: false, message: "本机新增标的，待接入后端抓数" }],
-        current: null,
-        change_1d_pct: null,
-        drawdown_52w: null,
-        return_1m: null,
-        return_3m: null,
-        cost_dev_factor: null,
-        cost_buy_signal: false
-      }));
-      return [...backendRows, ...localRows];
+      return state.data?.watchlist || [];
     }
 
     function assetCard(row, options = {}) {
@@ -463,15 +244,8 @@
     }
 
     function alertRows() {
-      const backendAlerts = (state.data?.alerts || []).filter(isActionAlert);
-      const localAlerts = state.localItems.map(row => ({
-        ticker: row.ticker,
-        name: row.name,
-        level: "local",
-        notify: false,
-        message: "本机新增标的，待接入后端抓数"
-      }));
-      return [...backendAlerts, ...localAlerts];
+      const backendAlerts = (state.data?.alerts || []).filter(row => isActionAlert(row) && isActionableTicker(row));
+      return backendAlerts;
     }
 
     function dataIssueRows() {
@@ -482,7 +256,7 @@
     }
 
     function notificationRows() {
-      const backendRows = (state.data?.notifications || []).filter(isActionAlert);
+      const backendRows = (state.data?.notifications || []).filter(row => isActionAlert(row) && isActionableTicker(row));
       return [...backendRows];
     }
 
@@ -493,7 +267,6 @@
         ["cost", "成本信号"],
         ["core", "核心"],
         ["US", "美股"],
-        ["HK", "港股"],
         ["CN", "A股"]
       ];
       const chips = document.getElementById("modeChips");
@@ -528,47 +301,6 @@
       });
     }
 
-    function renderShortFlow() {
-      const box = document.getElementById("shortFlow");
-      const data = state.shortFlow;
-      if (!data) {
-        box.innerHTML = '<div class="empty">未读取到 A股短线资金数据。请先刷新短线资金数据。</div>';
-        return;
-      }
-      const source = data.source_status || {};
-      const counts = data.status_counts || {};
-      const signals = data.watch_signals || [];
-      const picks = signals.slice(0, 3);
-      const hiddenSignals = Math.max(0, signals.length - picks.length);
-      const cards = picks.length ? picks.map(row => `
-        <article class="card">
-          <div class="top">
-            <div>
-              <div class="name">${safe(row.display_name || row.name || row.code)}</div>
-              <div class="code">${safe(row.code)} · ${safe(row.group)} · <span class="tag ${dataStatusClass(row.data_status)}">${safe(dataStatusLabel(row.data_status))}</span></div>
-            </div>
-            <div class="price ${cls(row.main_net)}">${money(row.main_net)}</div>
-          </div>
-          <div class="metrics">
-            <div class="metric"><span>状态</span><b>${safe(decisionLabel(row.status))}</b></div>
-            <div class="metric"><span>涨跌幅</span><b class="${cls(row.pct)}">${pct(row.pct)}</b></div>
-            <div class="metric"><span>主力占比</span><b class="${cls(row.main_net_pct)}">${pct(row.main_net_pct)}</b></div>
-          </div>
-          <div class="signal">${safe(row.next_trigger || row.reason || "等待资金确认")}</div>
-          ${row.failure ? `<div class="reason">失败条件：${safe(row.failure)}</div>` : ""}
-        </article>
-      `).join("") : '<div class="empty">观察池暂无可展示标的。</div>';
-      box.innerHTML = `
-        <div class="mini-strip">
-          <div class="mini"><span>重点观察</span><b>${counts["Focus watch"] || 0}</b></div>
-          <div class="mini"><span>等待/排除</span><b>${(counts["Wait for strength"] || 0) + (counts["Exclude for now"] || 0)}</b></div>
-          <div class="mini"><span>接口 实时/延迟/不可用</span><b>${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0}</b></div>
-        </div>
-        <div class="card-list">${cards}</div>
-        <a class="flow-link" href="../short-flow/">打开完整 A股短线看板${hiddenSignals ? `（还有 ${hiddenSignals} 个）` : ""} →</a>
-      `;
-    }
-
     function renderIndices() {
       document.getElementById("indices").innerHTML = (state.data?.indices || [])
         .map(row => assetCard(row, { type: "index" }))
@@ -577,14 +309,14 @@
 
     function filteredWatchlist() {
       const query = document.getElementById("search").value.trim().toLowerCase();
-      const markets = state.mode.filter(m => m === "US" || m === "HK" || m === "CN");
+      const markets = state.mode.filter(m => m === "US" || m === "CN");
       const needAlert = state.mode.includes("alert");
       const needCost = state.mode.includes("cost");
       const needCore = state.mode.includes("core");
       return watchRows().filter(row => {
         const text = `${row.ticker} ${row.name} ${row.group} ${row.market}`.toLowerCase();
         const marketOk = !markets.length || markets.includes(row.market);
-        const alertOk = !needAlert || (row.alerts || []).some(isActionAlert);
+        const alertOk = !needAlert || (isActionableTicker(row) && (row.alerts || []).some(isActionAlert));
         const costOk = !needCost || row.cost_buy_signal;
         const coreOk = !needCore || row.priority === "core";
         return marketOk && alertOk && costOk && coreOk && (!query || text.includes(query)) && (!state.group || row.group === state.group);
@@ -657,7 +389,6 @@
     function renderOverview() {
       const box = document.getElementById("overview");
       const indices = state.data?.indices || [];
-      const shortFlow = state.shortFlow;
       const spx = indices.find(r => r.code === "^GSPC");
       const ndx = indices.find(r => r.code === "^NDX");
       const div = indices.find(r => r.code === "H30269");
@@ -667,11 +398,14 @@
         const spxDD = spx?.drawdown_52w != null ? `${spx.drawdown_52w.toFixed(1)}%` : "暂无";
         const ndxPE = ndx?.pe_forward != null ? ndx.pe_forward.toFixed(1) : "暂无";
         const paused = (spx?.signal || "").includes("暂停");
-        pulses.push({ icon: "📈", label: "美股", tone: paused ? "warn" : "ok",
-          text: `标普距高点 ${spxDD} · 纳指前瞻 PE ${ndxPE}`, tag: paused ? "暂停新增" : "正常定投" });
+        pulses.push({ icon: "🌍", label: "标普 / 全球", tone: paused ? "warn" : "ok",
+          text: `VOO / VT · 标普距高点 ${spxDD} · 12-18个月分批`, tag: paused ? "等待" : "新增主线" });
       } else {
-        pulses.push({ icon: "📈", label: "美股", tone: "info", text: "数据暂缺", tag: "待更新" });
+        pulses.push({ icon: "🌍", label: "标普 / 全球", tone: "info", text: "VOO / VT · 12-18个月分批", tag: "新增主线" });
       }
+
+      pulses.push({ icon: "⏸️", label: "纳指100", tone: "warn",
+        text: `QQQ 已接近配置上限 · 前瞻 PE ${ndx?.pe_forward != null ? ndx.pe_forward.toFixed(1) : "暂无"}`, tag: "暂停新增" });
 
       if (div) {
         const dy = div.dividend_yield != null ? `${div.dividend_yield.toFixed(2)}%` : "暂无";
@@ -686,16 +420,8 @@
         pulses.push({ icon: "🛡️", label: "红利", tone: "info", text: "数据暂缺", tag: "待更新" });
       }
 
-      if (shortFlow) {
-        const counts = shortFlow.status_counts || {};
-        const focusCount = counts["Focus watch"] || 0;
-        const waitCount = counts["Wait for strength"] || 0;
-        const asof = shortFlow.asof || "暂无";
-        pulses.push({ icon: "⚡", label: "A股短线", tone: focusCount > 0 ? "ok" : "info",
-          text: `重点 ${focusCount} · 等待 ${waitCount} · ${asof}`, tag: focusCount > 0 ? "有机会" : "观望" });
-      } else {
-        pulses.push({ icon: "⚡", label: "A股短线", tone: "info", text: "数据暂缺", tag: "待更新" });
-      }
+      pulses.push({ icon: "🧱", label: "风险边界", tone: "info",
+        text: "防守层 30% · 不加杠杆 · 个股/行业ETF只作温度计", tag: "少犯错" });
 
       box.innerHTML = pulses.map(p => `
         <div class="pulse ${p.tone}">
@@ -711,7 +437,6 @@
       renderGroupChips();
       renderOverview();
       renderIndices();
-      renderShortFlow();
       renderWatchlist();
       renderAlerts();
       renderGaps();
@@ -720,7 +445,7 @@
     function showError(error) {
       document.getElementById("meta").textContent = "没有读到最新数据文件";
       const tip = '<div class="empty">先运行刷新脚本生成最新数据，再用本地服务器打开本页面。</div>';
-      ["overview", "alerts", "shortFlow", "indices"].forEach(id => { document.getElementById(id).innerHTML = tip; });
+      ["overview", "alerts", "indices"].forEach(id => { document.getElementById(id).innerHTML = tip; });
       document.getElementById("gaps").className = "empty";
       document.getElementById("gaps").textContent = `数据缺口：${error.message}`;
       document.getElementById("watchlist").innerHTML = `<div class="empty">${safe(error.message)}</div>`;
@@ -728,41 +453,6 @@
 
     document.getElementById("search")?.addEventListener("input", renderWatchlist);
     document.getElementById("reload")?.addEventListener("click", () => loadData().catch(showError));
-    document.getElementById("openAdd")?.addEventListener("click", () => {
-      document.getElementById("addPanel").classList.add("open");
-      document.getElementById("addTicker").focus();
-    });
-    document.getElementById("closeAdd")?.addEventListener("click", () => {
-      document.getElementById("addPanel").classList.remove("open");
-    });
-    for (const eventName of ["input", "change"]) {
-      document.getElementById("addTicker")?.addEventListener(eventName, event => applyAddCandidate(event.target.value));
-      document.getElementById("addName")?.addEventListener(eventName, event => applyAddCandidate(event.target.value));
-    }
-    document.getElementById("saveAdd")?.addEventListener("click", () => {
-      const candidate = candidateByInput(document.getElementById("addTicker").value) || candidateByInput(document.getElementById("addName").value);
-      const ticker = (candidate?.ticker || document.getElementById("addTicker").value).trim().toUpperCase();
-      if (!ticker) return;
-      const row = {
-        market: candidate?.market || (ticker.endsWith(".HK") ? "HK" : ticker.endsWith(".SH") || ticker.endsWith(".SZ") || ticker.endsWith(".BJ") ? "CN" : "US"),
-        ticker,
-        name: document.getElementById("addName").value.trim() || candidate?.name || ticker,
-        group: document.getElementById("addGroup").value.trim() || candidate?.group || "本机新增",
-        reason: document.getElementById("addReason").value.trim() || "手动添加观察",
-        priority: "local"
-      };
-      const rows = loadLocalItems().filter(item => item.ticker !== ticker);
-      rows.push(row);
-      saveLocalItems(rows);
-      document.querySelectorAll("#addTicker,#addName,#addGroup,#addReason").forEach(input => input.value = "");
-      document.getElementById("addPanel").classList.remove("open");
-      renderSummary();
-      renderModeChips();
-      renderGroupChips();
-      renderWatchlist();
-      renderAlerts();
-    });
-
     document.getElementById("notify")?.addEventListener("click", async () => {
       if (!("Notification" in window)) {
         alert("当前浏览器不支持通知");
@@ -776,7 +466,7 @@
       });
     });
 
-    const sections = ["overview-section", "alerts-section", "watchlist-section", "short-flow-section", "indices-section", "gaps-section"];
+    const sections = ["overview-section", "alerts-section", "watchlist-section", "indices-section", "gaps-section"];
     window.addEventListener("scroll", () => {
       const current = sections.findLast(id => document.getElementById(id)?.getBoundingClientRect().top < 220) || sections[0];
       document.querySelectorAll(".bottom-nav a").forEach(link => {

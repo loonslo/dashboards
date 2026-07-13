@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>A股短线资金跟随看板</title>
+  <title>A股资金观察看板</title>
   <link rel="stylesheet" href="../shared/tokens.css">
   <style>
     main.wrap { padding-bottom: 82px; }
@@ -18,21 +18,6 @@
       gap: 12px;
       margin-bottom: 10px;
       flex-wrap: wrap;
-    }
-    .section-tools {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 8px;
-      min-width: 0;
-      margin-left: auto;
-    }
-    .session-select {
-      width: min(100%, 238px);
-      height: 34px;
-      padding: 0 8px;
-      border-radius: 8px;
-      font-size: 13px;
     }
     .grid {
       display: grid;
@@ -88,72 +73,6 @@
       gap: 12px;
       margin-bottom: 10px;
     }
-    .etf-status-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-    }
-    .status-card {
-      min-width: 0;
-      min-height: 68px;
-      padding: 10px 11px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--panel);
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .status-card.primary {
-      border-left: 3px solid var(--blue);
-      background: linear-gradient(90deg, var(--blue-soft), #fff 55%);
-    }
-    .status-card.ok {
-      border-left: 3px solid var(--green);
-      background: linear-gradient(90deg, var(--green-soft), #fff 55%);
-    }
-    .status-card.warn {
-      border-left: 3px solid var(--amber);
-      background: linear-gradient(90deg, var(--amber-soft), #fff 55%);
-    }
-    .status-card span {
-      display: block;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.25;
-    }
-    .status-card b {
-      display: block;
-      margin-top: 3px;
-      font-family: var(--mono);
-      font-size: 17px;
-      line-height: 1.2;
-      overflow-wrap: anywhere;
-    }
-    .guardrail-strip {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .guardrail {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      min-height: 28px;
-      padding: 4px 8px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: var(--panel);
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.2;
-    }
-    .guardrail b {
-      color: var(--text);
-      font-family: var(--mono);
-      font-weight: 700;
-    }
     .etf-strip {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -182,113 +101,6 @@
       font-size: 15px;
       line-height: 1.2;
       overflow-wrap: anywhere;
-    }
-    .decision-grid {
-      display: grid;
-      gap: 10px;
-      align-items: stretch;
-    }
-    .decision-card {
-      display: grid;
-      gap: 8px;
-      min-height: 226px;
-      padding: 10px;
-      align-content: start;
-    }
-    .decision-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      padding-bottom: 7px;
-      border-bottom: 1px solid var(--line);
-    }
-    .decision-title {
-      font-size: 15px;
-      font-weight: 760;
-      line-height: 1.2;
-    }
-    .decision-count {
-      flex: 0 0 auto;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: var(--soft);
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 700;
-    }
-    .decision-card.focus .decision-count { background: var(--green-soft); color: var(--green); }
-    .decision-card.wait .decision-count { background: var(--amber-soft); color: var(--amber); }
-    .decision-card.exclude .decision-count { background: var(--red-soft); color: var(--red); }
-    .decision-list {
-      display: grid;
-      gap: 7px;
-    }
-    .decision-row {
-      min-width: 0;
-      min-height: 72px;
-      padding: 8px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fbfcfd;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .decision-row.compact {
-      min-height: 52px;
-      padding: 7px 8px;
-    }
-    .decision-main {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      min-width: 0;
-    }
-    .decision-main b {
-      min-width: 0;
-      font-size: 13px;
-      line-height: 1.25;
-      overflow-wrap: anywhere;
-    }
-    .score-pill {
-      flex: 0 0 auto;
-      padding: 2px 7px;
-      border-radius: 999px;
-      background: var(--soft);
-      color: #3c4043;
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 700;
-    }
-    .decision-note {
-      margin-top: 5px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-      overflow-wrap: anywhere;
-    }
-    .decision-meta {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 3px;
-      margin-top: 5px;
-      color: #4d5a66;
-      font-size: 12px;
-      line-height: 1.35;
-    }
-    .decision-meta span {
-      min-width: 0;
-      overflow-wrap: anywhere;
-    }
-    .decision-more {
-      padding: 7px 8px;
-      border-radius: 8px;
-      background: var(--soft);
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
     }
     .table-wrap {
       overflow-x: visible;
@@ -341,37 +153,14 @@
       font-family: var(--mono);
       font-size: 11px;
     }
-    .journal-stats {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    .journal-actions {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    .journal-panel {
-      display: none;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel);
-      margin-bottom: 10px;
-    }
-    .bottom-nav { --nav-cols: 8; }
+    .bottom-nav { --nav-cols: 6; }
     @media (min-width: 820px) {
       .wrap { padding-left: 20px; padding-right: 20px; }
       .hero { grid-template-columns: minmax(0, 1fr) 360px; align-items: start; }
       .summary { grid-column: 2; grid-row: 1 / span 2; }
       .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .rank-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .etf-status-grid { grid-template-columns: 1.2fr 1fr 1fr 1fr; }
       .etf-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      .decision-grid { grid-template-columns: minmax(190px, .75fr) minmax(260px, 1fr) minmax(320px, 1.35fr); }
-      .journal-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .bottom-nav { display: none; }
       main.wrap { padding-bottom: 28px; }
     }
@@ -385,19 +174,11 @@
     }
     @media (max-width: 520px) {
       .section-head { align-items: flex-start; }
-      .section-tools {
-        width: 100%;
-        justify-content: stretch;
-      }
-      .session-select { width: 100%; }
       .hint { white-space: normal; }
       .rank-table { font-size: 12px; }
       .rank-table th, .rank-table td { padding: 7px 6px; }
       .rank-table th:first-child, .rank-table td:first-child { width: 34%; }
       .rank-table th:nth-child(2), .rank-table td:nth-child(2) { width: 18%; }
-      .etf-status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .decision-meta { grid-template-columns: 1fr; }
-      .journal-actions { grid-template-columns: 1fr 82px; }
     }
   </style>
   <script src="../shared/api-client.js"></script>
@@ -407,12 +188,11 @@
   <header>
     <div class="wrap hero">
       <div>
-        <h1>A股短线资金跟随看板</h1>
+        <h1>A股资金观察看板</h1>
         <div id="meta" class="meta">等待数据</div>
         <nav class="switcher" aria-label="看板切换">
           <a href="../index-decision/">投资观察</a>
-          <a class="current" href="./" aria-current="page">A股短线</a>
-          <a href="../admin/">可选管理台</a>
+          <a class="current" href="./" aria-current="page">A股资金</a>
           <a href="../../">全部</a>
         </nav>
       </div>
@@ -422,7 +202,7 @@
         <div class="summary-card"><b id="waitCount">-</b><span>待观察/待排除</span></div>
       </div>
       <div class="toolbar">
-        <input id="search" type="search" list="instrumentOptions" placeholder="搜代码、名称、分组、状态">
+        <input id="search" type="search" placeholder="搜代码、名称、分组、状态">
         <button id="reload" type="button">刷新</button>
       </div>
       <nav id="chips" class="chips" aria-label="快速筛选"></nav>
@@ -440,24 +220,6 @@
         <span id="focusHint" class="hint">优先处理可观察</span>
       </div>
       <div id="focusPanel" class="attention-grid"></div>
-    </section>
-
-    <section id="etf-section">
-      <div class="section-head">
-        <h2>ETF训练仓</h2>
-        <div class="section-tools">
-          <select id="etfSession" class="session-select">
-            <option value="latest">最新报告</option>
-            <option value="0850">08:50 盘前</option>
-            <option value="0940">09:40 盘中确认</option>
-            <option value="1130">11:30 午间</option>
-            <option value="1430">14:30 尾盘</option>
-            <option value="1520">15:20 盘后</option>
-          </select>
-          <span id="etfHint" class="hint">等待数据</span>
-        </div>
-      </div>
-      <div id="etfPool" class="empty">等待数据</div>
     </section>
 
     <section id="rank-section">
@@ -505,44 +267,6 @@
       <div id="backtestPanel" class="empty">等待回测数据</div>
     </section>
 
-    <section id="journal-section">
-      <div class="section-head">
-        <h2>交易日志</h2>
-        <span id="journalHint" class="hint">记录每一笔决策</span>
-      </div>
-      <div id="journalStats" class="journal-stats"></div>
-      <div class="journal-actions">
-        <button id="openJournalAdd" type="button">+ 新交易</button>
-        <button id="clearJournal" type="button" style="color:var(--red)">清空</button>
-      </div>
-      <div id="journalAddPanel" class="journal-panel">
-        <div class="form-grid" style="display:grid;gap:8px">
-          <input id="jCode" list="instrumentOptions" placeholder="代码或名称，如 510300 / 沪深300ETF">
-          <input id="jName" list="instrumentNameOptions" placeholder="名称，如 沪深300ETF">
-          <input id="jEntryDate" placeholder="开仓日期，如 2026-07-01" type="date">
-          <input id="jEntryPrice" placeholder="开仓价" type="number" step="0.001">
-          <input id="jShares" placeholder="股数" type="number" step="1">
-          <input id="jReason" placeholder="开仓理由（引用信号）">
-        </div>
-        <div class="form-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
-          <button id="closeJournalAdd" type="button">取消</button>
-          <button id="saveJournalAdd" class="primary" type="button">记录</button>
-        </div>
-      </div>
-      <div id="journalClosePanel" class="journal-panel">
-        <div id="jCloseTitle" class="hint" style="margin-bottom:8px"></div>
-        <div class="form-grid" style="display:grid;gap:8px">
-          <input id="jExitPrice" placeholder="平仓价" type="number" step="0.001">
-          <input id="jExitDate" placeholder="平仓日期" type="date">
-          <input id="jExitReason" placeholder="平仓理由（可选）">
-        </div>
-        <div class="form-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
-          <button id="cancelCloseTrade" type="button">取消</button>
-          <button id="confirmCloseTrade" class="primary" type="button">确认平仓</button>
-        </div>
-      </div>
-      <div id="journalList" class="grid"></div>
-    </section>
     <section id="gaps-section">
       <div class="section-head">
         <h2>数据缺口</h2>
@@ -554,19 +278,14 @@
 
   <nav class="bottom-nav" aria-label="页面导航">
     <a href="#focus-section" class="active">关注</a>
-    <a href="#etf-section">ETF</a>
     <a href="#rank-section">排名</a>
     <a href="#watch-section">观察</a>
     <a href="#market-section">资金</a>
     <a href="#backtest-section">回测</a>
-    <a href="#journal-section">交易</a>
     <a href="#gaps-section">缺口</a>
   </nav>
-  <datalist id="instrumentOptions"></datalist>
-  <datalist id="instrumentNameOptions"></datalist>
-
   <script>
-    const state = { data: null, etf: null, etfSession: "latest", showAll: true, filters: new Set(), candidates: [] };
+    const state = { data: null, etf: null, showAll: true, filters: new Set() };
     const { safe, fmt, pct, cls, money, decisionLabel, dataStatusLabel, priorityLabel, regimeLabel } = DashFmt;
     const statusClass = status => status === "Focus watch" ? "" : status === "Exclude for now" ? "exclude" : "wait";
     const statusFilters = ["Focus watch", "Wait for strength", "Exclude for now"];
@@ -575,119 +294,22 @@
       "Wait for strength": "待观察",
       "Exclude for now": "待排除"
     };
-    const decisionStatusMap = {
-      focus: "Focus watch",
-      wait: "Wait for strength",
-      exclude: "Exclude for now"
-    };
-    const etfSectionFilter = "ETF训练仓";
-    const sectionFilters = {
-      [etfSectionFilter]: "etf"
-    };
-    const groupFilterLabels = ["宽基"];
-    const mainBroadEtfCodes = new Set(["510050", "510300", "510500", "512100", "159915", "588000", "588220"]);
-
-    async function loadEtfReport(session) {
-      if (session === "latest") {
-        try {
-          state.etf = await DashboardApi.fetchLatest("etf-pool", "etf_pool_latest.json");
-        } catch (error) {
-          state.etf = null;
-        }
-        return;
-      }
-      // Try to load specific session report from reports/{trade_date}/{session}.json
+    async function loadEtfReport() {
       try {
-        const tradeDate = state.etf?.trade_date || new Date().toISOString().slice(0, 10);
-        const base = await DashboardApi.apiBase();
-        const candidates = [];
-        if (base) candidates.push(`${base}/api/report/short-flow/${tradeDate}/${session}`);
-        candidates.push(`reports/${tradeDate}/${session}.json`);
-        for (const url of candidates) {
-          try {
-            const res = await fetch(url, { cache: "no-store" });
-            if (res.ok) { state.etf = await res.json(); return; }
-          } catch { /* try next */ }
-        }
-      } catch { /* keep current etf data */ }
+        state.etf = await DashboardApi.fetchLatest("etf-pool", "etf_pool_latest.json");
+      } catch {
+        state.etf = null;
+      }
     }
 
     async function loadData() {
       state.data = await DashboardApi.fetchLatest("short-flow", "dashboard_latest.json");
-      await loadEtfReport(state.etfSession);
-      await loadCandidateList();
+      await loadEtfReport();
       render();
     }
 
     function allRows() {
       return [...(state.data?.market_flow || []), ...(state.data?.watch_signals || [])];
-    }
-
-    async function loadCandidateList() {
-      const rows = [];
-      try {
-        const res = await fetch("watchlist_v1.json", { cache: "no-store" });
-        if (res.ok) {
-          const data = await res.json();
-          rows.push(...(data.items || []));
-        }
-      } catch { /* local candidate list is optional */ }
-      try {
-        const res = await fetch("a_share_etf_universe.json", { cache: "no-store" });
-        if (res.ok) {
-          const data = await res.json();
-          rows.push(...(data.items || []));
-        }
-      } catch { /* full ETF universe is optional */ }
-      rows.push(...allRows());
-      for (const bucket of ["focus_watch", "wait", "exclude", "exit_queue"]) {
-        rows.push(...(state.etf?.[bucket] || []));
-      }
-      try {
-        const res = await fetch("../instrument_universe.json", { cache: "no-store" });
-        if (res.ok) {
-          const data = await res.json();
-          rows.push(...(data.items || []));
-        }
-      } catch { /* maintained universe is optional */ }
-      const seen = new Set();
-      state.candidates = rows
-        .map(row => ({
-          code: String(row.code || "").trim(),
-          name: String(row.display_name || row.name || "").trim(),
-          group: String(row.group || row.category || row.bucket || "").trim(),
-          market: String(row.market || "").trim(),
-          assetType: String(row.asset_type || "").trim()
-        }))
-        .filter(row => {
-          const key = `${row.market || "LOCAL"}:${row.code}`;
-          return row.code && !seen.has(key) && seen.add(key);
-        })
-        .sort((a, b) => {
-          const rankA = a.market === "A" ? 0 : a.market === "US" ? 1 : 2;
-          const rankB = b.market === "A" ? 0 : b.market === "US" ? 1 : 2;
-          return rankA - rankB || a.code.localeCompare(b.code);
-        });
-      renderCandidateOptions();
-    }
-
-    function renderCandidateOptions() {
-      const codeOptions = state.candidates.map(row =>
-        `<option value="${safe(row.code)}" label="${safe([row.name, row.group, row.market].filter(Boolean).join(" · "))}"></option>`
-      ).join("");
-      const nameOptions = state.candidates.map(row =>
-        `<option value="${safe(row.name || row.code)}" label="${safe([row.code, row.group, row.market].filter(Boolean).join(" · "))}"></option>`
-      ).join("");
-      document.getElementById("instrumentOptions").innerHTML = codeOptions;
-      document.getElementById("instrumentNameOptions").innerHTML = nameOptions;
-    }
-
-    function candidateByInput(value) {
-      const query = String(value || "").trim().toLowerCase();
-      if (!query) return null;
-      return state.candidates.find(row =>
-        row.code.toLowerCase() === query || row.name.toLowerCase() === query
-      ) || null;
     }
 
     function textMatches(row) {
@@ -701,22 +323,6 @@
       return statusFilters.filter(status => state.filters.has(status));
     }
 
-    function selectedSections() {
-      return [...state.filters].map(filter => sectionFilters[filter]).filter(Boolean);
-    }
-
-    function selectedGroups() {
-      return [...state.filters].filter(filter => !statusFilters.includes(filter) && !sectionFilters[filter]);
-    }
-
-    function sectionMatches(section) {
-      if (state.showAll) return true;
-      const sections = selectedSections();
-      if (sections.length) return sections.includes(section);
-      if (!state.filters.size) return false;
-      return true;
-    }
-
     function statusMatches(row) {
       const statuses = selectedStatuses();
       if (!statuses.length) return true;
@@ -728,25 +334,14 @@
       });
     }
 
-    function groupMatches(row) {
-      const groups = selectedGroups();
-      if (!groups.length) return true;
-      return groups.some(group => {
-        if (group === "宽基") {
-          return mainBroadEtfCodes.has(String(row.code || "").trim());
-        }
-        return row.group === group || row.category === group || row.bucket === group;
-      });
+    function filterMatches(row) {
+      if (!state.filters.size) return state.showAll;
+      return statusMatches(row);
     }
 
-    function filterMatches(row, section = "main") {
-      if (!state.filters.size) return sectionMatches(section);
-      return sectionMatches(section) && statusMatches(row) && groupMatches(row);
-    }
-
-    function filtered(rows, section = "main") {
+    function filtered(rows) {
       return rows.filter(row => {
-        return filterMatches(row, section) && textMatches(row);
+        return filterMatches(row) && textMatches(row);
       });
     }
 
@@ -758,22 +353,13 @@
     }
 
     function updateSectionVisibility() {
-      const explicitSections = selectedSections();
-      const hasExplicitEtf = explicitSections.includes("etf");
-      const hasExplicitMain = !explicitSections.length;
-      const mainCount = filtered(allRows(), "main").length;
-      const etfCount = etfVisibleCount();
-      const showEtf = state.showAll || hasExplicitEtf || (hasExplicitMain && etfCount > 0);
-      const showMain = state.showAll || (hasExplicitMain && mainCount > 0);
-      const selectedSectionKeys = selectedSections();
+      const showMain = state.showAll || filtered(allRows()).length > 0;
       setSectionVisible("filter-empty", !state.showAll && !state.filters.size);
       setSectionVisible("focus-section", state.showAll || !!state.filters.size);
-      setSectionVisible("etf-section", showEtf);
       setSectionVisible("rank-section", showMain);
       setSectionVisible("watch-section", showMain);
       setSectionVisible("market-section", showMain);
-      setSectionVisible("backtest-section", state.showAll || selectedSectionKeys.includes("etf"));
-      setSectionVisible("journal-section", state.showAll);
+      setSectionVisible("backtest-section", state.showAll);
       setSectionVisible("gaps-section", state.showAll);
     }
 
@@ -791,12 +377,12 @@
       const rel = DashFmt.relativeTime(state.data?.asof);
       const badge = rel.text ? ` <span class="freshness ${rel.level === "fresh" ? "" : safe(rel.level)}">${safe(rel.text)}</span>` : "";
       const scanText = scope.universe_count ? ` · ETF池：${scope.universe_count} / 扫描：${scope.scanned_count || 0}` : "";
-      document.getElementById("meta").innerHTML = `生成时间：${safe(state.data?.asof || "暂无")}${badge} · 交易日：${safe(state.data?.trade_date || "暂无")}${scanText} · 接口 实时/延迟/不可用：${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0} · 不自动交易`;
+      document.getElementById("meta").innerHTML = `生成时间：${safe(state.data?.asof || "暂无")}${badge} · 交易日：${safe(state.data?.trade_date || "暂无")}${scanText} · 接口 实时/延迟/不可用：${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0} · 仅作市场观察，不属于长期配置`;
     }
 
     function renderChips() {
-      const modes = ["all", ...statusFilters, etfSectionFilter, ...groupFilterLabels];
-      const labels = { all: "全部", ...statusFilterLabels, [etfSectionFilter]: "ETF训练仓" };
+      const modes = ["all", ...statusFilters];
+      const labels = { all: "全部", ...statusFilterLabels };
       const chips = document.getElementById("chips");
       chips.innerHTML = modes.map(mode =>
         `<button type="button" class="chip ${(mode === "all" ? state.showAll : state.filters.has(mode)) ? "active" : ""}" data-filter="${safe(mode)}">${safe(labels[mode] || mode)}</button>`
@@ -844,48 +430,6 @@
       `;
     }
 
-    function etfRowsForAttention() {
-      const buckets = [
-        ["focus_watch", "focus", "ETF训练仓"],
-        ["wait", "wait", "ETF训练仓"],
-        ["exclude", "exclude", "ETF训练仓"],
-        ["exit_queue", "exclude", "退出队列"]
-      ];
-      return buckets.flatMap(([bucket, decision, source]) =>
-        (state.etf?.[bucket] || []).map(row => ({
-          ...row,
-          _section: "etf",
-          _source: source,
-          _decision: decision,
-          status: decisionStatusMap[decision],
-          group: row.group || row.category || row.bucket
-        }))
-      );
-    }
-
-    function filteredEtfRows(decision, rows) {
-      const buckets = {
-        focus: "focus_watch",
-        wait: "wait",
-        exclude: "exclude"
-      };
-      const bucket = buckets[decision] || "exclude";
-      return filtered((rows || state.etf?.[bucket] || []).map(row => ({
-        ...row,
-        _section: "etf",
-        _decision: decision,
-        status: decisionStatusMap[decision],
-        group: row.group || row.category || row.bucket
-      })), "etf");
-    }
-
-    function etfVisibleCount() {
-      return ["focus", "wait", "exclude"].reduce((sum, decision) => {
-        if (!decisionVisible(decision)) return sum;
-        return sum + filteredEtfRows(decision).length;
-      }, 0) + (decisionVisible("exclude") ? filteredEtfRows("exclude", state.etf?.exit_queue || []).length : 0);
-    }
-
     function attentionRows() {
       const statuses = selectedStatuses();
       const targetStatuses = statuses.length ? statuses : ["Focus watch"];
@@ -897,12 +441,11 @@
         })),
         ...(state.data?.market_flow || []).map(row => ({ ...row, _section: "main", _source: "手工置顶" }))
       ];
-      return [...mainRows, ...etfRowsForAttention()]
+      return mainRows
         .filter(row => targetStatuses.includes(row.status))
-        .filter(row => filterMatches(row, row._section || "main") && textMatches(row))
+        .filter(row => filterMatches(row) && textMatches(row))
         .sort((a, b) => {
-          const sourceRank = (a._source === "手工置顶" ? 0 : a._source === "全池候选" ? 1 : a._source === "ETF训练仓" ? 2 : 3) -
-            (b._source === "手工置顶" ? 0 : b._source === "全池候选" ? 1 : b._source === "ETF训练仓" ? 2 : 3);
+          const sourceRank = (a._source === "手工置顶" ? 0 : 1) - (b._source === "手工置顶" ? 0 : 1);
           return sourceRank || (b.score ?? 0) - (a.score ?? 0) || (b.main_net_pct ?? 0) - (a.main_net_pct ?? 0);
         });
     }
@@ -957,45 +500,6 @@
       document.getElementById("watchHint").textContent = `筛选后 ${watchRows.length} 个`;
       document.getElementById("marketFlow").innerHTML = marketRows.length ? marketRows.map(card).join("") : '<div class="empty">没有匹配的市场/板块标的</div>';
       document.getElementById("watchSignals").innerHTML = watchRows.length ? watchRows.map(card).join("") : '<div class="empty">没有匹配的观察标的</div>';
-    }
-
-
-    function decisionCard(title, rows, decision) {
-      if (!decisionVisible(decision)) return "";
-      const visibleRows = filteredEtfRows(decision, rows);
-      const decisionClass = decision === "focus" ? "focus" : decision === "exclude" ? "exclude" : "wait";
-      const displayRows = decision === "exclude" ? visibleRows.slice(0, 8) : visibleRows;
-      const hiddenCount = visibleRows.length - displayRows.length;
-      return `
-        <div class="card decision-card ${decisionClass}">
-          <div class="decision-head">
-            <div class="decision-title">${safe(title)}</div>
-            <div class="decision-count">${visibleRows.length} 个</div>
-          </div>
-          <div class="decision-list">
-            ${displayRows.length ? displayRows.map(row => `
-              <div class="decision-row ${decision === "exclude" ? "compact" : ""}">
-                <div class="decision-main">
-                  <b>${safe(row.code)} ${safe(row.name)}</b>
-                  <span class="score-pill">${row.score != null ? fmt(row.score, 1) : "暂无"}</span>
-                </div>
-                <div class="decision-note">${safe(row.reason || "-")}</div>
-                ${decision === "exclude" ? "" : `<div class="decision-meta">
-                  <span><b>触发</b> ${safe(row.trigger || "-")}</span>
-                  <span><b>失败</b> ${safe(row.failure || "-")}</span>
-                </div>`}
-              </div>
-            `).join("") : '<div class="decision-note">无</div>'}
-            ${hiddenCount > 0 ? `<div class="decision-more">还有 ${hiddenCount} 个低优先级排除项已收起</div>` : ""}
-          </div>
-        </div>
-      `;
-    }
-
-    function decisionVisible(decision) {
-      if (!sectionMatches("etf")) return false;
-      const statuses = selectedStatuses();
-      return !statuses.length || statuses.includes(decisionStatusMap[decision]);
     }
 
     function renderBacktest() {
@@ -1068,49 +572,6 @@
       html += `</div>`;
       panel.innerHTML = html;
     }
-    function renderEtfPool() {
-      const root = document.getElementById("etfPool");
-      const hint = document.getElementById("etfHint");
-      const data = state.etf;
-      if (!data) {
-        hint.textContent = "等待最新训练仓数据";
-        root.className = "empty";
-        root.innerHTML = "还没有导出 ETF 训练仓结果";
-        return;
-      }
-      const regime = data.market_regime || {};
-      const permission = data.trading_permission || {};
-      const guardrails = data.guardrails || {};
-      hint.textContent = `${data.session_name || data.session || "最新"} · ${data.trade_date || "暂无"}`;
-      root.className = "";
-      root.innerHTML = `
-        <div class="etf-overview">
-          <div class="etf-status-grid">
-            <div class="status-card primary"><span>市场状态</span><b>${safe(regimeLabel(regime.regime))}</b></div>
-            <div class="status-card ${permission.can_open ? "ok" : "warn"}"><span>训练仓</span><b>${permission.can_open ? "允许开仓" : "停止新开"}</b></div>
-            <div class="status-card"><span>最大敞口</span><b>${pct((permission.max_exposure_pct || 0) * 100, 0)}</b></div>
-            <div class="status-card"><span>分析编号 / 时间</span><b>#${safe(data.analysis_run_id || "暂无")} · ${safe(data.generated_at || "暂无")}</b></div>
-          </div>
-          <div class="guardrail-strip" aria-label="训练仓配置">
-            <span class="guardrail">本金 <b>${money(guardrails.train_capital)}</b></span>
-            <span class="guardrail">首笔 <b>${pct((guardrails.first_entry_ratio || 0) * 100, 0)}</b></span>
-            <span class="guardrail">单ETF <b>${pct((guardrails.max_single_etf_pct || 0) * 100, 0)}</b></span>
-            <span class="guardrail">主题 <b>${permission.theme_enabled ? "启用" : "关闭"}</b></span>
-            <span class="guardrail">趋势向下 <b>${safe(guardrails.trend_down_exit_days || 3)}日退出</b></span>
-          </div>
-          <div class="decision-grid">
-            ${decisionCard("可观察", data.focus_watch || [], "focus")}
-            ${decisionCard("待观察", data.wait || [], "wait")}
-            ${decisionCard("待排除", data.exclude || [], "exclude")}
-          </div>
-          ${data.exit_queue?.length ? decisionCard("趋势向下退出队列", data.exit_queue, "exclude") : ""}
-        </div>
-      `;
-      if (!root.querySelector(".decision-card")) {
-        const grid = root.querySelector(".decision-grid");
-        if (grid) grid.innerHTML = '<div class="empty">没有匹配的训练仓标的</div>';
-      }
-    }
     function renderGaps() {
       const gaps = state.data?.data_gaps || [];
       const box = document.getElementById("gaps");
@@ -1125,9 +586,7 @@
       renderAttention();
       renderRanks();
       renderSections();
-      renderEtfPool();
       renderBacktest();
-      renderJournal();
       renderGaps();
     }
 
@@ -1137,9 +596,7 @@
       renderAttention();
       renderRanks();
       renderSections();
-      renderEtfPool();
       renderBacktest();
-      renderJournal();
     }
 
     function showError(error) {
@@ -1150,13 +607,6 @@
 
     document.getElementById("search").addEventListener("input", renderFilteredViews);
     document.getElementById("reload").addEventListener("click", () => loadData().catch(showError));
-    document.getElementById("etfSession").addEventListener("change", async (event) => {
-      state.etfSession = event.target.value;
-      await loadEtfReport(state.etfSession);
-      await loadCandidateList();
-      renderEtfPool();
-      renderBacktest();
-    });
     document.getElementById("chips").addEventListener("click", event => {
       const button = event.target.closest("button[data-filter]");
       if (!button) return;
@@ -1173,203 +623,7 @@
       }
       renderFilteredViews();
     });
-    // --- Trade Journal ---
-    const JOURNAL_KEY = "short_flow_trade_journal_v1";
-
-    function newJournalId() {
-      if (window.crypto?.randomUUID) return window.crypto.randomUUID();
-      return `trade-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    }
-
-    function loadJournal() {
-      try {
-        const entries = JSON.parse(localStorage.getItem(JOURNAL_KEY) || "[]");
-        let changed = false;
-        entries.forEach(entry => {
-          if (!entry.id) {
-            entry.id = newJournalId();
-            changed = true;
-          }
-        });
-        if (changed) localStorage.setItem(JOURNAL_KEY, JSON.stringify(entries));
-        return entries;
-      } catch {
-        return [];
-      }
-    }
-
-    function saveJournal(entries) {
-      localStorage.setItem(JOURNAL_KEY, JSON.stringify(entries));
-    }
-
-    function journalStats() {
-      const entries = loadJournal();
-      const closed = entries.filter(e => e.exit_price != null);
-      const open = entries.filter(e => e.exit_price == null);
-      const wins = closed.filter(e => (e.pnl || 0) > 0);
-      const totalPnl = closed.reduce((sum, e) => sum + (e.pnl || 0), 0);
-      return {
-        total: entries.length,
-        open: open.length,
-        closed: closed.length,
-        wins: wins.length,
-        winRate: closed.length ? (wins.length / closed.length * 100).toFixed(0) + "%" : "暂无",
-        totalPnl: totalPnl,
-        avgReturn: closed.length ? (closed.reduce((s, e) => s + (e.pnl_pct || 0), 0) / closed.length).toFixed(2) + "%" : "暂无",
-      };
-    }
-
-    function renderJournal() {
-      const entries = loadJournal();
-      const stats = journalStats();
-      document.getElementById("journalHint").textContent = `${stats.total} 笔 · ${stats.open} 持仓中`;
-
-      document.getElementById("journalStats").innerHTML = `
-        <div class="summary-card"><b>${stats.total}</b><span>总记录</span></div>
-        <div class="summary-card"><b>${stats.open}</b><span>持仓中</span></div>
-        <div class="summary-card"><b>${stats.winRate}</b><span>胜率(${stats.wins}/${stats.closed})</span></div>
-        <div class="summary-card"><b class="${stats.totalPnl > 0 ? 'pos' : stats.totalPnl < 0 ? 'neg' : 'flat'}">${stats.totalPnl >= 0 ? '+' : ''}${stats.totalPnl.toFixed(0)}</b><span>总盈亏 · 均${stats.avgReturn}</span></div>
-      `;
-
-      // Sort: open first, then by entry_date desc
-      const sorted = [...entries].sort((a, b) => {
-        if (!a.exit_price && b.exit_price) return -1;
-        if (a.exit_price && !b.exit_price) return 1;
-        return (b.entry_date || "").localeCompare(a.entry_date || "");
-      });
-
-      document.getElementById("journalList").innerHTML = sorted.length
-        ? sorted.map(e => {
-            const isOpen = e.exit_price == null;
-            const pnl = e.pnl != null ? e.pnl : (e.exit_price && e.entry_price ? (e.exit_price - e.entry_price) * (e.shares || 100) : null);
-            const pnlPct = e.pnl_pct != null ? e.pnl_pct : (e.exit_price && e.entry_price ? ((e.exit_price / e.entry_price - 1) * 100) : null);
-            const pnlCls = (pnl || 0) > 0 ? "pos" : (pnl || 0) < 0 ? "neg" : "flat";
-            return `
-            <article class="card">
-              <div class="top">
-                <div>
-                  <div class="name">${safe(e.code)} ${safe(e.name || "")}</div>
-                  <div class="code">开仓：${safe(e.entry_date || "暂无")} @ ${fmt(e.entry_price, 3)} · ${safe(e.shares || 100)}股 ${isOpen ? '· <span style="color:var(--blue)">持仓中</span>' : `· 平仓：${safe(e.exit_date || "暂无")} @ ${fmt(e.exit_price, 3)}`}</div>
-                </div>
-                <div style="text-align:right">
-                  <div class="price ${pnlCls}">${pnl != null ? (pnl >= 0 ? '+' : '') + pnl.toFixed(0) : "暂无"}</div>
-                  <div style="font-size:12px;color:var(--muted)">${pnlPct != null ? (pnlPct >= 0 ? '+' : '') + pnlPct.toFixed(2) + '%' : ''}</div>
-                </div>
-              </div>
-              <div class="reason">${safe(e.reason || "无备注")}</div>
-              ${isOpen ? `<button data-id="${safe(e.id)}" class="closeTradeBtn" style="margin-top:8px;width:100%">平仓</button>` : ""}
-              <button data-id="${safe(e.id)}" class="delTradeBtn" style="margin-top:4px;width:100%;font-size:12px;color:var(--muted)">删除</button>
-            </article>`;
-          }).join("")
-        : '<div class="empty">暂无交易记录。<br>每笔模拟交易帮助你验证策略有效性。</div>';
-
-      // Attach event listeners
-      document.querySelectorAll(".closeTradeBtn").forEach(btn => {
-        btn.addEventListener("click", () => closeTrade(btn.dataset.id));
-      });
-      document.querySelectorAll(".delTradeBtn").forEach(btn => {
-        btn.addEventListener("click", () => deleteTrade(btn.dataset.id));
-      });
-    }
-
-    let closingId = null;
-    function closeTrade(id) {
-      const entries = loadJournal();
-      const e = entries.find(entry => entry.id === id);
-      if (!e) return;
-      closingId = id;
-      document.getElementById("jCloseTitle").textContent = `平仓 ${e.code} ${e.name || ""} · 开仓价 ${fmt(e.entry_price, 3)} · ${e.shares || 100} 股`;
-      document.getElementById("jExitPrice").value = "";
-      document.getElementById("jExitDate").value = new Date().toISOString().slice(0, 10);
-      document.getElementById("jExitReason").value = "";
-      document.getElementById("journalClosePanel").style.display = "block";
-      document.getElementById("jExitPrice").focus();
-    }
-    function confirmCloseTrade() {
-      if (closingId === null) return;
-      const entries = loadJournal();
-      const index = entries.findIndex(entry => entry.id === closingId);
-      const e = entries[index];
-      if (!e) return;
-      const price = parseFloat(document.getElementById("jExitPrice").value);
-      if (isNaN(price)) return;
-      e.exit_price = price;
-      e.exit_date = document.getElementById("jExitDate").value || new Date().toISOString().slice(0, 10);
-      e.exit_reason = document.getElementById("jExitReason").value.trim();
-      e.shares = e.shares || 100;
-      e.pnl = (price - e.entry_price) * e.shares;
-      e.pnl_pct = (price / e.entry_price - 1) * 100;
-      entries[index] = e;
-      saveJournal(entries);
-      closingId = null;
-      document.getElementById("journalClosePanel").style.display = "none";
-      renderJournal();
-    }
-
-    function deleteTrade(id) {
-      if (!confirm("删除这笔交易记录？")) return;
-      const entries = loadJournal();
-      saveJournal(entries.filter(entry => entry.id !== id));
-      renderJournal();
-    }
-
-    // Journal form handlers
-    document.getElementById("openJournalAdd").addEventListener("click", () => {
-      document.getElementById("journalAddPanel").style.display = "block";
-      document.getElementById("jCode").focus();
-    });
-    function applyJournalCandidate(value) {
-      const candidate = candidateByInput(value);
-      if (!candidate) return;
-      document.getElementById("jCode").value = candidate.code;
-      document.getElementById("jName").value = candidate.name || candidate.code;
-    }
-    for (const eventName of ["input", "change"]) {
-      document.getElementById("jCode").addEventListener(eventName, event => applyJournalCandidate(event.target.value));
-      document.getElementById("jName").addEventListener(eventName, event => applyJournalCandidate(event.target.value));
-    }
-    document.getElementById("closeJournalAdd").addEventListener("click", () => {
-      document.getElementById("journalAddPanel").style.display = "none";
-    });
-    document.getElementById("saveJournalAdd").addEventListener("click", () => {
-      const entry = {
-        id: newJournalId(),
-        code: (candidateByInput(document.getElementById("jCode").value)?.code || document.getElementById("jCode").value).trim(),
-        name: (document.getElementById("jName").value.trim() || candidateByInput(document.getElementById("jCode").value)?.name || ""),
-        entry_date: document.getElementById("jEntryDate").value || new Date().toISOString().slice(0, 10),
-        entry_price: parseFloat(document.getElementById("jEntryPrice").value) || 0,
-        shares: parseInt(document.getElementById("jShares").value) || 100,
-        reason: document.getElementById("jReason").value.trim() || "手动记录",
-        exit_price: null,
-        exit_date: null,
-        exit_reason: null,
-        pnl: null,
-        pnl_pct: null,
-      };
-      if (!entry.code) return;
-      const entries = loadJournal();
-      entries.push(entry);
-      saveJournal(entries);
-      // Clear form
-      document.querySelectorAll("#jCode,#jName,#jEntryPrice,#jShares,#jReason").forEach(el => el.value = "");
-      document.getElementById("journalAddPanel").style.display = "none";
-      renderJournal();
-    });
-    document.getElementById("clearJournal").addEventListener("click", () => {
-      if (confirm("确认清空所有交易记录？此操作不可恢复。")) {
-        saveJournal([]);
-        renderJournal();
-      }
-    });
-    document.getElementById("cancelCloseTrade").addEventListener("click", () => {
-      closingId = null;
-      document.getElementById("journalClosePanel").style.display = "none";
-    });
-    document.getElementById("confirmCloseTrade").addEventListener("click", confirmCloseTrade);
-
-    // --- End Trade Journal ---
-
-    const sections = ["etf-section", "focus-section", "rank-section", "watch-section", "market-section", "backtest-section", "journal-section", "gaps-section"];
+    const sections = ["focus-section", "rank-section", "watch-section", "market-section", "backtest-section", "gaps-section"];
     window.addEventListener("scroll", () => {
       const visibleSections = sections.filter(id => {
         const section = document.getElementById(id);

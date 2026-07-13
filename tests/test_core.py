@@ -4,6 +4,7 @@ import sys
 import tempfile
 import unittest
 import datetime as dt
+import json
 from unittest import mock
 
 
@@ -154,6 +155,34 @@ class EastmoneyTransportTests(unittest.TestCase):
         ):
             result = eastmoney.get_json("https://example.com/data", timeout=1)
         self.assertEqual(result["data"]["name"], "沪深300ETF")
+
+
+class DashboardScopeTests(unittest.TestCase):
+    def test_public_pages_keep_configuration_and_a_share_scopes_separate(self):
+        root_html = (ROOT / "index.html").read_text(encoding="utf-8")
+        index_html = (ROOT / "dashboards" / "index-decision" / "index.html").read_text(encoding="utf-8")
+        short_html = (ROOT / "dashboards" / "short-flow" / "index.html").read_text(encoding="utf-8")
+
+        for html in (root_html, index_html, short_html):
+            self.assertNotIn("管理台", html)
+            self.assertNotIn("../admin/", html)
+        self.assertNotIn('id="short-flow-section"', index_html)
+        self.assertNotIn("ETF训练仓", short_html)
+        self.assertNotIn("交易日志", short_html)
+        self.assertNotIn('data-filter="宽基"', short_html)
+
+    def test_investment_watchlist_matches_declared_asset_scope(self):
+        path = ROOT / "dashboards" / "index-decision" / "watchlist_v1.json"
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        tickers = {item["ticker"] for item in payload["items"]}
+        expected = {
+            "VOO", "VT", "QQQ", "SPY", "SMH", "DRAM", "VGT",
+            "MSFT", "NVDA", "AVGO", "AAPL", "AMZN", "GOOGL", "META",
+            "512890.SH",
+        }
+        self.assertEqual(tickers, expected)
+        cn_items = [item for item in payload["items"] if item["market"] == "CN"]
+        self.assertEqual([item["ticker"] for item in cn_items], ["512890.SH"])
 
 
 class SessionPersistenceTests(unittest.TestCase):
