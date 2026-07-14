@@ -197,6 +197,7 @@
   </style>
   <script src="../shared/api-client.js"></script>
   <script src="../shared/format.js"></script>
+  <script src="../shared/intraday-etf.js"></script>
 </head>
 <body>
   <header>
@@ -357,9 +358,7 @@
       if (state.intradayLoading) return;
       state.intradayLoading = true;
       try {
-        const response = await fetch("/api/short-flow-intraday", { cache: "no-store" });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const payload = await response.json();
+        const payload = await IntradayETF.build(state.data || {});
         if (!Array.isArray(payload.rows) || !payload.rows.length) throw new Error("盘中候选为空");
         state.intraday = payload;
         state.intradayError = "";

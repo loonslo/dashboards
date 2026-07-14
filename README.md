@@ -14,14 +14,14 @@ Refresh flow:
 3. Each dashboard writes its own `dashboard_latest.json`.
 4. Each refresh archives a dated copy in `history/`.
 5. The workflow exports SQLite to `short-flow/state/short_flow.sql`, then commits and pushes all changed outputs.
-6. Vercel deploys the static snapshots plus the read-only intraday ETF quote function.
+6. Vercel deploys the static snapshots and the read-only browser-side ETF candidate filter.
 
 Refresh cadence (Asia/Shanghai):
 
 - US/index-decision: 07:15 Tuesday-Saturday, aligned to the preceding US session close.
-- A-share intraday candidates: the browser polls the read-only Vercel function every five minutes while the market is open; only the preselected candidate funnel is queried.
+- A-share intraday candidates: the browser sends one read-only batch quote request every five minutes while the market is open; only the preselected candidate funnel is queried.
 - A-share full universe and durable state: 15:20 Monday-Friday after the close.
-- GitHub Actions remains the only scheduled production writer. Intraday function responses are ephemeral and never commit or mutate state.
+- GitHub Actions remains the only scheduled production writer. Intraday browser responses are ephemeral and never commit or mutate state.
 
 GitHub Actions is the only scheduled production writer. Its runner is temporary,
 so the ignored SQLite runtime database is restored from a Git-friendly SQL dump
@@ -81,15 +81,15 @@ Useful API endpoints:
 - `POST /api/refresh/index-decision`
 - `POST /api/refresh/short-flow`
 - `POST /api/refresh/etf-pool`
-- `GET /api/short-flow-intraday` (Vercel, read-only; refreshes only the filtered ETF candidate pool)
 
 The production investment dashboard always reads the checked-in JSON snapshot
 deployed with the same Git commit. This prevents an old browser
 `dashboard_api_base` setting from silently replacing GitHub/Vercel data with a
-stale server response. The A-share money-flow page overlays its checked-in close
-snapshot with `/api/short-flow-intraday` during the trading session. That
-function is read-only, scans at most 36 preselected candidates, caches responses
-for three minutes, and never writes repository or database state.
+stale server response. During the trading session, the A-share money-flow page
+overlays its checked-in close snapshot with one browser-side batch request for at
+most 36 preselected candidates. The request is read-only and never writes
+repository or database state; if the quote source is unavailable, the page keeps
+the last successful intraday result or falls back to the close snapshot.
 
 Localhost development still prefers the API when it is available and falls back
 to the checked-in `dashboard_latest.json` files. The browser `localStorage` key

@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { classifyIntraday, marketPhase, selectCandidates } from "../api/short-flow-intraday.mjs";
+import IntradayETF from "../dashboards/shared/intraday-etf.js";
+
+const { classifyIntraday, marketPhase, selectCandidates } = IntradayETF;
 
 test("candidate pool keeps manual watch and excludes broad or cash auto candidates", () => {
   const snapshot = {
