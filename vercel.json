@@ -5,7 +5,7 @@
   "functions": {
     "api/short-flow-intraday.mjs": {
       "includeFiles": "dashboards/short-flow/dashboard_latest.json",
-      "maxDuration": 10,
+      "maxDuration": 20,
       "regions": ["hkg1"]
     }
   }

@@ -2,7 +2,9 @@ import { readFile } from "node:fs/promises";
 
 const SNAPSHOT_URL = new URL("../dashboards/short-flow/dashboard_latest.json", import.meta.url);
 const MAX_CANDIDATES = 36;
-const BATCH_SIZE = 10;
+// Eastmoney supports the full candidate list in one ulist request. Keeping it in
+// one batch avoids multiplying cross-region connection latency on Vercel.
+const BATCH_SIZE = 50;
 const QUOTE_FIELDS = [
   "f12", "f14", "f2", "f3", "f5", "f6", "f8", "f10", "f15", "f16",
   "f17", "f18", "f62", "f184", "f66", "f72", "f78", "f84", "f124"
@@ -141,7 +143,7 @@ async function requestQuotes(secids, endpoint) {
       Referer: "https://quote.eastmoney.com/",
       "User-Agent": "dashboards-intraday/1.0"
     },
-    signal: AbortSignal.timeout(6000)
+    signal: AbortSignal.timeout(4000)
   });
   if (!response.ok) throw new Error(`quote HTTP ${response.status}`);
   const payload = await response.json();
