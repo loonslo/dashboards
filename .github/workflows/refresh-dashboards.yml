@@ -14,9 +14,9 @@ on:
           - "1430"
           - "1520"
   schedule:
-    # GitHub cron uses UTC: 11:10 and 15:35 Asia/Shanghai on weekdays.
-    - cron: "10 3 * * 1-5"
-    - cron: "35 7 * * 1-5"
+    # GitHub cron uses UTC: 15:20 Asia/Shanghai on A-share weekdays.
+    # Intraday candidates are read-only Vercel data; this job persists the close snapshot.
+    - cron: "20 7 * * 1-5"
 
 permissions:
   contents: write
@@ -47,7 +47,9 @@ jobs:
         run: python -m compileall -q scripts short-flow
 
       - name: Run unit tests
-        run: python -m unittest discover -s tests -v
+        run: |
+          python -m unittest discover -s tests -v
+          node --test tests/test_intraday_api.mjs
 
       - name: Validate committed snapshots
         run: python scripts/validate_dashboards.py
@@ -62,7 +64,7 @@ jobs:
           MANUAL_SESSION: ${{ inputs.session }}
           EVENT_SCHEDULE: ${{ github.event.schedule }}
         run: |
-          if [ "$EVENT_SCHEDULE" = "35 7 * * 1-5" ]; then
+          if [ -n "$EVENT_SCHEDULE" ]; then
             export SHORT_FLOW_SESSION=1520
           elif [ -n "$MANUAL_SESSION" ]; then
             export SHORT_FLOW_SESSION="$MANUAL_SESSION"

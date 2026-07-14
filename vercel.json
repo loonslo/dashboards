@@ -1,4 +1,12 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
-  "trailingSlash": true
+  "trailingSlash": true,
+  "functions": {
+    "api/short-flow-intraday.mjs": {
+      "includeFiles": "dashboards/short-flow/dashboard_latest.json",
+      "maxDuration": 10,
+      "regions": ["hkg1"]
+    }
+  }
 }

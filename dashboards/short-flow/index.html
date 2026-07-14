@@ -68,6 +68,20 @@
       min-height: 0;
       align-items: flex-start;
     }
+    .intraday-strip {
+      margin-top: 12px;
+      padding: 11px 13px;
+      border: 1px solid rgba(67, 211, 146, .28);
+      border-radius: 12px;
+      background: rgba(67, 211, 146, .08);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .intraday-strip.stale {
+      border-color: rgba(255, 190, 92, .28);
+      background: rgba(255, 190, 92, .08);
+    }
     .etf-overview {
       display: grid;
       gap: 12px;
@@ -197,7 +211,7 @@
         </nav>
       </div>
       <div class="summary" aria-label="摘要">
-        <div class="summary-card"><b id="marketCount">-</b><span>扫描ETF</span></div>
+        <div class="summary-card"><b id="marketCount">-</b><span>盘中候选</span></div>
         <div class="summary-card"><b id="focusCount">-</b><span>可观察</span></div>
         <div class="summary-card"><b id="waitCount">-</b><span>待观察/待排除</span></div>
       </div>
@@ -206,6 +220,7 @@
         <button id="reload" type="button">刷新</button>
       </div>
       <nav id="chips" class="chips" aria-label="快速筛选"></nav>
+      <div id="intradayStatus" class="intraday-strip stale">正在连接盘中候选行情；不可用时自动保留最近收盘快照。</div>
     </div>
   </header>
 
@@ -245,7 +260,7 @@
 
     <section id="watch-section">
       <div class="section-head">
-        <h2>全池候选信号</h2>
+        <h2>盘中候选过滤</h2>
         <span id="watchHint" class="hint">筛选后 - 个</span>
       </div>
       <div id="watchSignals" class="grid"></div>
@@ -285,7 +300,16 @@
     <a href="#gaps-section">缺口</a>
   </nav>
   <script>
-    const state = { data: null, etf: null, showAll: true, filters: new Set() };
+    const state = {
+      data: null,
+      etf: null,
+      intraday: null,
+      intradayError: "",
+      intradayLoading: false,
+      intradayTimer: null,
+      showAll: true,
+      filters: new Set()
+    };
     const { safe, fmt, pct, cls, money, decisionLabel, dataStatusLabel, priorityLabel, regimeLabel } = DashFmt;
     const statusClass = status => status === "Focus watch" ? "" : status === "Exclude for now" ? "exclude" : "wait";
     const statusFilters = ["Focus watch", "Wait for strength", "Exclude for now"];
@@ -306,10 +330,46 @@
       state.data = await DashboardApi.fetchLatest("short-flow", "dashboard_latest.json");
       await loadEtfReport();
       render();
+      await loadIntraday();
+    }
+
+    function candidateRows() {
+      return state.intraday?.rows?.length ? state.intraday.rows : (state.data?.watch_signals || []);
     }
 
     function allRows() {
-      return [...(state.data?.market_flow || []), ...(state.data?.watch_signals || [])];
+      return [...(state.data?.market_flow || []), ...candidateRows()];
+    }
+
+    function clearIntradayTimer() {
+      if (state.intradayTimer) clearTimeout(state.intradayTimer);
+      state.intradayTimer = null;
+    }
+
+    function scheduleIntradayRefresh() {
+      clearIntradayTimer();
+      const seconds = Number(state.intraday?.refresh_seconds || 0);
+      if (!seconds || document.hidden) return;
+      state.intradayTimer = setTimeout(() => loadIntraday(), Math.max(180, seconds) * 1000);
+    }
+
+    async function loadIntraday() {
+      if (state.intradayLoading) return;
+      state.intradayLoading = true;
+      try {
+        const response = await fetch("/api/short-flow-intraday", { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const payload = await response.json();
+        if (!Array.isArray(payload.rows) || !payload.rows.length) throw new Error("盘中候选为空");
+        state.intraday = payload;
+        state.intradayError = "";
+      } catch (error) {
+        state.intradayError = error.message || "盘中行情暂不可用";
+      } finally {
+        state.intradayLoading = false;
+        render();
+        scheduleIntradayRefresh();
+      }
     }
 
     function textMatches(row) {
@@ -370,14 +430,31 @@
         rows.filter(row => row.status === status).length
       ]));
       const scope = state.data?.scan_scope || {};
-      document.getElementById("marketCount").textContent = scope.scanned_count ?? state.data?.market_flow?.length ?? 0;
+      document.getElementById("marketCount").textContent = state.intraday?.candidate_count ?? candidateRows().length;
       document.getElementById("focusCount").textContent = counts["Focus watch"] ?? 0;
       document.getElementById("waitCount").textContent = (counts["Wait for strength"] ?? 0) + (counts["Exclude for now"] ?? 0);
       const source = state.data?.source_status || {};
       const rel = DashFmt.relativeTime(state.data?.asof);
       const badge = rel.text ? ` <span class="freshness ${rel.level === "fresh" ? "" : safe(rel.level)}">${safe(rel.text)}</span>` : "";
       const scanText = scope.universe_count ? ` · ETF池：${scope.universe_count} / 扫描：${scope.scanned_count || 0}` : "";
-      document.getElementById("meta").innerHTML = `生成时间：${safe(state.data?.asof || "暂无")}${badge} · 交易日：${safe(state.data?.trade_date || "暂无")}${scanText} · 接口 实时/延迟/不可用：${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0} · 仅作市场观察，不属于长期配置`;
+      const liveText = state.intraday?.generated_at ? ` · 盘中行情：${safe(state.intraday.generated_at)}（${safe(state.intraday.phase?.label || "观察")}）` : "";
+      document.getElementById("meta").innerHTML = `收盘快照：${safe(state.data?.asof || "暂无")}${badge} · 交易日：${safe(state.data?.trade_date || "暂无")}${liveText}${scanText} · 接口 实时/延迟/不可用：${source.live_rows || 0}/${source.stale_rows || 0}/${source.unavailable_rows || 0} · 仅作市场观察，不属于长期配置`;
+    }
+
+    function renderIntradayStatus() {
+      const box = document.getElementById("intradayStatus");
+      const live = state.intraday;
+      if (!live) {
+        box.className = "intraday-strip stale";
+        box.textContent = state.intradayError
+          ? `盘中接口暂不可用（${state.intradayError}），当前显示最近收盘候选；点击“刷新”可重试。`
+          : "正在连接盘中候选行情；不可用时自动保留最近收盘快照。";
+        return;
+      }
+      const counts = live.status_counts || {};
+      const delayed = Number(live.source_status?.delayed || 0) > 0;
+      box.className = `intraday-strip${delayed ? " stale" : ""}`;
+      box.textContent = `收盘全池 → 候选 ${live.candidate_count || 0} → 已更新 ${live.quote_count || 0} · 可观察 ${counts["Focus watch"] || 0} / 待观察 ${counts["Wait for strength"] || 0} / 待排除 ${counts["Exclude for now"] || 0} · ${live.phase?.label || "观察"} · ${live.generated_at}${live.refresh_seconds ? " · 每5分钟自动更新" : " · 非交易时段不轮询"}${delayed ? " · 部分行情为延迟源" : ""}${state.intradayError ? " · 最近一次刷新失败，保留上一版" : ""}`;
     }
 
     function renderChips() {
@@ -390,6 +467,8 @@
     }
 
     function card(row) {
+      const amountMetric = row.amount_pace_20 != null ? row.amount_pace_20 : row.amount_ratio_20;
+      const amountLabel = row.amount_pace_20 != null ? "额速/20日均" : "额/20日均";
       return `
         <article class="card">
           <div class="top">
@@ -408,7 +487,7 @@
             <div class="metric"><span>主力占比</span><b class="${cls(row.main_net_pct)}">${pct(row.main_net_pct)}</b></div>
             <div class="metric"><span>MA5/MA20</span><b>${fmt(row.ma5)} / ${fmt(row.ma20)}</b></div>
             <div class="metric"><span>5/20日涨幅</span><b>${pct(row.return_5d_pct)} / ${pct(row.return_20d_pct)}</b></div>
-            <div class="metric"><span>额/20日均</span><b>${fmt(row.amount_ratio_20, 2)}x</b></div>
+            <div class="metric"><span>${amountLabel}</span><b>${fmt(amountMetric, 2)}x</b></div>
           </div>
           <div class="signal ${statusClass(row.status)}">${safe(decisionLabel(row.status))}：${safe(row.reason || "等待数据")}</div>
           ${row.next_trigger ? `<div class="plan"><b>触发：</b>${safe(row.next_trigger)}</div>` : ""}
@@ -433,14 +512,16 @@
     function attentionRows() {
       const statuses = selectedStatuses();
       const targetStatuses = statuses.length ? statuses : ["Focus watch"];
-      const mainRows = [
+      const mainRows = state.intraday?.rows?.length
+        ? state.intraday.rows.map(row => ({ ...row, _section: "main", _source: "盘中候选" }))
+        : [
         ...(state.data?.watch_signals || []).map(row => ({
           ...row,
           _section: "main",
           _source: String(row.source_pool || "").includes("watchlist") ? "手工置顶" : "全池候选"
         })),
         ...(state.data?.market_flow || []).map(row => ({ ...row, _section: "main", _source: "手工置顶" }))
-      ];
+        ];
       return mainRows
         .filter(row => targetStatuses.includes(row.status))
         .filter(row => filterMatches(row) && textMatches(row))
@@ -487,17 +568,20 @@
     }
 
     function renderRanks() {
-      const inflow = filtered(state.data?.ranked_inflow || allRows(), "main").slice(0, 6);
-      const outflow = filtered(state.data?.ranked_outflow || allRows(), "main").slice(0, 6);
+      const live = state.intraday?.rows?.length ? state.intraday.rows : null;
+      const inflowSource = live ? [...live].sort((a, b) => (b.main_net ?? -Infinity) - (a.main_net ?? -Infinity)) : (state.data?.ranked_inflow || allRows());
+      const outflowSource = live ? [...live].sort((a, b) => (a.main_net ?? Infinity) - (b.main_net ?? Infinity)) : (state.data?.ranked_outflow || allRows());
+      const inflow = filtered(inflowSource, "main").slice(0, 6);
+      const outflow = filtered(outflowSource, "main").slice(0, 6);
       document.getElementById("inflowRows").innerHTML = inflow.length ? inflow.map(rankRow).join("") : '<tr><td colspan="5">没有匹配的流入排名</td></tr>';
       document.getElementById("outflowRows").innerHTML = outflow.length ? outflow.map(rankRow).join("") : '<tr><td colspan="5">没有匹配的流出排名</td></tr>';
     }
 
     function renderSections() {
       const marketRows = filtered(state.data?.market_flow || [], "main");
-      const watchRows = filtered(state.data?.watch_signals || [], "main");
+      const watchRows = filtered(candidateRows(), "main");
       document.getElementById("marketHint").textContent = `筛选后 ${marketRows.length} 个`;
-      document.getElementById("watchHint").textContent = `筛选后 ${watchRows.length} 个`;
+      document.getElementById("watchHint").textContent = `${state.intraday ? "盘中" : "收盘"}筛选后 ${watchRows.length} 个`;
       document.getElementById("marketFlow").innerHTML = marketRows.length ? marketRows.map(card).join("") : '<div class="empty">没有匹配的市场/板块标的</div>';
       document.getElementById("watchSignals").innerHTML = watchRows.length ? watchRows.map(card).join("") : '<div class="empty">没有匹配的观察标的</div>';
     }
@@ -581,6 +665,7 @@
 
     function render() {
       renderSummary();
+      renderIntradayStatus();
       renderChips();
       updateSectionVisibility();
       renderAttention();
@@ -634,6 +719,11 @@
         link.classList.toggle("active", link.getAttribute("href") === `#${current}`);
       });
     }, { passive: true });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) clearIntradayTimer();
+      else loadIntraday();
+    });
 
     loadData().catch(showError);
   </script>

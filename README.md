@@ -14,7 +14,14 @@ Refresh flow:
 3. Each dashboard writes its own `dashboard_latest.json`.
 4. Each refresh archives a dated copy in `history/`.
 5. The workflow exports SQLite to `short-flow/state/short_flow.sql`, then commits and pushes all changed outputs.
-6. Vercel deploys the latest static site.
+6. Vercel deploys the static snapshots plus the read-only intraday ETF quote function.
+
+Refresh cadence (Asia/Shanghai):
+
+- US/index-decision: 07:15 Tuesday-Saturday, aligned to the preceding US session close.
+- A-share intraday candidates: the browser polls the read-only Vercel function every five minutes while the market is open; only the preselected candidate funnel is queried.
+- A-share full universe and durable state: 15:20 Monday-Friday after the close.
+- GitHub Actions remains the only scheduled production writer. Intraday function responses are ephemeral and never commit or mutate state.
 
 GitHub Actions is the only scheduled production writer. Its runner is temporary,
 so the ignored SQLite runtime database is restored from a Git-friendly SQL dump
@@ -74,15 +81,28 @@ Useful API endpoints:
 - `POST /api/refresh/index-decision`
 - `POST /api/refresh/short-flow`
 - `POST /api/refresh/etf-pool`
+- `GET /api/short-flow-intraday` (Vercel, read-only; refreshes only the filtered ETF candidate pool)
 
-Production dashboard pages always read the checked-in JSON snapshots deployed
-with the same Git commit. This prevents an old browser `dashboard_api_base`
-setting from silently replacing GitHub/Vercel data with a stale server response.
+The production investment dashboard always reads the checked-in JSON snapshot
+deployed with the same Git commit. This prevents an old browser
+`dashboard_api_base` setting from silently replacing GitHub/Vercel data with a
+stale server response. The A-share money-flow page overlays its checked-in close
+snapshot with `/api/short-flow-intraday` during the trading session. That
+function is read-only, scans at most 36 preselected candidates, caches responses
+for three minutes, and never writes repository or database state.
 
 Localhost development still prefers the API when it is available and falls back
 to the checked-in `dashboard_latest.json` files. The browser `localStorage` key
 `dashboard_api_base` can be used to test a local API address. A deliberately
 API-backed deployment must set `window.DASHBOARD_SAME_ORIGIN_API = true`.
+
+Validation commands:
+
+```bash
+python -m unittest discover -s tests -v
+node --test tests/test_intraday_api.mjs
+python scripts/validate_dashboards.py
+```
 
 For a public API listener, both a management token and an explicit browser-origin
 allowlist are required:

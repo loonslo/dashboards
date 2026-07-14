@@ -1,0 +1,52 @@
+name: Refresh investment close data
+
+on:
+  workflow_dispatch:
+  schedule:
+    # GitHub cron uses UTC. 23:15 Monday-Friday is 07:15 Tuesday-Saturday
+    # Asia/Shanghai, after each corresponding US regular session closes.
+    - cron: "15 23 * * 1-5"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-dashboards-main
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Compile Python
+        run: python -m py_compile scripts/index_decision_dashboard.py
+
+      - name: Run unit tests
+        run: |
+          python -m unittest discover -s tests -v
+          node --test tests/test_intraday_api.mjs
+
+      - name: Validate committed snapshots
+        run: python scripts/validate_dashboards.py
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Refresh investment snapshot and push
+        run: bash scripts/server_refresh_index_and_push.sh
