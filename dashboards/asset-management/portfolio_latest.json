@@ -1,0 +1,303 @@
+{
+  "asof": "2026-07-22 00:27",
+  "generated_by": "scripts/portfolio_report.py v1.0",
+  "fx_rate_usdcny": 7.2,
+  "summary": {
+    "total_value_cny": 761537.92,
+    "total_cost_cny": 524430.0,
+    "total_pnl_cny": 237107.92,
+    "total_pnl_pct": 45.21,
+    "unrealized_pnl_cny": 237107.92,
+    "realized_pnl_cny": 0,
+    "position_count": 4,
+    "live_positions": 4,
+    "stale_positions": 0,
+    "best_performer": {
+      "ticker": "QQQ",
+      "return_pct": 52.44
+    },
+    "worst_performer": {
+      "ticker": "512890",
+      "return_pct": -14.07
+    }
+  },
+  "positions": [
+    {
+      "ticker": "VOO",
+      "name": "Vanguard S&P 500 ETF",
+      "market": "US",
+      "asset_class": "equity_us",
+      "strategy": "core_allocation",
+      "direction": "long",
+      "shares": 100,
+      "avg_cost": 480.5,
+      "cost_currency": "USD",
+      "entry_date": "2026-01-15",
+      "current_price": 687.99,
+      "change_1d_pct": -0.4500072348430084,
+      "value_cny": 495352.8,
+      "cost_cny": 345960.0,
+      "unrealized_pnl_cny": 149392.8,
+      "unrealized_pnl_pct": 43.18,
+      "allocation_bucket": "美股核心",
+      "data_status": "live",
+      "source": "Yahoo:finance/chart",
+      "notes": "12-18个月分批建仓",
+      "linked_signals": [
+        {
+          "source": "index-decision",
+          "ticker": "VOO",
+          "name": "Vanguard S&P 500 ETF",
+          "signal": "接近52周高位"
+        }
+      ],
+      "pct_of_portfolio": 65.0
+    },
+    {
+      "ticker": "QQQ",
+      "name": "Invesco QQQ Trust",
+      "market": "US",
+      "asset_class": "equity_us",
+      "strategy": "core_allocation",
+      "direction": "long",
+      "shares": 40,
+      "avg_cost": 465.0,
+      "cost_currency": "USD",
+      "entry_date": "2026-01-20",
+      "current_price": 708.865,
+      "change_1d_pct": -1.5041198293709868,
+      "value_cny": 204153.12,
+      "cost_cny": 133920.0,
+      "unrealized_pnl_cny": 70233.12,
+      "unrealized_pnl_pct": 52.44,
+      "allocation_bucket": "美股核心",
+      "data_status": "live",
+      "source": "Yahoo:finance/chart",
+      "notes": "已接近配置上限，默认暂停新增",
+      "linked_signals": [
+        {
+          "source": "index-decision",
+          "ticker": "QQQ",
+          "name": "Invesco QQQ",
+          "signal": "正常观察"
+        }
+      ],
+      "pct_of_portfolio": 26.8
+    },
+    {
+      "ticker": "VT",
+      "name": "Vanguard Total World Stock ETF",
+      "market": "US",
+      "asset_class": "equity_us",
+      "strategy": "core_allocation",
+      "direction": "long",
+      "shares": 50,
+      "avg_cost": 105.0,
+      "cost_currency": "USD",
+      "entry_date": "2026-02-01",
+      "current_price": 156.2,
+      "change_1d_pct": -0.3699451460645542,
+      "value_cny": 56232.0,
+      "cost_cny": 37800.0,
+      "unrealized_pnl_cny": 18432.0,
+      "unrealized_pnl_pct": 48.76,
+      "allocation_bucket": "美股核心",
+      "data_status": "live",
+      "source": "Yahoo:finance/chart",
+      "notes": "全球分散配置",
+      "linked_signals": [
+        {
+          "source": "index-decision",
+          "ticker": "VT",
+          "name": "Vanguard Total World Stock ETF",
+          "signal": "接近52周高位"
+        }
+      ],
+      "pct_of_portfolio": 7.4
+    },
+    {
+      "ticker": "512890",
+      "name": "红利低波ETF",
+      "market": "CN",
+      "asset_class": "equity_cn",
+      "strategy": "defense_allocation",
+      "direction": "long",
+      "shares": 5000,
+      "avg_cost": 1.35,
+      "cost_currency": "CNY",
+      "entry_date": "2026-03-10",
+      "current_price": 1.16,
+      "change_1d_pct": -1.0238907849829393,
+      "value_cny": 5800.0,
+      "cost_cny": 6750.0,
+      "unrealized_pnl_cny": -950.0,
+      "unrealized_pnl_pct": -14.07,
+      "allocation_bucket": "A股长期",
+      "data_status": "live",
+      "source": "Tencent:appstock/fqkline",
+      "notes": "A股长期防御配置",
+      "pct_of_portfolio": 0.8
+    }
+  ],
+  "allocation": [
+    {
+      "name": "美股核心",
+      "value": 755737.9199999999,
+      "actual_pct": 99.2,
+      "target_pct": 50,
+      "deviation_pct": 49.2,
+      "tolerance_pct": 5,
+      "rebalance_needed": true,
+      "suggested_action": "超配 49%，考虑暂缓新增"
+    },
+    {
+      "name": "A股长期",
+      "value": 5800.0,
+      "actual_pct": 0.8,
+      "target_pct": 15,
+      "deviation_pct": -14.2,
+      "tolerance_pct": 5,
+      "rebalance_needed": true,
+      "suggested_action": "低配 14%，关注机会分批建仓"
+    },
+    {
+      "name": "美股温度计",
+      "value": 0,
+      "actual_pct": 0.0,
+      "target_pct": 5,
+      "deviation_pct": -5,
+      "tolerance_pct": 3,
+      "rebalance_needed": false,
+      "suggested_action": "不进入核心配置，仅观察"
+    },
+    {
+      "name": "A股短线跟随",
+      "value": 0,
+      "actual_pct": 0.0,
+      "target_pct": 10,
+      "deviation_pct": -10,
+      "tolerance_pct": 5,
+      "rebalance_needed": false,
+      "suggested_action": "低配 10%，关注机会分批建仓"
+    },
+    {
+      "name": "加密币量化",
+      "value": 0,
+      "actual_pct": 0.0,
+      "target_pct": 10,
+      "deviation_pct": -10,
+      "tolerance_pct": 3,
+      "rebalance_needed": true,
+      "suggested_action": "低配 10%，关注机会分批建仓"
+    },
+    {
+      "name": "现金/备用",
+      "value": 0,
+      "actual_pct": 0.0,
+      "target_pct": 10,
+      "deviation_pct": -10,
+      "tolerance_pct": 3,
+      "rebalance_needed": true,
+      "suggested_action": "低配 10%，关注机会分批建仓"
+    }
+  ],
+  "strategy_summary": [
+    {
+      "strategy": "core_allocation",
+      "value_cny": 755737.9199999999,
+      "cost_cny": 517680.0,
+      "count": 3,
+      "return_pct": 45.99
+    },
+    {
+      "strategy": "defense_allocation",
+      "value_cny": 5800.0,
+      "cost_cny": 6750.0,
+      "count": 1,
+      "return_pct": -14.07
+    }
+  ],
+  "signals_to_actions": [
+    {
+      "source": "index-decision",
+      "ticker": "VOO",
+      "name": "Vanguard S&P 500 ETF",
+      "signal": "接近52周高位",
+      "held": true,
+      "allocation_bucket": "美股核心",
+      "pnl_pct": 43.18,
+      "implication": "你持有 100 股 (浮盈 +43.2%)，配置桶「美股核心」"
+    },
+    {
+      "source": "index-decision",
+      "ticker": "VT",
+      "name": "Vanguard Total World Stock ETF",
+      "signal": "接近52周高位",
+      "held": true,
+      "allocation_bucket": "美股核心",
+      "pnl_pct": 48.76,
+      "implication": "你持有 50 股 (浮盈 +48.8%)，配置桶「美股核心」"
+    },
+    {
+      "source": "index-decision",
+      "ticker": "QQQ",
+      "name": "Invesco QQQ",
+      "signal": "正常观察",
+      "held": true,
+      "allocation_bucket": "美股核心",
+      "pnl_pct": 52.44,
+      "implication": "你持有 40 股 (浮盈 +52.4%)，配置桶「美股核心」"
+    }
+  ],
+  "trades_recent": [
+    {
+      "date": "2026-03-10",
+      "action": "buy",
+      "ticker": "512890",
+      "name": "红利低波ETF",
+      "market": "CN",
+      "shares": 5000,
+      "price": 1.35,
+      "value_cny": 6750,
+      "reason": "股息率>6%，PE<11，允许买入信号触发",
+      "linked_signal": "index-decision:dividend_signal:H30269"
+    },
+    {
+      "date": "2026-02-01",
+      "action": "buy",
+      "ticker": "VT",
+      "name": "Vanguard Total World Stock ETF",
+      "market": "US",
+      "shares": 50,
+      "price": 105.0,
+      "value_usd": 5250,
+      "reason": "全球分散执行载体",
+      "linked_signal": null
+    },
+    {
+      "date": "2026-01-20",
+      "action": "buy",
+      "ticker": "QQQ",
+      "name": "Invesco QQQ Trust",
+      "market": "US",
+      "shares": 40,
+      "price": 465.0,
+      "value_usd": 18600,
+      "reason": "纳指配置，价格合理区间",
+      "linked_signal": null
+    },
+    {
+      "date": "2026-01-15",
+      "action": "buy",
+      "ticker": "VOO",
+      "name": "Vanguard S&P 500 ETF",
+      "market": "US",
+      "shares": 100,
+      "price": 480.5,
+      "value_usd": 48050,
+      "reason": "新增资金主线，按12-18个月分批建仓",
+      "linked_signal": null
+    }
+  ],
+  "data_gaps": []
+}

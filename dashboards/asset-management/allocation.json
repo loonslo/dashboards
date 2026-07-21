@@ -1,0 +1,51 @@
+{
+  "asof": "2026-07-22",
+  "base_currency": "CNY",
+  "targets": [
+    {
+      "bucket": "美股核心",
+      "asset_classes": ["equity_us"],
+      "strategies": ["core_allocation"],
+      "target_pct": 50,
+      "tolerance_pct": 5,
+      "rebalance_threshold_pct": 5
+    },
+    {
+      "bucket": "美股温度计",
+      "asset_classes": ["equity_us"],
+      "strategies": ["thermometer"],
+      "target_pct": 5,
+      "tolerance_pct": 3,
+      "action": "不进入核心配置，仅观察"
+    },
+    {
+      "bucket": "A股长期",
+      "asset_classes": ["equity_cn"],
+      "strategies": ["defense_allocation", "core_allocation_cn"],
+      "target_pct": 15,
+      "tolerance_pct": 5
+    },
+    {
+      "bucket": "A股短线跟随",
+      "asset_classes": ["equity_cn"],
+      "strategies": ["short_flow_trade"],
+      "target_pct": 10,
+      "tolerance_pct": 5
+    },
+    {
+      "bucket": "加密币量化",
+      "asset_classes": ["crypto"],
+      "strategies": ["crypto_quant"],
+      "target_pct": 10,
+      "tolerance_pct": 3,
+      "rebalance_threshold_pct": 3
+    },
+    {
+      "bucket": "现金/备用",
+      "asset_classes": ["cash"],
+      "strategies": ["reserve"],
+      "target_pct": 10,
+      "tolerance_pct": 3
+    }
+  ]
+}

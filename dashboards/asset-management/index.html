@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>资产管理</title>
+  <link rel="stylesheet" href="../shared/tokens.css">
+  <style>
+    main.wrap { padding-bottom: calc(78px + env(safe-area-inset-bottom)); }
+    section { scroll-margin-top: 188px; margin: 18px 0 22px; }
+    .section-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+
+    /* ── 总览 ── */
+    .hero-grid { display:grid; gap:10px; }
+    .hero-card {
+      min-height:80px; padding:14px 16px;
+      border:1px solid var(--line); border-left:4px solid var(--muted); border-radius:10px;
+      background:var(--panel); box-shadow:var(--shadow);
+      display:flex; flex-direction:column; justify-content:center;
+    }
+    .hero-card .k { font-size:12px; color:var(--muted); }
+    .hero-card .v { font-size:22px; font-weight:700; margin-top:4px; }
+    .hero-card .v.pos { color:var(--green); }
+    .hero-card .v.neg { color:var(--red); }
+    .hero-card .sub { font-size:13px; color:var(--muted); margin-top:3px; }
+    .hero-card.total { border-left-color:var(--blue); }
+    .hero-card.pnl { border-left-color:var(--green); }
+    .hero-card.pnl.neg { border-left-color:var(--red); }
+    .hero-card.count { border-left-color:var(--muted); }
+    .hero-card.fx { border-left-color:#9db8e8; }
+
+    /* ── 脉冲卡片（配置偏离） ── */
+    .pulse-grid { display:grid; gap:10px; }
+    .pulse {
+      min-height:82px; padding:12px 14px;
+      border:1px solid var(--line); border-left:3px solid var(--muted); border-radius:10px;
+      background:var(--panel); box-shadow:var(--shadow);
+      display:flex; flex-direction:column; justify-content:space-between;
+    }
+    .pulse.ok { border-left-color:var(--green); }
+    .pulse.warn { border-left-color:var(--amber); }
+    .pulse.info { border-left-color:var(--blue); }
+    .pulse.critical { border-left-color:var(--red); }
+    .pulse .k {
+      display:flex; align-items:center; gap:8px; font-size:13px; font-weight:680;
+    }
+    .pulse .k .tag {
+      margin-left:auto; font-size:11px; font-weight:680;
+      padding:2px 9px; border-radius:999px;
+      background:var(--soft); color:var(--muted);
+    }
+    .pulse.ok .k .tag { background:var(--green-soft); color:var(--green); }
+    .pulse.warn .k .tag { background:var(--amber-soft); color:var(--amber); }
+    .pulse.critical .k .tag { background:var(--red-soft); color:var(--red); }
+    .pulse .v { margin-top:6px; font-size:13px; line-height:1.5; color:var(--muted); }
+    .pulse .v .bar-wrap {
+      display:flex; align-items:center; gap:8px; margin-top:4px;
+    }
+    .pulse .v .bar-outer {
+      flex:1; height:8px; border-radius:999px;
+      background:var(--soft); overflow:hidden;
+    }
+    .pulse .v .bar-inner { height:100%; border-radius:999px; transition:width .4s; }
+    .pulse .v .bar-inner.over { background:var(--amber); }
+    .pulse .v .bar-inner.under { background:var(--blue); }
+    .pulse .v .bar-inner.match { background:var(--green); }
+
+    /* ── 策略汇总卡 ── */
+    .strip-grid { display:grid; gap:10px; }
+    .strip {
+      min-height:56px; padding:10px 12px;
+      border:1px solid var(--line); border-radius:8px;
+      background:var(--panel);
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .strip .left { display:flex; flex-direction:column; gap:2px; }
+    .strip .left .name { font-size:13px; font-weight:680; }
+    .strip .left .detail { font-size:11px; color:var(--muted); }
+    .strip .right { text-align:right; }
+    .strip .right .value { font-size:15px; font-weight:680; }
+    .strip .right .pct { font-size:12px; }
+
+    /* ── 持仓卡片 ── */
+    .card-list { display:grid; gap:10px; }
+    .card { min-height:180px; }
+    .card .pnl-row { display:flex; gap:12px; margin-top:8px; flex-wrap:wrap; }
+    .card .pnl-item { font-size:12px; color:var(--muted); }
+    .card .pnl-item b { font-size:14px; }
+
+    /* ── 信号关联 ── */
+    .signal-card {
+      min-height:0; padding:12px;
+      border:1px solid var(--line); border-left:3px solid #9db8e8; border-radius:8px;
+      background:var(--panel);
+      display:flex; flex-direction:column; gap:4px;
+    }
+    .signal-card .top { display:flex; justify-content:space-between; gap:10px; }
+    .signal-card .top .name { font-size:13px; font-weight:680; }
+    .signal-card .top .tag { font-size:11px; padding:2px 8px; border-radius:999px; background:var(--soft); white-space:nowrap; }
+    .signal-card .signal { font-size:12px; color:var(--muted); }
+    .signal-card .implication { font-size:13px; padding:6px 8px; border-radius:6px; background:var(--soft); }
+
+    /* ── 交易日志表格 ── */
+    .table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:8px; background:var(--panel); }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th, td { padding:8px 10px; border-bottom:1px solid var(--line); text-align:right; white-space:nowrap; }
+    th:first-child, td:first-child { text-align:left; }
+    th { color:var(--muted); font-size:12px; font-weight:700; background:#fafbfc; }
+    tr:last-child td { border-bottom:0; }
+
+    /* ── 数据缺口 ── */
+    .gap-box div+div { margin-top:4px; }
+
+    @media (min-width:640px) {
+      .hero-grid { grid-template-columns: repeat(2,1fr); }
+      .pulse-grid { grid-template-columns: repeat(2,1fr); }
+      .strip-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (min-width:820px) {
+      .wrap { padding-left:20px; padding-right:20px; }
+      .hero-grid { grid-template-columns: repeat(4,1fr); }
+      .card-list { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .bottom-nav { display:none; }
+      main.wrap { padding-bottom:28px; }
+    }
+    @media (min-width:1180px) {
+      .card-list { grid-template-columns: repeat(3,minmax(0,1fr)); }
+    }
+    @media (max-width:370px) {
+      h1 { font-size:20px; }
+      .price { font-size:18px; }
+    }
+  </style>
+  <script src="../shared/api-client.js"></script>
+  <script src="../shared/format.js"></script>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <div>
+        <h1>资产管理</h1>
+        <div id="meta" class="meta">等待数据</div>
+        <nav class="switcher" aria-label="看板切换">
+          <a href="../index-decision/">投资观察</a>
+          <a href="../short-flow/">A股资金</a>
+          <a class="current" href="./" aria-current="page">资产管理</a>
+          <a href="../../">全部</a>
+        </nav>
+      </div>
+      <div class="summary" aria-label="摘要">
+        <div class="summary-card"><b id="posCount">-</b><span>持仓</span></div>
+        <div class="summary-card"><b id="liveCount">-</b><span>有效</span></div>
+        <div class="summary-card"><b id="gapCount">-</b><span>缺口</span></div>
+      </div>
+      <div class="toolbar">
+        <button id="reload" type="button">刷新</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- 资产总览 -->
+    <section id="summary-section">
+      <div class="section-head">
+        <h2>资产总览</h2>
+        <span class="hint">净值与盈亏</span>
+      </div>
+      <div id="heroCards" class="hero-grid"></div>
+    </section>
+
+    <!-- 策略汇总 -->
+    <section id="strategy-section">
+      <div class="section-head">
+        <h2>策略收益</h2>
+        <span class="hint">按策略分组</span>
+      </div>
+      <div id="strategyGrid" class="strip-grid"></div>
+    </section>
+
+    <!-- 配置偏离 -->
+    <section id="allocation-section">
+      <div class="section-head">
+        <h2>配置偏离</h2>
+        <span class="hint">实际 vs 目标</span>
+      </div>
+      <div id="allocation" class="pulse-grid"></div>
+    </section>
+
+    <!-- 持仓明细 -->
+    <section id="positions-section">
+      <div class="section-head">
+        <h2>持仓明细</h2>
+        <span id="posHint" class="hint">按市值排序</span>
+      </div>
+      <div id="positions" class="card-list"></div>
+    </section>
+
+    <!-- 信号关联 -->
+    <section id="signals-section">
+      <div class="section-head">
+        <h2>信号关联</h2>
+        <span class="hint">市场信号 × 个人持仓</span>
+      </div>
+      <div id="signals" class="card-list"></div>
+    </section>
+
+    <!-- 交易日志 -->
+    <section id="trades-section">
+      <div class="section-head">
+        <h2>交易日志</h2>
+        <span id="tradesHint" class="hint">最近20笔</span>
+      </div>
+      <div id="trades" class="table-wrap"></div>
+    </section>
+
+    <!-- 数据缺口 -->
+    <section id="gaps-section">
+      <div class="section-head">
+        <h2>数据缺口</h2>
+        <span class="hint">不假装完整</span>
+      </div>
+      <div id="gaps" class="empty">暂无数据</div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="页面导航">
+    <a href="#summary-section" class="active">总览</a>
+    <a href="#strategy-section">策略</a>
+    <a href="#allocation-section">配置</a>
+    <a href="#positions-section">持仓</a>
+    <a href="#signals-section">信号</a>
+    <a href="#gaps-section">缺口</a>
+  </nav>
+
+  <script>
+    const state = { data: null };
+    const { safe, fmt, pct, cls, money, decisionLabel, relativeTime } = DashFmt;
+
+    // ── 新增格式化函数 ──
+    const pnlCls = v => Number(v) > 0 ? "pos" : Number(v) < 0 ? "neg" : "flat";
+    const deviationLabel = (actual, target) => {
+      const diff = (actual || 0) - (target || 0);
+      if (Math.abs(diff) <= 3) return { text: "✅ 达标", cls: "ok" };
+      if (diff > 0) return { text: `📈 超配 ${diff.toFixed(1)}%`, cls: "warn" };
+      return { text: `📉 低配 ${(-diff).toFixed(1)}%`, cls: "warn" };
+    };
+    const bucketIcon = name => {
+      if (name.includes("美股核心")) return "🇺🇸";
+      if (name.includes("美股温度")) return "🌡️";
+      if (name.includes("A股长期")) return "🇨🇳";
+      if (name.includes("A股短线")) return "⚡";
+      if (name.includes("加密币")) return "₿";
+      if (name.includes("现金")) return "💵";
+      return "📦";
+    };
+
+    async function loadData() {
+      state.data = await DashboardApi.fetchLatest("asset-management", "portfolio_latest.json");
+      render();
+    }
+
+    // ── 资产总览 ──
+    function renderSummary() {
+      const s = state.data?.summary || {};
+      const hero = document.getElementById("heroCards");
+
+      // 时间戳
+      const rel = relativeTime(state.data?.asof);
+      const badge = rel.text ? ` <span class="freshness ${rel.level === "fresh" ? "" : safe(rel.level)}">${safe(rel.text)}</span>` : "";
+      document.getElementById("meta").innerHTML = `报告生成：${safe(state.data?.asof || "暂无")}${badge} · 只做观察，不执行交易`;
+
+      // 摘要卡片
+      document.getElementById("posCount").textContent = s.position_count ?? 0;
+      document.getElementById("liveCount").textContent = s.live_positions ?? 0;
+      document.getElementById("gapCount").textContent = state.data?.data_gaps?.length ?? 0;
+
+      const totalPnl = s.total_pnl_pct;
+      const totalPnlCls = totalPnl > 0 ? "pos" : totalPnl < 0 ? "neg" : "";
+      hero.innerHTML = [
+        `<div class="hero-card total"><div class="k">总资产净值</div><div class="v">¥${fmt(s.total_value_cny, 0)}</div><div class="sub">本金 ¥${fmt(s.total_cost_cny, 0)}</div></div>`,
+        `<div class="hero-card pnl ${totalPnlCls}"><div class="k">总盈亏</div><div class="v">${s.total_pnl_cny >= 0 ? "+" : ""}¥${fmt(s.total_pnl_cny, 0)}</div><div class="sub">${pct(s.total_pnl_pct)} · 已实现 ¥${fmt(s.realized_pnl_cny, 0)}</div></div>`,
+        `<div class="hero-card count"><div class="k">持仓分布</div><div class="v">${s.live_positions}/${s.position_count}</div><div class="sub">有效 / 总数${s.stale_positions ? ` · ${s.stale_positions} 个数据待更新` : ""}</div></div>`,
+        `<div class="hero-card fx"><div class="k">USD/CNY 汇率</div><div class="v">${fmt(state.data?.fx_rate_usdcny, 4)}</div><div class="sub">${state.data?.asof ? "报告时参考汇率" : ""}</div></div>`,
+      ].join("");
+    }
+
+    // ── 策略收益 ──
+    function renderStrategy() {
+      const strategies = state.data?.strategy_summary || [];
+      const grid = document.getElementById("strategyGrid");
+      if (!strategies.length) {
+        grid.innerHTML = '<div class="empty">暂无策略收益数据</div>';
+        return;
+      }
+      grid.innerHTML = strategies.map(s => {
+        const returnCls = (s.return_pct || 0) > 0 ? "pos" : (s.return_pct || 0) < 0 ? "neg" : "flat";
+        return `
+          <div class="strip">
+            <div class="left">
+              <div class="name">${safe(s.strategy)}</div>
+              <div class="detail">${s.count} 个持仓 · ¥${fmt(s.value_cny, 0)}</div>
+            </div>
+            <div class="right">
+              <div class="value ${returnCls}">${s.return_pct >= 0 ? "+" : ""}${pct(s.return_pct, 2)}</div>
+              <div class="pct">收益</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // ── 配置偏离脉冲 ──
+    function renderAllocation() {
+      const alloc = state.data?.allocation || [];
+      const box = document.getElementById("allocation");
+      if (!alloc.length) {
+        box.innerHTML = '<div class="empty">暂无配置数据（请先填写 allocation.json）</div>';
+        return;
+      }
+      box.innerHTML = alloc.map(a => {
+        const label = deviationLabel(a.actual_pct, a.target_pct);
+        const barPct = Math.min(a.actual_pct / (Math.max(a.target_pct, 1) * 2) * 100, 100);
+        const barCls = a.rebalance_needed ? "over" : (a.actual_pct < a.target_pct * 0.5 ? "under" : "match");
+        return `
+          <div class="pulse ${label.cls}">
+            <div class="k">${bucketIcon(a.name)} ${safe(a.name)}<span class="tag">${safe(label.text)}</span></div>
+            <div class="v">
+              <div>实际 ${pct(a.actual_pct, 1)} / 目标 ${pct(a.target_pct, 1)} · 偏离 ${a.deviation_pct >= 0 ? "+" : ""}${fmt(a.deviation_pct, 1)}pp</div>
+              <div class="bar-wrap">
+                <div class="bar-outer"><div class="bar-inner ${barCls}" style="width:${barPct}%"></div></div>
+                <span style="font-size:11px">¥${fmt(a.value, 0)}</span>
+              </div>
+              ${a.suggested_action ? `<div style="margin-top:4px;font-size:12px">${safe(a.suggested_action)}</div>` : ""}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // ── 持仓卡片 ──
+    function positionCard(pos) {
+      const avgCostFmt = pos.cost_currency === "USD" ? `$${fmt(pos.avg_cost)}` : `¥${fmt(pos.avg_cost, 4)}`;
+      return `
+        <article class="card">
+          <div class="top">
+            <div>
+              <div class="name">${safe(pos.name || pos.ticker)}</div>
+              <div class="code">${safe(pos.ticker)} · ${safe(pos.market)} · ${safe(pos.strategy)} · ${safe(pos.direction)}</div>
+            </div>
+            <div>
+              <div class="price ${pnlCls(pos.change_1d_pct)}">${fmt(pos.current_price)}</div>
+              <div style="text-align:right;margin-top:5px">
+                <span class="pill">${safe(pos.allocation_bucket)}</span>
+              </div>
+            </div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><span>持仓</span><b>${fmt(pos.shares, 0)} 股</b></div>
+            <div class="metric"><span>均价</span><b>${avgCostFmt}</b></div>
+            <div class="metric"><span>市值</span><b>¥${fmt(pos.value_cny, 0)}</b></div>
+            <div class="metric"><span>占比</span><b>${pct(pos.pct_of_portfolio, 1)}</b></div>
+          </div>
+          <div class="pnl-row">
+            <div class="pnl-item">浮盈 <b class="${pnlCls(pos.unrealized_pnl_cny)}">${pos.unrealized_pnl_cny >= 0 ? "+" : ""}¥${fmt(pos.unrealized_pnl_cny, 0)}</b></div>
+            <div class="pnl-item">收益率 <b class="${pnlCls(pos.unrealized_pnl_pct)}">${pct(pos.unrealized_pnl_pct, 2)}</b></div>
+            ${pos.entry_date ? `<div class="pnl-item">入场 ${safe(pos.entry_date)}</div>` : ""}
+            <div class="pnl-item">数据 <b>${pos.data_status === "live" ? "✅ 实时" : "⚠️ 待更新"}</b></div>
+          </div>
+          ${pos.notes ? `<div class="reason">${safe(pos.notes)}</div>` : ""}
+          ${pos.linked_signals && pos.linked_signals.length ? pos.linked_signals.slice(0, 2).map(s =>
+            `<div class="signal" style="margin-top:6px">${safe(s.source)}：${safe(s.signal || "暂无信号")}</div>`
+          ).join("") : ""}
+        </article>
+      `;
+    }
+
+    function renderPositions() {
+      const positions = state.data?.positions || [];
+      const box = document.getElementById("positions");
+      const hint = document.getElementById("posHint");
+      hint.textContent = positions.length ? `共 ${positions.length} 个持仓` : "暂无持仓";
+      box.innerHTML = positions.length
+        ? positions.map(positionCard).join("")
+        : '<div class="empty">暂无持仓数据（请填写 portfolio.json）</div>';
+    }
+
+    // ── 信号关联 ──
+    function renderSignals() {
+      const signals = state.data?.signals_to_actions || [];
+      const box = document.getElementById("signals");
+      if (!signals.length) {
+        box.innerHTML = '<div class="empty">暂无持仓信号关联数据</div>';
+        return;
+      }
+      box.innerHTML = signals.filter(s => s.held).slice(0, 12).map(s => `
+        <div class="signal-card">
+          <div class="top">
+            <div class="name">${safe(s.name || s.ticker)}</div>
+            <span class="tag">${safe(s.source)}</span>
+          </div>
+          <div class="signal">信号：${safe(s.signal || "等待数据")}</div>
+          <div class="implication">${safe(s.implication)}</div>
+        </div>
+      `).join("");
+    }
+
+    // ── 交易日志 ──
+    function renderTrades() {
+      const trades = state.data?.trades_recent || [];
+      const hint = document.getElementById("tradesHint");
+      hint.textContent = trades.length ? `最近 ${trades.length} 笔` : "暂无交易记录";
+      const box = document.getElementById("trades");
+      if (!trades.length) {
+        box.innerHTML = '<div class="empty" style="padding:20px;text-align:center">暂无交易记录（请填写 trades.json）</div>';
+        return;
+      }
+      let html = `<table><thead><tr>
+        <th>日期</th><th>操作</th><th>品种</th><th>数量</th><th>价格</th><th>金额</th><th>原因</th>
+      </tr></thead><tbody>`;
+      trades.forEach(t => {
+        const actionCls = t.action === "buy" ? "pos" : t.action === "sell" ? "neg" : "flat";
+        const valueText = t.value_cny ? `¥${fmt(t.value_cny, 0)}` : t.value_usd ? `$${fmt(t.value_usd, 0)}` : "-";
+        html += `<tr>
+          <td>${safe(t.date)}</td>
+          <td class="${actionCls}">${safe(t.action)}</td>
+          <td>${safe(t.ticker)}</td>
+          <td>${fmt(t.shares, 0)}</td>
+          <td>${fmt(t.price)}</td>
+          <td>${safe(valueText)}</td>
+          <td style="white-space:normal;max-width:200px">${safe(t.reason || "-")}</td>
+        </tr>`;
+      });
+      html += "</tbody></table>";
+      box.innerHTML = html;
+    }
+
+    // ── 数据缺口 ──
+    function renderGaps() {
+      const gaps = state.data?.data_gaps || [];
+      const box = document.getElementById("gaps");
+      box.className = gaps.length ? "gap-box" : "empty";
+      box.innerHTML = gaps.length
+        ? gaps.map(g => `<div>· ${safe(g)}</div>`).join("")
+        : "暂无数据缺口";
+    }
+
+    function render() {
+      renderSummary();
+      renderStrategy();
+      renderAllocation();
+      renderPositions();
+      renderSignals();
+      renderTrades();
+      renderGaps();
+    }
+
+    function showError(error) {
+      document.getElementById("meta").textContent = "没有读到最新数据文件";
+      const tip = '<div class="empty">先运行 scripts/portfolio_report.py 生成最新数据，再用本地服务器打开本页面。</div>';
+      ["heroCards", "strategyGrid", "allocation", "positions", "signals", "trades"].forEach(id => {
+        document.getElementById(id).innerHTML = tip;
+      });
+      document.getElementById("gaps").className = "empty";
+      document.getElementById("gaps").textContent = `数据缺口：${error.message}`;
+    }
+
+    document.getElementById("reload")?.addEventListener("click", () => loadData().catch(showError));
+
+    const sections = ["summary-section", "strategy-section", "allocation-section", "positions-section", "signals-section", "trades-section", "gaps-section"];
+    window.addEventListener("scroll", () => {
+      const current = sections.findLast(id => document.getElementById(id)?.getBoundingClientRect().top < 220) || sections[0];
+      document.querySelectorAll(".bottom-nav a").forEach(link => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${current}`);
+      });
+    }, { passive: true });
+
+    loadData().catch(showError);
+  </script>
+</body>
+</html>

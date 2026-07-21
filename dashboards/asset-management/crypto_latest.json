@@ -1,0 +1,33 @@
+{
+  "asof": "2026-07-21 16:31 UTC",
+  "prices": [
+    {
+      "id": "bitcoin",
+      "ticker": "BTC",
+      "name": "Bitcoin",
+      "price_usd": 66484.0,
+      "change_24h_pct": 1.7183197659306613,
+      "market_cap_usd": 1334024296876.6084,
+      "source": "CoinGecko"
+    },
+    {
+      "id": "ethereum",
+      "ticker": "ETH",
+      "name": "Ethereum",
+      "price_usd": 1923.5,
+      "change_24h_pct": 1.3348975375281893,
+      "market_cap_usd": 232157933320.68414,
+      "source": "CoinGecko"
+    },
+    {
+      "id": "solana",
+      "ticker": "SOL",
+      "name": "Solana",
+      "price_usd": 77.97,
+      "change_24h_pct": 0.560587872815748,
+      "market_cap_usd": 45444334047.17701,
+      "source": "CoinGecko"
+    }
+  ],
+  "data_gaps": []
+}

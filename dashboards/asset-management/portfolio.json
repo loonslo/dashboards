@@ -1,0 +1,59 @@
+{
+  "asof": "2026-07-22",
+  "capital_base": 1000000,
+  "currency": "CNY",
+  "items": [
+    {
+      "ticker": "VOO",
+      "name": "Vanguard S&P 500 ETF",
+      "market": "US",
+      "asset_class": "equity_us",
+      "strategy": "core_allocation",
+      "direction": "long",
+      "shares": 100,
+      "avg_cost": 480.50,
+      "cost_currency": "USD",
+      "entry_date": "2026-01-15",
+      "notes": "12-18个月分批建仓"
+    },
+    {
+      "ticker": "VT",
+      "name": "Vanguard Total World Stock ETF",
+      "market": "US",
+      "asset_class": "equity_us",
+      "strategy": "core_allocation",
+      "direction": "long",
+      "shares": 50,
+      "avg_cost": 105.00,
+      "cost_currency": "USD",
+      "entry_date": "2026-02-01",
+      "notes": "全球分散配置"
+    },
+    {
+      "ticker": "QQQ",
+      "name": "Invesco QQQ Trust",
+      "market": "US",
+      "asset_class": "equity_us",
+      "strategy": "core_allocation",
+      "direction": "long",
+      "shares": 40,
+      "avg_cost": 465.00,
+      "cost_currency": "USD",
+      "entry_date": "2026-01-20",
+      "notes": "已接近配置上限，默认暂停新增"
+    },
+    {
+      "ticker": "512890",
+      "name": "红利低波ETF",
+      "market": "CN",
+      "asset_class": "equity_cn",
+      "strategy": "defense_allocation",
+      "direction": "long",
+      "shares": 5000,
+      "avg_cost": 1.35,
+      "cost_currency": "CNY",
+      "entry_date": "2026-03-10",
+      "notes": "A股长期防御配置"
+    }
+  ]
+}

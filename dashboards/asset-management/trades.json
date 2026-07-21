@@ -1,0 +1,53 @@
+{
+  "asof": "2026-07-22",
+  "trades": [
+    {
+      "date": "2026-01-15",
+      "action": "buy",
+      "ticker": "VOO",
+      "name": "Vanguard S&P 500 ETF",
+      "market": "US",
+      "shares": 100,
+      "price": 480.50,
+      "value_usd": 48050,
+      "reason": "新增资金主线，按12-18个月分批建仓",
+      "linked_signal": null
+    },
+    {
+      "date": "2026-01-20",
+      "action": "buy",
+      "ticker": "QQQ",
+      "name": "Invesco QQQ Trust",
+      "market": "US",
+      "shares": 40,
+      "price": 465.00,
+      "value_usd": 18600,
+      "reason": "纳指配置，价格合理区间",
+      "linked_signal": null
+    },
+    {
+      "date": "2026-02-01",
+      "action": "buy",
+      "ticker": "VT",
+      "name": "Vanguard Total World Stock ETF",
+      "market": "US",
+      "shares": 50,
+      "price": 105.00,
+      "value_usd": 5250,
+      "reason": "全球分散执行载体",
+      "linked_signal": null
+    },
+    {
+      "date": "2026-03-10",
+      "action": "buy",
+      "ticker": "512890",
+      "name": "红利低波ETF",
+      "market": "CN",
+      "shares": 5000,
+      "price": 1.35,
+      "value_cny": 6750,
+      "reason": "股息率>6%，PE<11，允许买入信号触发",
+      "linked_signal": "index-decision:dividend_signal:H30269"
+    }
+  ]
+}
